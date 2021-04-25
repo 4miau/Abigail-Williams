@@ -1,0 +1,7 @@
+package-lock.json
+tsconfig.json
+dist
+node_modules
+src/Config.ts
+src/Bot.ts
+src/client
