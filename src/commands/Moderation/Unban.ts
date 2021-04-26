@@ -20,7 +20,7 @@ export default class Unban extends Command {
                 {
                     id: 'member',
                     type: 'string',
-                    default: (msg: Message) => msg.util!.send('Please provide a user ID to unban.')
+                    match: 'phrase'
                 },
                 {
                     id: 'reason',
@@ -32,11 +32,15 @@ export default class Unban extends Command {
     }
 
     public exec(message: Message, {member, reason}: {member: string, reason: string}): Promise<Message> {
-        try {
-            message.guild.members.unban(member, reason ? reason : 'No reason specified')
-            return message.util!.reply(`User has been unbanned from the server. Reason: ${reason ? reason : 'No reason specified'}`)
-        } catch (err) {
-            return message.util!.send('Unable to find user.')
+        if (member) {
+            try {
+                message.guild.members.unban(member, reason ? reason : 'No reason specified')
+                return message.util!.reply(`User has been unbanned from the server. Reason: ${reason ? reason : 'No reason specified'}`)
+            } catch (err) {
+                return message.util!.send('Unable to unban that user...')
+            }
+        } else {
+            return message.util!.send('Please provide a user ID to unban.')
         }
     }
 }
