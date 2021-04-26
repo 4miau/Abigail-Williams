@@ -18,9 +18,9 @@ export default class Avatar extends Command {
             args: [
                 {
                     id: 'member',
-                    type: 'user',
+                    type: 'string',
                     match: 'rest',
-                    default: (msg: Message) => msg.member
+                    default: (msg: Message) => msg.member.id
                 },
                 {
                     id: 'size',
@@ -36,16 +36,20 @@ export default class Avatar extends Command {
         })
     }
 
-    public exec(message: Message, {member, size}: {member: UserResolvable, size: number}): Promise<Message> {
-        const userResolved: User = this.client.users.resolve(member)
-        console.log(userResolved)
+    public exec(message: Message, {member, size}: {member: string, size: number}): Promise<Message> {
+        try {
+            const userResolved: User = this.client.util!.resolveUser(member, this.client.users.cache, false)
+    
+            return message.util!.send(new MessageEmbed()
+                .setTitle(`Avatar | ${userResolved.tag}`)
+                .setColor('RANDOM')
+                .setDescription(`${userResolved.tag}'s avatar`)
+                .setImage(userResolved.displayAvatarURL({ format: 'png', size: size as ImageSize, dynamic: true }))
+                .setFooter(`${userResolved.tag}`)
+            )
+        } catch (err) {
+            return message.util!.reply('There was an error retrieving this user, please try again!')
+        }
 
-        return message.util!.send(new MessageEmbed()
-            .setTitle(`Avatar | ${userResolved.tag}`)
-            .setColor('RANDOM')
-            .setDescription(`${userResolved.tag}'s avatar`)
-            .setImage(userResolved.displayAvatarURL({ format: 'png', size: size as ImageSize, dynamic: true }))
-            .setFooter(`${userResolved.tag}`)
-        )
     }
 }
