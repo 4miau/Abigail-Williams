@@ -1,7 +1,17 @@
-package-lock.json
-tsconfig.json
+# Dist
 dist
+
+# Packages
 node_modules
+package-lock.json
+
+# Sensitive
 src/Config.ts
 src/Bot.ts
 src/client
+
+# Progress & Logs
+todos
+
+# Configs
+tsconfig.json
