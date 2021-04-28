@@ -20,5 +20,6 @@ export default class Shutdown extends Command {
 
     public exec(message: Message) {
         this.client.destroy()
+        console.log('Bot shutdown successfully.')
     }
 }

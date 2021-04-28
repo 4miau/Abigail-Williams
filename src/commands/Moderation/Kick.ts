@@ -35,9 +35,9 @@ export default class Kick extends Command {
         })
     }
 
-    public exec(message: Message, {member, reason}: {member: GuildMember, reason: string}): Promise<Message> {
+    public async exec(message: Message, {member, reason}: {member: GuildMember, reason: string}): Promise<Message> {
         if (member.kickable) {
-            member.kick(reason ? reason : 'No reason specified')
+            await member.kick(reason ? reason : 'No reason specified')
             return message.util!.send(`${member} has been kicked, ${reason ? 'Reason: ' + reason : ''}`)
         } 
         else return message.util!.reply('I am unable to kick that user.')

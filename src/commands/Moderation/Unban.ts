@@ -31,10 +31,13 @@ export default class Unban extends Command {
         })
     }
 
-    public exec(message: Message, {member, reason}: {member: string, reason: string}): Promise<Message> {
+    public async exec(message: Message, {member, reason}: {member: string, reason: string}): Promise<Message> {
+        //TODO: Unban through cache
+        
+        //const user: User = this.client.util.resolveUser(member, message.guild.members.cache.)
         if (member) {
             try {
-                message.guild.members.unban(member, reason ? reason : 'No reason specified')
+                await message.guild.members.unban(member, reason ? reason : 'No reason specified')
                 return message.util!.reply(`User has been unbanned from the server. Reason: ${reason ? reason : 'No reason specified'}`)
             } catch (err) {
                 return message.util!.send('Unable to unban that user...')

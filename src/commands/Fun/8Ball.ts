@@ -1,7 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
-import { eightBallReplies } from '../../utilities/Constants'
+import { eightBallReplies } from '../../utils/Constants'
+import { getRandomInt } from '../../utils/Functions'
 
 export default class EightBall extends Command {
     public constructor() {
@@ -27,7 +28,6 @@ export default class EightBall extends Command {
     }
 
     public exec(message: Message, {question}: {question: string}): Promise<Message> {
-        return message.util!.reply(question ? eightBallReplies[Math.floor(Math.random() * eightBallReplies.length)] : 'What are you asking the 8ball?')
-
+        return message.util!.send(question ? ':8ball: ' + eightBallReplies[getRandomInt(eightBallReplies.length)] : 'What are you asking the 8ball?')
     }
 }

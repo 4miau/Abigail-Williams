@@ -2,6 +2,11 @@ import { Command } from 'discord-akairo'
 import { Message, GuildMember } from 'discord.js'
 import ms from 'ms'
 
+import { Repository } from 'typeorm'
+
+import { Bans } from '../../models/Bans'
+import { maxBanDays, minBanDays } from '../../utils/Constants'
+
 export default class Ban extends Command {
     public constructor() {
         super('ban', {
@@ -30,27 +35,37 @@ export default class Ban extends Command {
                 {
                     id: 'days',
                     type: (_: Message, str: string) => {
-                        if (Number(ms(str)) < 2.6e9 && Number(ms(str)) > 8.64e7) {
+                        if (Number(ms(str)) < minBanDays && Number(ms(str)) > maxBanDays) {
                             return Number(ms(str))
                         }
                         return 0
                     },
-                    match: 'phrase',
-                    default: 0
+                    match: 'phrase'
                 },
                 {
                     id: 'reason',
                     type: 'string',
-                    'match': 'rest',
-                    'default': 'No reason specified'
+                    match: 'rest',
+                    default: 'No reason specified'
                 }
             ]
         })
     }
 
-    public exec(message: Message, {member, days, reason}: {member: GuildMember, days: number, reason: string}): Promise<any> {
+    public async exec(message: Message, {member, days, reason}: {member: GuildMember, days: number, reason: string}): Promise<any> {
+        const banRepo: Repository<Bans> = this.client.db.getRepository(Bans)
+
         if (member!.bannable) {
-            member.ban({days: days? days : Infinity, reason: reason})
+            await member.ban({days: days? days : Infinity, reason: reason})
+
+            await banRepo.insert({
+                guild: message.guild.id,
+                user: member.user.id,
+                moderator: message.author.id,
+                duration: days ? 0 : days,
+                reason: reason ? reason : 'No reason specified'
+            })
+
             return message.util!.send(`${member.user.id} has successfully been banned from the server.`)
         } else {
             message.util!.reply('I am unable to ban that user.')
