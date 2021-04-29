@@ -53,3 +53,5 @@ export default class Avatar extends Command {
 
     }
 }
+
+//this.client.options.fetchallmembers
