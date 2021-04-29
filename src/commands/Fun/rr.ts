@@ -31,7 +31,7 @@ export default class RussianRoulette extends Command {
         if (bullets < bulletsMin) return message.util!.send('You coward, you need at least 1 bullet in the chamber!')
         if (bullets > bulletsMax) return message.util!.send('Woah, you really must be trying to get yourself killed.')
 
-        const dead: boolean = (Math.floor(Math.random() * bulletsTotal) <= bullets)
+        const dead: boolean = (Math.floor(Math.random() * bulletsTotal) < bullets)
 
         return await (message.util!.send(`You load ${bullets === 1 ? 'a bullet' : bullets + ' bullets'} into the revolver, give it a spin, and place it against your head.`)
                 .then(msg => { return msg.channel.send(`${emojiList[getRandomInt(emojiList.length)]} :gun:`)})
