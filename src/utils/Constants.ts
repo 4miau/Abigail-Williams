@@ -59,6 +59,14 @@ export const secondsConvert: number = 1000
 export const minBanDays: number = 8.64e7 //1 DAY
 export const maxBanDays: number = 2.6e9 //30 DAYS
 
+/*
+    OWNER
+*/
+
+//Activity + Status
+
+export const miauTwitch: string = 'https://twitch.tv/notmiauu'
+
 
 /*
     MISC
