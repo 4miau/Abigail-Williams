@@ -64,7 +64,6 @@ Optionally:
 <ul>
   <li>sqlite3 (if you wish to use sqlite for the database)</li>
   <li>typeorm (this is useful for storing connections and repositories while connecting to db)</li>
-  <li></li>
 </ul>
 
 # Commands
