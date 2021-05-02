@@ -5,7 +5,7 @@
   - [Features](#features)
   - [Requirements](#requirements)
   - [Commands](#commands)
-  - [Note](#note)
+  - [Notes](#notes)
 
 # Description
 
@@ -103,7 +103,7 @@ Here are a list of the current commands (only those that are functional):
   <li>Avatar</li>
 </ul>
 
-# Note
+# Notes
 
 ##### While it is true that this bot's code (commands, listeners & inhibitors, etc) is open to the public, you may use the coding from this bot to study & learn from, especially if you are using typescript, or the discord-akairo framework.
 ###### However, you may not invite this bot to other servers, as it is private and you will have to figure out how to host the bot and make a database yourself. You can not just directly dump this program to make your bot, you will need to have some understanding on how to use Node.js.
