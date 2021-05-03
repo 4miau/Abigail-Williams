@@ -4,6 +4,8 @@ import { dbName } from '../Config'
 import { Warns } from '../models/Warns'
 import { Bans } from '../models/Bans'
 import { MuteRole } from '../models/MuteRole'
+import { ModmailSetup } from '../models/ModmailSetup'
+import { ChannelBlacklists } from '../models/ChannelBlacklists'
 
 const connectionManager: ConnectionManager = new ConnectionManager()
 connectionManager.create({
@@ -13,7 +15,9 @@ connectionManager.create({
     entities: [
         Warns,
         Bans,
-        MuteRole
+        MuteRole,
+        ModmailSetup,
+        ChannelBlacklists
     ]
 })
 
