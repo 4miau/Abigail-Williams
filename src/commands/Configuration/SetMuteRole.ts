@@ -40,13 +40,12 @@ export default class setMuteRole extends Command {
         })
     }
 
-    public exec(message: Message, {role}: {role: string}): Promise<Message> {
-        const muteRoleRepo: Repository<MuteRole> = this.client.db.getRepository(MuteRole)
-
+    public async exec(message: Message, {role}: {role: string}): Promise<Message> {
+        const muteRoleRepo: Repository<MuteRole> = await this.client.db.getRepository(MuteRole)
         const muteRole: Role = message.guild.roles.resolve(role)
 
         if (muteRole) {
-            muteRoleRepo.insert({
+            await muteRoleRepo.insert({
                 guild: message.guild.id,
                 role: muteRole.id
             })
