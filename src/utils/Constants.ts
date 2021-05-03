@@ -42,6 +42,16 @@ export const liveList: string[] = [
 ]
 
 /*
+    GENERAL
+*/
+
+//Help
+
+export const commandsGithub: string = 'https://github.com/notmiauu/abby-bot#commands'
+
+export const pages: readonly number[] = [1, 2] 
+
+/*
     MODERATION
 */
 
