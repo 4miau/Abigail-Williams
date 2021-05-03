@@ -1,10 +1,10 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
-export default class Load extends Command {
+export default class Build extends Command {
     public constructor() {
-        super('load', {
-            aliases: ['load'],
+        super('build', {
+            aliases: ['build', 'load'],
             category: 'Owner',
             description: [
                 {
@@ -27,7 +27,7 @@ export default class Load extends Command {
 
     public exec(message: Message, {command}: {command: string}): Promise<Message> {
         try {
-            this.client.commandHandler.load(command)
+            this.client.commandHandler.load(command, true)
             return message.util!.reply(`${command} has been loaded successfully.`)
         } catch (err) {
             return message.util!.reply('This command has already been loaded or I can not load it in.')
