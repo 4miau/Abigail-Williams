@@ -35,8 +35,10 @@ export default class Ban extends Command {
                 {
                     id: 'days',
                     type: (_: Message, str: string) => {
-                        if (Number(ms(str)) < minBanDays && Number(ms(str)) > maxBanDays) {
-                            return Number(ms(str))
+                        if (str) {
+                            if (Number(ms(str)) < minBanDays && Number(ms(str)) > maxBanDays) {
+                                return Number(ms(str))
+                            }
                         }
                         return 0
                     },

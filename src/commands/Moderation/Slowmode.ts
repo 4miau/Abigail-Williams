@@ -26,52 +26,48 @@ export default class Slowmode extends Command {
                 },
                 {
                     id: 'timer',
-                    type: 'string'
+                    type: (_: Message, str: string): null | number => {
+                        if (str) {
+                            if (Number(ms(str))) return Number(ms(str))
+                        }
+                        
+                        return null
+
+                    }
                 }
             ]
         })
     }
 
-    public exec(message: Message, {channel, timer}: {channel: GuildChannelResolvable, timer: string}): Promise<Message> {
-        if (channel.toString() && !channel.toString().includes('<#')) {
-            if (isNaN(parseInt(channel.toString()))) {
-                const textChannel: GuildChannel = message.guild.channels.resolve(channel)
+    public exec(message: Message, {channel, timer}: {channel: GuildChannelResolvable, timer: number}): Promise<Message> {
+        let textChannel: GuildChannel
+
+        if (channel) {
+
+            ;(!message.mentions.channels.first() ? () => {
+                timer = isNaN(parseInt(channel.toString())) ? timer : Number(ms(channel.toString()))
+                textChannel = isNaN(parseInt(channel.toString())) ? message.guild.channels.resolve(channel) : message.guild.channels.resolve(message.channel.id)
 
                 try {
-                    const newTimer: number = Number(ms(timer))
-
-                    textChannel.edit({ rateLimitPerUser: newTimer / secondsConvert})
+                    textChannel.edit({'rateLimitPerUser': Math.floor(timer / secondsConvert)})
+                    return message.util!.send('Slowmode set successfully.')
                 } catch (err) {
+                    console.log(err)
                     return message.util!.send('Please input a valid time.')
                 }
-            } else {
-                const newTimer: number = Number(ms(channel.toString()))
+            } : () => {
+                textChannel = message.mentions.channels.first()
 
                 try {
-                    const currentChannelID: string = message.channel.id
-                    const currentChannel: GuildChannel = message.guild.channels.resolve(currentChannelID)
-
-                    if (slowmodeRange.includes(newTimer / secondsConvert)) {
-                        currentChannel.edit({ rateLimitPerUser: newTimer / secondsConvert})
-                        return message.util!.send('The slowmode for this channel has been set successfully.')
-                    } else {
-                        throw new Error
-                    }
-                } catch {
-                    return message.util!.send('Not a valid timer to set for the slowmode.')
+                    textChannel.edit({'rateLimitPerUser': Math.floor(timer / secondsConvert)})
+                    return message.util!.send('Slowmode set successfully.')
+                } catch(err) {
+                    console.log(err)
+                    return message.util!.send('HI I GOT HERE SOMEHOW')    
                 }
-            }
+            })()
         } else {
-            try {
-                const textChannel: GuildChannel = message.mentions.channels.first()
-
-                textChannel.edit({ rateLimitPerUser: Number(ms(timer)) / secondsConvert})
-                return message.util!.send('Slowmode has been set successfully.')
-            } catch (err) {
-                return message.util!.send('Error trying to set the slowmode, please try again.')
-            }
+            return message.util!.send('Please provide a time.')
         }
     }
 }
-
-//TODO: CLEAN UP SLOWMODE, VERY DIRTY CODE AND CAN EASILY BE CONDENSED

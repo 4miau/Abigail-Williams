@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { GuildMemberResolvable, GuildMember, Message, Guild, RoleResolvable } from 'discord.js'
+import { GuildMemberResolvable, GuildMember, Message, Guild, RoleResolvable, Role } from 'discord.js'
 import ms  from 'ms'
 import { MuteRole } from '../../models/MuteRole'
 
@@ -16,7 +16,7 @@ export default class Mute extends Command {
                 }
             ],
             userPermissions: ['MUTE_MEMBERS'],
-            clientPermissions: ['MUTE_MEMBERS'],
+            clientPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,
             args: [
                 {
@@ -30,8 +30,10 @@ export default class Mute extends Command {
                 },
                 {
                     id: 'time',
-                    type: (_: Message, str: string) => {
-                        if (Number(ms(str))) return Number(ms(str))
+                    type: (_: Message, str: string): number => {
+                        if (str) {
+                            if (Number(ms(str))) return Number(ms(str))
+                        }       
                         return 0
                     },
                     match: 'phrase'
@@ -47,30 +49,28 @@ export default class Mute extends Command {
     }
 
     public async exec(message: Message, { member, time, reason}: {member: GuildMemberResolvable, time: number, reason: string}) {
-        console.log('I reached here.')
-        let userResolved: GuildMember = message.guild.members.resolve(member)
+        const userResolved: GuildMember = message.guild.members.resolve(member)
 
-        console.log(userResolved)
-
-        let muteRoleID: string = await this.client.db.getRepository(MuteRole).find()
+        const muteRoleID: RoleResolvable = await this.client.db.getRepository(MuteRole).find()
             .then(mrArr => {return mrArr.find(m => m.guild === message.guild.id)})
-            .then(mr => muteRoleID = mr.guild)
-        
-        console.log(muteRoleID)
+            .then(mr => mr.role)
+            .catch(() => void 0)
+
+        const roleResolved: Role = message.guild.roles.resolve(muteRoleID)
 
         if (!muteRoleID) {
             return message.util!.send('Failed to get the role id, please make sure you have set a mute role!')
         }
 
-        if (userResolved.roles.highest.position < message.member.roles.highest.position || userResolved.user.id === message.guild.ownerID) {
-            return message.util!.send('You can not mute this person!')
-        } else {
+        if (roleResolved.editable || userResolved.id === message.guild.ownerID) {
             try {
-                userResolved.roles.add(muteRoleID)
-                return message.util!.send(`Muted ${member}.`)
+                await userResolved.roles.add(roleResolved)
+                return message.util!.send(`Muted ${member}`)
             } catch (err) {
-                return message.util!.send('Failed to mute for some reason, please check this bro.')
+                return message.util!.send('You can not mute this person!')
             }
+        } else {
+            return message.util!.send('Failed to mute for some reason, SERIOUSLY LIKE please check this bro.')
         }
     }
 }
