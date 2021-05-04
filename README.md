@@ -122,6 +122,6 @@ Optionally:
 abby-bot ©️ [miau](https://github.com/notmiauu)
 Solely authored and maintained by miau.
 
-### Notes
+### Note
 
-##### I shall permit this bot's code (commands, listeners & inhibitors, etc) to be open to the public so that you may use the codr from this bot to study & learn from. However, you may not invite this bot to servers, as it is private and you will have to figure out how to re-create certain files, host the bot and make a database yourself. You can not just directly dump this repository in order to make your bot, you will need to have some understanding with discord-akairo & Node.js.
+##### I shall permit this bot's code (commands, listeners & inhibitors, etc) to be open to the public so that you may use the codr from this bot to study & learn from. However, you may not invite this bot to servers, and you will have to figure out how to recreate certain files, host the bot and make a database yourself. You can not just directly dump this repository in order to make your bot, you will need to have some understanding with discord-akairo & Node.js.
