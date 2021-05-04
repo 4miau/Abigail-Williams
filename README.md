@@ -1,11 +1,12 @@
-# abby-bot ©
+# abby-bot
 
 - [Abby-bot](#abby-bot)
   - [Description](#description)
   - [Features](#features)
   - [Requirements](#requirements)
   - [Commands](#commands)
-  - [Notes](#notes)
+  - [Contributing](#contributing)
+  - [Author](#author)
 
 # Description
 
@@ -68,14 +69,15 @@ Optionally:
 
 # Commands
 
-Here are a list of the current commands (only those that are functional):
-###### NOTE: I have decided to leave out the Owner commands, however I can tell you they are all functional with decent error handling (requires optimization)
+#### Here are a list of the current commands (only those that are functional):
 ---
 ## Fun:
 
 <ul>
   <li>Russian Roulette (rr)</li>
   <li>8ball</li>
+  <li>Gayrate</li>
+  <li>Ship</li>
 </ul>
 
 ## General:
@@ -83,13 +85,14 @@ Here are a list of the current commands (only those that are functional):
 ## Configuration:
 <ul>
   <li>SetMuteRole</li>
+  <li>Setup (Modmail)</li>
 </ul>
 
 ## Moderation:
 
 <ul>
   <li>Fixname</li>
-  <li>Slowmode (requires optimization)</li>
+  <li>Slowmode</li>
   <li>Warn</li>
   <li>Kick</li>
   <li>Unban</li>
@@ -101,12 +104,24 @@ Here are a list of the current commands (only those that are functional):
 <ul>
   <li>Ping</li>
   <li>Avatar</li>
+  <li>Uptime</li>
 </ul>
 
-# Notes
+# Contributing
 
-##### While it is true that this bot's code (commands, listeners & inhibitors, etc) is open to the public, you may use the coding from this bot to study & learn from, especially if you are using typescript, or the discord-akairo framework.
-###### However, you may not invite this bot to other servers, as it is private and you will have to figure out how to host the bot and make a database yourself. You can not just directly dump this program to make your bot, you will need to have some understanding on how to use Node.js.
+### For those that wish to contribute to the bot, it'd be greatly appreciated. If you wish to contribute then please proceed with the following steps:
 
+- Fork this repository
+- Create a new branch hosting the changes `git checkout -b new-branch`
+- After making updates to this branch, push it to your forked repository `git push remote new-branch`
+- `Submit a pull request` with a summary of the changes/features added
 
-###### Bonus note: sorry if the code seems impractical, I am actually currently learning Typescript at the same time so this is an opportunity for me to learn also. Feel free to make pull requests to help out, I will review every pull request.
+# Author
+
+##### Hi there!
+abby-bot ©️ [miau](https://github.com/notmiauu)
+Solely authored and maintained by miau.
+
+### Notes
+
+##### I shall permit this bot's code (commands, listeners & inhibitors, etc) to be open to the public so that you may use the codr from this bot to study & learn from. However, you may not invite this bot to servers, as it is private and you will have to figure out how to re-create certain files, host the bot and make a database yourself. You can not just directly dump this repository in order to make your bot, you will need to have some understanding with discord-akairo & Node.js.
