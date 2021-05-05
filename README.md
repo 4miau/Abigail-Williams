@@ -1,4 +1,4 @@
-# abby-bot
+# Abigail Williams (AKA. abby-bot)
 
 - [Abby-bot](#abby-bot)
   - [Description](#description)
