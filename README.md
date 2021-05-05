@@ -1,6 +1,6 @@
-# Abigail Williams (AKA. abby-bot)
+# Abigail Williams (AKA. abby-bot) 
 
-- [Abby-bot](#abby-bot)
+- [Abby-bot](#abby-bot) <img src="https://i.imgur.com/wwkkDAr.png" align="right" width=200>
   - [Description](#description)
   - [Features](#features)
   - [Requirements](#requirements)
@@ -74,29 +74,40 @@ Optionally:
 ## Fun:
 
 <ul>
-  <li>Russian Roulette (rr)</li>
   <li>8ball</li>
   <li>Gayrate</li>
+  <li>Russian Roulette (rr)</li>
+  <li>Say</li>
   <li>Ship</li>
 </ul>
 
 ## General:
+<ul>
+  <li>About</li>
+</ul>
 
 ## Configuration:
 <ul>
+  <li>ChannelBlacklist</li>
+  <li>ChannelWhitelist</li>
   <li>SetMuteRole</li>
+  <li>SetPrefix</li>
+  <li>SetSupportRole</li>
   <li>Setup (Modmail)</li>
 </ul>
 
 ## Moderation:
 
 <ul>
-  <li>Fixname</li>
-  <li>Slowmode</li>
-  <li>Warn</li>
-  <li>Kick</li>
-  <li>Unban</li>
   <li>Ban</li>
+  <li>Fixname</li>
+  <li>Kick</li>
+  <li>Mute</li>
+  <li>Prune</li>
+  <li>Slowmode</li>
+  <li>Unban</li>
+  <li>Unmute</li>
+  <li>Warn</li>
 </ul>
 
 ## Utility
@@ -118,7 +129,7 @@ Optionally:
 
 # Author
 
-##### Hi there!
+#### Hi there!  <img src="https://i.imgur.com/wwkkDAr.png" align="right" width=128>
 abby-bot ©️ [miau](https://github.com/notmiauu)
 Solely authored and maintained by miau.
 
