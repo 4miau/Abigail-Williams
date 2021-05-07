@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message, MessageEmbed, User, UserResolvable, ImageSize } from 'discord.js'
+import { Message, MessageEmbed, User, ImageSize } from 'discord.js'
 
 export default class Avatar extends Command {
     public constructor() {
@@ -9,7 +9,7 @@ export default class Avatar extends Command {
             description: [
                 {
                     content: 'Gets the avatar of a member',
-                    usage: ['avatar [@user]', 'avatar [userID]'],
+                    usage: 'avatar [@user]',
                     examples: ['avatar @user', 'avatar 1337']
                 }
             ],
@@ -53,5 +53,3 @@ export default class Avatar extends Command {
 
     }
 }
-
-//this.client.options.fetchallmembers

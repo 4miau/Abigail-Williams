@@ -1,5 +1,6 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
+import { secondsConvert } from '../../utils/Constants'
 
 export default class Uptime extends Command {
     public constructor() {
@@ -10,7 +11,7 @@ export default class Uptime extends Command {
                 {
                     content: 'Returns the uptime of the bot',
                     usage: 'uptime',
-                    examples: 'uptime'
+                    examples: ['uptime']
                 }
             ],
             ratelimit: 3
@@ -18,6 +19,6 @@ export default class Uptime extends Command {
     }
 
     public exec(message: Message): Promise<Message> {
-        return message.util!.send(this.client.uptime)
+        return message.util!.send('This bot has been up for' + this.client.uptime / secondsConvert + 's')
     }
 }

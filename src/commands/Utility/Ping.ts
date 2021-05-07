@@ -10,7 +10,7 @@ export default class Ping extends Command {
                 {
                     content: 'Pong.',
                     usage: 'ping',
-                    examples: 'ping'
+                    examples: ['ping']
                 }
             ],
             ratelimit: 3
