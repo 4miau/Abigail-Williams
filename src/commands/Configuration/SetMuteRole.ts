@@ -1,9 +1,6 @@
 import { Command } from 'discord-akairo'
 import { Role } from 'discord.js'
 import { Message } from 'discord.js'
-import { Repository } from 'typeorm'
-
-import { MuteRole } from '../../models/MuteRole'
 
 export default class setMuteRole extends Command {
     public constructor() {
@@ -14,9 +11,10 @@ export default class setMuteRole extends Command {
                 {
                     content: 'Sets a role as the mute role.',
                     usage: 'muterole [rolename]',
-                    example: 'muterole Muted'
+                    example: ['muterole Muted']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MANAGE_ROLES'],
             clientPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,
@@ -41,16 +39,13 @@ export default class setMuteRole extends Command {
     }
 
     public async exec(message: Message, {role}: {role: string}): Promise<Message> {
-        const muteRoleRepo: Repository<MuteRole> = await this.client.db.getRepository(MuteRole)
         const muteRole: Role = message.guild.roles.resolve(role)
 
         if (muteRole) {
-            await muteRoleRepo.insert({
-                guild: message.guild.id,
-                role: muteRole.id
-            })
-
-            return message.util!.send('New muterole has been setted.')
+            this.client.settings.set(message.guild, 'mute-role', muteRole.id)
+            return message.util!.send('New muterole has been successfully set.')
         }
+
+        return message.util!.send('Can not resolve the muterole.')
     }
 }

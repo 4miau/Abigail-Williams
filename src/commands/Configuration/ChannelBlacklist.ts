@@ -1,20 +1,19 @@
 import { Command } from 'discord-akairo'
 import { Message, TextChannel } from 'discord.js'
-import { Repository } from 'typeorm'
-import { ChannelBlacklists } from '../../models/ChannelBlacklists'
 
 export default class ChannelBlacklist extends Command {
     public constructor() {
         super('channelblacklist', {
-            aliases: ['channelblacklist', 'cblacklist'],
+            aliases: ['channelblacklist', 'blacklistchannel', 'blockchannel'],
             category: 'Configuration',
             description: [
                 {
                     content: 'Blacklists commands from a channel',
-                    usage: ['blacklist [#channel]'],
+                    usage: 'blacklist [#channel]',
                     examples: ['blacklist #lobby']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,
             args: [
@@ -29,24 +28,16 @@ export default class ChannelBlacklist extends Command {
     public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
         if (!channel) return message.util!.send('You must provide a channel to blacklist.')
 
-        const blacklistRepo: Repository<ChannelBlacklists> = this.client.db.getRepository(ChannelBlacklists)
-        const blacklistRecord = await blacklistRepo.find().then(blArr => blArr.find(bl => bl.guild === message.guild.id))
+        const blacklistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
 
-        if (blacklistRecord && !blacklistRecord.channels.includes(channel.id)) {
-            blacklistRecord.channels.push(channel.id)
-            blacklistRepo.update({ 'guild': message.guild.id }, { channels: blacklistRecord.channels }) //UPDATES 2 WHERE 1
-        } else if (!blacklistRecord) {
-            let serverBlacklists: string[] = new Array<string>(channel.id)
-
-            blacklistRepo.insert({
-                'guild': message.guild.id,
-                'channels': serverBlacklists
-            })
-        } else {
-            return message.util!.send('This channel is already blacklisted from commands.')
+        if (blacklistedChannels.includes(channel.id)) {
+            return message.util!.send('The channel is already blacklisted from commands.')
         }
+
+        blacklistedChannels.push(channel.id)
+        this.client.settings.set(message.guild, 'channel-blacklist', blacklistedChannels)
+        return message.util!.send('Channel has been blacklisted from commands.')
+
+
     }
 } 
-
-
-//TODO: Fix array not pushing
