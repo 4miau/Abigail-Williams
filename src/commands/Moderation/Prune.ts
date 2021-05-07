@@ -68,8 +68,6 @@ export default class Prune extends Command {
     }
 }
 
-//TODO: COMPLETE FLAGS PARSING
-
 /*
 t@prune help | <1-99> [user] | ["word"] | [type] [--ignore [user] | ["word"] | [type]]
 text, emojis, bots, images, embeds, mentions, links, invites, left
