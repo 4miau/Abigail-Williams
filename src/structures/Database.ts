@@ -4,8 +4,8 @@ import { dbName } from '../Config'
 import { Warns } from '../models/Warns'
 import { Bans } from '../models/Bans'
 import { MuteRole } from '../models/MuteRole'
-import { ModmailSetup } from '../models/ModmailSetup'
-import { ChannelBlacklists } from '../models/ChannelBlacklists'
+import { Settings } from '../models/Settings'
+import { BotStatus } from '../models/BotStatus'
 
 const connectionManager: ConnectionManager = new ConnectionManager()
 connectionManager.create({
@@ -16,8 +16,8 @@ connectionManager.create({
         Warns,
         Bans,
         MuteRole,
-        ModmailSetup,
-        ChannelBlacklists
+        BotStatus,
+        Settings
     ]
 })
 

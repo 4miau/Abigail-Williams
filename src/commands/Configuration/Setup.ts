@@ -1,9 +1,8 @@
 import { Command } from 'discord-akairo'
 import { MessageEmbed, TextChannel } from 'discord.js'
-import { Message, CategoryChannel, Role } from 'discord.js'
-import { Repository } from 'typeorm'
+import { Message, CategoryChannel, Role, Guild } from 'discord.js'
 
-import { ModmailSetup } from '../../models/ModmailSetup'
+import { Colours } from '../../utils/Colours'
 
 export default class Setup extends Command {
     public constructor () {
@@ -13,45 +12,57 @@ export default class Setup extends Command {
             description: [
                 {
                     content: 'Setups modmail for your server',
-                    usage: ['setup'],
+                    usage: 'setup',
                     examples: ['setup']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             clientPermissions: ['MANAGE_GUILD', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
             ratelimit: 3
         })
     }
 
+    private async createSupportRole(guild: Guild): Promise<Role> {
+        return await guild.roles.create({
+            'data': {
+                'name': 'Support',
+                'hoist': true,
+                'color': Colours.Pinky,
+                'mentionable': false
+            }})
+    }
+
+    private async createModmailCategory(guild: Guild): Promise<CategoryChannel> {
+        return await guild.channels.create('Modmail', {
+            'type': 'category', 
+            'position': guild.channels.cache.filter(c => c.type === 'category').size
+        })
+
+    }
+
+    private async createModmailChannel(guild: Guild, modmailCategory: CategoryChannel): Promise<TextChannel> {
+        return await guild.channels.create('modmail-logs', {
+            'type': 'text',
+            'topic': 'Modmail logs',
+            'parent': modmailCategory
+        })
+    }
+
     public async exec(message: Message): Promise<Message> {
-        const setupRepo: Repository<ModmailSetup> = this.client.db.getRepository(ModmailSetup)
-        const serverSetup = await setupRepo.find().then(msArr => msArr.find(ms => ms.guild === message.guild.id))
+        const serverSetup = this.client.settings.get(message.guild, 'modmail.modmail-hasSetup', false)
 
         if (!serverSetup) {
             message.util!.send('Please wait as this is a first time setup...')
-            
-            const supportRole: Role = await message.guild.roles.create({
-                'data': {
-                    'name': 'Support',
-                    'hoist': true,
-                    'color': '#ea8cff',
-                    'mentionable': false
-                }})
-            
-            const modmailCategory: CategoryChannel = await message.guild.channels.create('Modmail', {
-                'type': 'category', 
-                'position': message.guild.channels.cache.filter(c => c.type === 'category').size
-            })
-            
-            const modmailChannel: TextChannel = await message.guild.channels.create('logs', {
-                'type': 'text',
-                'topic': 'Modmail logs',
-                'parent': modmailCategory
-            }).then(tc => {
-                tc.updateOverwrite(message.guild.roles.everyone, {'VIEW_CHANNEL': false, 'SEND_MESSAGES': false})
-                tc.updateOverwrite(supportRole, {'VIEW_CHANNEL': true})
-                return tc
-            })
+
+            const supportRole = await this.createSupportRole(message.guild)
+            const modmailCategory = await this.createModmailCategory(message.guild)
+            const modmailChannel = await this.createModmailChannel(message.guild, modmailCategory)
+                .then(tc => {
+                    tc.updateOverwrite(message.guild.roles.everyone, {'VIEW_CHANNEL': false, 'SEND_MESSAGES': false})
+                    tc.updateOverwrite(supportRole, {'VIEW_CHANNEL': true})
+                    return tc
+                }) //Sets permissions for the channel
 
             modmailChannel.send(new MessageEmbed()
                 .setAuthor('Modmail Setup Complete', message.guild.icon)
@@ -59,23 +70,57 @@ export default class Setup extends Command {
                 Anyone who can see this channel is able to use modmail commands.`)
             )
 
-            await setupRepo.insert({
-                'guild': message.guild.id,
-                'category': modmailCategory.id,
-                'modrole': supportRole.id,
-                'modchannel': modmailChannel.id
-            })
+            this.client.settings.setArr(message.guild, [
+                {'key': 'modmail.support-role', 'value': supportRole.id},
+                {'key': 'modmail.modmail-channel', 'value': modmailChannel.id},
+                {'key': 'modmail.modmail-category', 'value': modmailCategory.id},
+                {'key': 'modmail.modmail-hasSetup', 'value': true}
+            ])
+
 
             return message.util!.send('Modmail has now been setup for this server.')
+                .then(m => {
+                    message.util!.message.delete()
+                    setTimeout(() => {
+                        m.delete()
+                    }, 5000)
+                    return m
+                })
+
+            
         } else {
-            return message.util!.send('This server already has been set up.')
-            //TEMPORARY
+            const modmailArr: string[] = this.client.settings.getArr(message.guild, [
+                {'key': 'modmail.support-role', 'defaultValue': ''}, //modmailArr[0]
+                {'key': 'modmail.modmail-category', 'defaultValue': ''}, //modmailArr[1]
+                {'key': 'modmail.modmail-channel', 'defaultValue': ''} //modmailArr[2]
+            ])
+
+            //Pardon this messy code v
+            if (!message.guild.roles.resolve(modmailArr[0])) {
+                const newSupportRole: Role = await this.createSupportRole(message.guild)
+                this.client.settings.set(message.guild, 'modmail.support-role', newSupportRole.id)
+            }
+            if (!message.guild.channels.resolve(modmailArr[1])) {
+                const newModmailCategory: CategoryChannel = await this.createModmailCategory(message.guild)
+                this.client.settings.set(message.guild, 'modmail.modmail-category', newModmailCategory.id)
+            }
+            if (!message.guild.channels.resolve(modmailArr[2])) {
+                const currentCategory: CategoryChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'modmail.modmail-category', '')) as CategoryChannel
+                const newTextChannel: TextChannel = await this.createModmailChannel(message.guild, currentCategory)
+                this.client.settings.set(message.guild, 'modmail.modmail-channel', newTextChannel.id)
+            }
+            //Pardon this messy code ^
+
+            return message.util!.send('Server modmail configuration has been updated!')
+            .then(m => {
+                message.util!.message.delete()
+                setTimeout(() => {
+                    m.delete()
+                }, 4500)
+                return m
+            })
+            
+            
         }
-
-
     }
 }
-
-/*
-1 => 
-*/
