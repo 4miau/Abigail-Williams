@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { GuildMemberResolvable, Message, RoleResolvable, GuildMember, Role } from 'discord.js'
+import { GuildMemberResolvable, Message, RoleResolvable, GuildMember } from 'discord.js'
 
 import { MuteRole } from '../../models/MuteRole'
 
@@ -11,10 +11,11 @@ export default class Unmute extends Command {
             description: [
                 {
                     content: 'Unmutes a user',
-                    usage: ['unmute [@user] <reason>'],
+                    usage: 'unmute [@user] <reason>',
                     examples: ['unmute @user false mute']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MANAGE_ROLES'],
             clientPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,

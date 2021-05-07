@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message, User } from 'discord.js'
+import { Message } from 'discord.js'
 
 export default class Unban extends Command {
     public constructor() {
@@ -13,6 +13,7 @@ export default class Unban extends Command {
                     examples: ['unban 1337 was a mistake']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['BAN_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'BAN_MEMBERS'],
             ratelimit: 3,

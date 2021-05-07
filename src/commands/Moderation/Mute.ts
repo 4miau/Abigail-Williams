@@ -1,7 +1,6 @@
 import { Command } from 'discord-akairo'
-import { GuildMemberResolvable, GuildMember, Message, Guild, RoleResolvable, Role } from 'discord.js'
+import { GuildMemberResolvable, GuildMember, Message, Role } from 'discord.js'
 import ms  from 'ms'
-import { MuteRole } from '../../models/MuteRole'
 
 export default class Mute extends Command {
     public constructor() {
@@ -15,6 +14,7 @@ export default class Mute extends Command {
                     examples: ['mute @user bullying']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MUTE_MEMBERS'],
             clientPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,
@@ -48,29 +48,27 @@ export default class Mute extends Command {
         })
     }
 
-    public async exec(message: Message, { member, time, reason}: {member: GuildMemberResolvable, time: number, reason: string}) {
+    public async exec(message: Message, { member, time, reason}: {member: GuildMemberResolvable, time: number, reason: string}): Promise<Message> {
         const userResolved: GuildMember = message.guild.members.resolve(member)
 
-        const muteRoleID: RoleResolvable = await this.client.db.getRepository(MuteRole).find()
-            .then(mrArr => {return mrArr.find(m => m.guild === message.guild.id)})
-            .then(mr => mr.role)
-            .catch(() => void 0)
+        const muteRole: Role = message.guild.roles.resolve(this.client.settings.get(message.guild, 'mute-role', ''))
 
-        const roleResolved: Role = message.guild.roles.resolve(muteRoleID)
-
-        if (!muteRoleID) {
-            return message.util!.send('Failed to get the role id, please make sure you have set a mute role!')
-        }
-
-        if (roleResolved.editable || userResolved.id === message.guild.ownerID) {
-            try {
-                await userResolved.roles.add(roleResolved)
+        if (muteRole) {
+            ;(muteRole.editable ? () => {
+                userResolved.roles.add(muteRole)
                 return message.util!.send(`Muted ${member}`)
-            } catch (err) {
+            } : () => {
                 return message.util!.send('You can not mute this person!')
-            }
+            })()
         } else {
-            return message.util!.send('Failed to mute for some reason, SERIOUSLY LIKE please check this bro.')
+            return message.util!.send('Please make sure to set a mute role first!')
         }
     }
 }
+
+
+/*
+                this.client.settings.set(message.guild, 'mutes.user', userResolved.id)
+                this.client.settings.set(message.guild, 'mutes.moderator', message.author.id)
+                this.client.settings.set(message.guild, 'mutes.reason', reason ? reason : 'No reason specified')
+*/

@@ -9,10 +9,11 @@ export default class Kick extends Command {
             description: [
                 {
                     content: 'Kicks a user from the server.',
-                    usage: ['kick [@user] <reason>'],
+                    usage: 'kick [@user] <reason>',
                     examples: ['kick @user', 'kick @user swearing too much.']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['KICK_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'KICK_MEMBERS'],
             ratelimit: 3,

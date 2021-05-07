@@ -16,6 +16,7 @@ export default class Warn extends Command {
                     examples: ['warn @user spamming']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['VIEW_AUDIT_LOG'],
             clientPermissions: ['VIEW_AUDIT_LOG'],
             ratelimit: 3,

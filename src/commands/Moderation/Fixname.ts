@@ -15,6 +15,7 @@ export default class Fixname extends Command {
                     examples: ['fixname @userWithUnicode']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MANAGE_NICKNAMES'],
             clientPermissions: ['MANAGE_NICKNAMES'],
             ratelimit: 3,

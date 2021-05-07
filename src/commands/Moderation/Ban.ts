@@ -19,6 +19,7 @@ export default class Ban extends Command {
                     examples: ['ban @user', 'ban @user 3d for being rude to staff']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['BAN_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'EMBED_LINKS', 'SEND_MESSAGES'],
             ratelimit: 3,

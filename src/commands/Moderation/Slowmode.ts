@@ -1,8 +1,8 @@
 import { Command } from 'discord-akairo'
-import { Message, GuildChannel, GuildChannelResolvable, TextChannel } from 'discord.js'
+import { Message, GuildChannel, GuildChannelResolvable } from 'discord.js'
 import ms from 'ms'
 
-import { secondsConvert, slowmodeRange, ZERO } from '../../utils/Constants'
+import { secondsConvert } from '../../utils/Constants'
 
 export default class Slowmode extends Command {
     public constructor() {
@@ -16,6 +16,7 @@ export default class Slowmode extends Command {
                     examples: ['sm 5m', 'sm #general 5s']
                 }
             ],
+            channel: 'guild',
             userPermissions: ['MANAGE_CHANNELS'],
             clientPermissions: ['MANAGE_CHANNELS'],
             ratelimit: 3,
@@ -43,10 +44,11 @@ export default class Slowmode extends Command {
         let textChannel: GuildChannel
 
         if (channel) {
-
-            ;(!message.mentions.channels.first() ? () => {
+            ;(!message.mentions.channels.first() ? () => { //uses current channel
                 timer = isNaN(parseInt(channel.toString())) ? timer : Number(ms(channel.toString()))
                 textChannel = isNaN(parseInt(channel.toString())) ? message.guild.channels.resolve(channel) : message.guild.channels.resolve(message.channel.id)
+
+                if (timer < 5000 && timer !== 0) return message.util!.send('Please add a time modifier if you are not using milliseconds (e.g. 5s, 1h)')
 
                 try {
                     textChannel.edit({'rateLimitPerUser': Math.floor(timer / secondsConvert)})
@@ -55,8 +57,10 @@ export default class Slowmode extends Command {
                     console.log(err)
                     return message.util!.send('Please input a valid time.')
                 }
-            } : () => {
+            } : () => { //channel was mentioned
                 textChannel = message.mentions.channels.first()
+                
+                if (timer < 5000 && timer !== 0) return message.util!.send('Please add a time modifier if you are not using milliseconds (e.g. 5s, 1h)')
 
                 try {
                     textChannel.edit({'rateLimitPerUser': Math.floor(timer / secondsConvert)})
