@@ -1,5 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMemberResolvable, GuildMember, Message, MessageEmbed } from 'discord.js'
+
 import { getRandomIntRange } from '../../utils/Functions'
 
 export default class Ship extends Command {
@@ -7,6 +8,7 @@ export default class Ship extends Command {
         super('ship', {
             aliases: ['ship'],
             category: 'Fun',
+            channel: 'guild',
             description: [
                 {
                     content: 'Ships between 2 users',

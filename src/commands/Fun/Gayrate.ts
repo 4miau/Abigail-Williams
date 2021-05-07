@@ -9,10 +9,11 @@ export default class Gayrate extends Command {
             description: [
                 {
                     content: 'Returns a rating of how gay a user is (between 0-100%)',
-                    usage: ['gayrate [@user]'],
+                    usage: 'gayrate [@user]',
                     examples: ['gayrate @user']
                 }
             ],
+            channel: 'guild',
             clientPermissions: ['EMBED_LINKS'],
             ratelimit: 3,
             args: [

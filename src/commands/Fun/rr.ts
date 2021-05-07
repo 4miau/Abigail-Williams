@@ -12,7 +12,7 @@ export default class RussianRoulette extends Command {
             description: [
                 {
                     content: 'Plays russian roulette with a supplied amount of bullets',
-                    usage: ['rr [numberOfBullets]'],
+                    usage: 'rr [numberOfBullets]',
                     examples: ['rr 3']
                 }
             ],
