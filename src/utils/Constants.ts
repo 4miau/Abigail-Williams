@@ -69,6 +69,22 @@ export const secondsConvert: number = 1000
 export const minBanDays: number = 8.64e7 //1 DAY
 export const maxBanDays: number = 2.6e9 //30 DAYS
 
+//Prune
+
+export const msgFlags: string[] = ['-text', '-emojis', '-bots', '-images', '-embeds', '-mentions', '-links', '-invites', '-left']
+
+export enum flags {
+    'text' = 1,
+    'bots',
+    'images',
+    'embeds',
+    'mentions',
+    'links',
+    'invites',
+    'left',
+    'member'
+}
+
 /*
     OWNER
 */
@@ -83,3 +99,4 @@ export const miauTwitch: string = 'https://twitch.tv/notmiauu'
 */
 
 export const ZERO: number = 0
+export const ONE: number = 1
