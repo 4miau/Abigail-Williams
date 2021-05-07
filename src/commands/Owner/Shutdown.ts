@@ -10,7 +10,7 @@ export default class Shutdown extends Command {
                 {
                     content: 'Shutsdown the bot, allowing restarting of the bot.',
                     usage: 'shutdown',
-                    examples: 'shutdown'
+                    examples: ['shutdown']
                 }
             ],
             ownerOnly: true,

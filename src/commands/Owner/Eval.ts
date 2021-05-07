@@ -1,6 +1,7 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import { performance } from 'perf_hooks'
+import { parseCommandLine } from 'typescript'
 
 export default class Eval extends Command {
     public constructor() {
