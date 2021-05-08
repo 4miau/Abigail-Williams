@@ -8,13 +8,11 @@ export default class Fixname extends Command {
         super('fixname', {
             aliases: ['fixname', 'fn'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Fixes the username of a member',
                     usage: 'fixname [@user]',
                     examples: ['fixname @userWithUnicode']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_NICKNAMES'],
             clientPermissions: ['MANAGE_NICKNAMES'],

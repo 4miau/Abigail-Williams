@@ -12,13 +12,11 @@ export default class Ban extends Command {
         super('ban', {
             aliases: ['ban', 'bean'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Bans a user from the server',
                     usage: 'ban [@user] <days> <reason>',
                     examples: ['ban @user', 'ban @user 3d for being rude to staff']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['BAN_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'EMBED_LINKS', 'SEND_MESSAGES'],

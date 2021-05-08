@@ -9,13 +9,11 @@ export default class Ship extends Command {
             aliases: ['ship'],
             category: 'Fun',
             channel: 'guild',
-            description: [
-                {
+            description: {
                     content: 'Ships between 2 users',
                     usage: 'ship [@user1] [@user2]',
                     examples: ['ship @user1 @user2']
-                }
-            ],
+            },
             ratelimit: 3,
             args: [
                 {

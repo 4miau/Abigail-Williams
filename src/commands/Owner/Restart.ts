@@ -6,13 +6,11 @@ export default class Restart extends Command {
         super('restart', {
             aliases: ['restart', 'reload'],
             category: 'Owner',
-            description: [
-                {
+            description: {
                     content: 'Restarts a command (or all commands & listeners)',
                     usage: ['restart [command]'],
                     examples: ['restart ping', 'reload all']
-                }
-            ],
+            },
             ownerOnly: true,
             ratelimit: 3,
             args: [

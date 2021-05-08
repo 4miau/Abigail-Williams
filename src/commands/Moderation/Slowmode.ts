@@ -9,13 +9,11 @@ export default class Slowmode extends Command {
         super('slowmode', {
             aliases: ['slowmode', 'sm'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Sets a slowmode in a channel',
                     usage: 'sm <channel> [timer]',
                     examples: ['sm 5m', 'sm #general 5s']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_CHANNELS'],
             clientPermissions: ['MANAGE_CHANNELS'],

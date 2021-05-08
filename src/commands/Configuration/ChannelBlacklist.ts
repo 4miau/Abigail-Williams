@@ -6,13 +6,11 @@ export default class ChannelBlacklist extends Command {
         super('channelblacklist', {
             aliases: ['channelblacklist', 'blacklistchannel', 'blockchannel'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Blacklists commands from a channel',
                     usage: 'blacklist [#channel]',
                     examples: ['blacklist #lobby']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,

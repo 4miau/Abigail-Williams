@@ -6,13 +6,11 @@ export default class Prefix extends Command {
         super('prefix', {
             aliases: ['prefix', 'setprefix'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Gets/sets the server prefix',
                     usage: 'prefix <newPrefix>',
                     examples: ['prefix a.']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,

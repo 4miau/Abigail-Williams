@@ -8,14 +8,12 @@ export default class Prune extends Command {
         super('prune', {
             aliases: ['prune', 'purge'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Deletes a specified amount of messages (up to 100)',
                     usage: 'prune [numberOfMsgs] [user] | ["word"] | [type/flag]',
                     examples: ['prune 50', 'prune 10 @user', 'prune 10 "hi"'],
                     flags: ['-text', '-emojis', '-bots', '-images', '-embeds', '-mentions', '-links', '-invites', '-left']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_MESSAGES', 'VIEW_AUDIT_LOG'],
             clientPermissions: ['MANAGE_MESSAGES'],
@@ -34,7 +32,6 @@ export default class Prune extends Command {
     }
 
     private parseFlag(message: Message, flag: string): number {
-        console.log(flag)
         if (!flag) return 12
         if (message.guild.members.resolve(flag) || message.guild.members.resolve(flag.substring(3, flag.length - 1))) return 10
 

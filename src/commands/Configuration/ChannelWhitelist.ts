@@ -6,13 +6,11 @@ export default class ChannelWhitelist extends Command {
         super('channelwhitelist', {
             aliases: ['channelwhitelist', 'whitelistchannel', 'addchannel'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Whitelists a blacklisted channel',
                     usage: 'channelwhitelist [#blacklistedChannel]',
                     examples: ['channelwhitelist #blacklistedChannel']
-                }
-            ],
+            },
             userPermissions: ['MANAGE_GUILD', 'MANAGE_CHANNELS'],
             ratelimit: 3,
             args: [

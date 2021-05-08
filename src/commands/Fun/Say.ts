@@ -6,13 +6,11 @@ export default class Say extends Command {
         super('say', {
             aliases: ['say'],
             category: 'Fun',
-            description: [
-                {
+            description: {
                     content: 'The bot will say whatever you tell it to say',
                     usage: 'say [WhatToSay]',
                     examples: ['say hello!']
-                }
-            ],
+            },
             clientPermissions: ['SEND_MESSAGES'],
             ratelimit: 3,
             args: [

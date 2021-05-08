@@ -9,13 +9,11 @@ export default class Setup extends Command {
         super('setup', {
             aliases: ['setup'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Setups modmail for your server',
                     usage: 'setup',
                     examples: ['setup']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             clientPermissions: ['MANAGE_GUILD', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],

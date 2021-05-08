@@ -9,13 +9,11 @@ export default class RussianRoulette extends Command {
         super('rr', {
             aliases: ['rr', 'russianroulette', 'rroulette'],
             category: 'Fun',
-            description: [
-                {
+            description: {
                     content: 'Plays russian roulette with a supplied amount of bullets',
                     usage: 'rr [numberOfBullets]',
                     examples: ['rr 3']
-                }
-            ],
+            },
             ratelimit: 3,
             args: [
                 {

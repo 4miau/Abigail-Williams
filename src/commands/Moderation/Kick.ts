@@ -6,13 +6,11 @@ export default class Kick extends Command {
         super('kick', {
             aliases: ['kick'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Kicks a user from the server.',
                     usage: 'kick [@user] <reason>',
                     examples: ['kick @user', 'kick @user swearing too much.']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['KICK_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'KICK_MEMBERS'],

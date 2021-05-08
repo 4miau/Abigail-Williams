@@ -6,13 +6,11 @@ export default class UserBlacklist extends Command {
         super('userblacklist', {
             aliases: ['userblacklist', 'blacklistuser', 'blockuser'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Adds user to the bot blacklist for commands',
                     usage: 'userblacklist [@user]',
                     examples: ['userblacklist @user']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,

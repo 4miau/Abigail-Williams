@@ -7,13 +7,11 @@ export default class SetNickname extends Command {
         super('setnickname', {
             aliases: ['setnickname', 'setnick'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: `Manually set a user's nickname (if blank, resets nickname)`,
                     usage: 'setnick [@user] [newnick]',
                     examples: ['setnick @user nickname', 'setnickname @user']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_NICKNAMES'],
             ratelimit: 3,

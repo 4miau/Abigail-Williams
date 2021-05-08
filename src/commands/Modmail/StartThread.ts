@@ -7,13 +7,11 @@ export default class StartThread extends Command {
             aliases: ['startthread', 'contact'],
             
             category: 'Modmail',
-            description: [
-                {
+            description: {
                     content: 'Starts a new thread with support members',
                     usage: 'startthread <reason>',
                     examples: ['startthread issues with verifying']
-                }
-            ],
+            },
             channel: 'dm',
             ratelimit: 3,
             args: [

@@ -7,13 +7,11 @@ export default class setMuteRole extends Command {
         super('muterole', {
             aliases: ['muterole', 'setmuterole', 'setmr'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Sets a role as the mute role.',
                     usage: 'muterole [rolename]',
                     example: ['muterole Muted']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_ROLES'],
             clientPermissions: ['MANAGE_ROLES'],

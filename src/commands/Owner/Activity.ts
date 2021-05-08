@@ -10,13 +10,11 @@ export default class Activity extends Command {
         super('activity', {
             aliases: ['activity', 'setactivity'],
             category: 'Owner',
-            description: [
-                {
+            description: {
                     content: 'Sets my activity',
                     usage: 'activity [activity]',
                     examples: ['activity Listening to music']
-                }
-            ],
+            },
             ownerOnly: true,
             ratelimit: 3,
             args: [

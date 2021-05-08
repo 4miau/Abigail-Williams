@@ -6,13 +6,11 @@ export default class Build extends Command {
         super('build', {
             aliases: ['build', 'load'],
             category: 'Owner',
-            description: [
-                {
+            description: {
                     content: 'Loads a command in',
                     usage: 'load [command]',
                     examples: ['load 8ball', 'load all']
-                }
-            ],
+            },
             ownerOnly: true,
             ratelimit: 3,
             args: [

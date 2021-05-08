@@ -8,13 +8,11 @@ export default class Eval extends Command {
         super('eval', {
             aliases: ['eval'],
             category: 'Owner',
-            description: [
-                {
+            description: {
                     content: 'Evaluates and executes Javascript code.',
                     usage: 'eval <JS code>',
                     examples: ['eval console.log(\'hi\')']
-                }
-            ],
+            },
             ownerOnly: true,
             ratelimit: 3,
             args: [

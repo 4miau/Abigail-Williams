@@ -6,13 +6,11 @@ export default class Unban extends Command {
         super('unban', {
             aliases: ['unban', 'unbean'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Unbans a currently banned user',
                     usage: 'unban [userID] <reason>',
                     examples: ['unban 1337 was a mistake']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['BAN_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'BAN_MEMBERS'],

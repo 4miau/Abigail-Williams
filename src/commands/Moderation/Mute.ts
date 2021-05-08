@@ -7,13 +7,11 @@ export default class Mute extends Command {
         super('mute', {
             aliases: ['mute', 'silence', 'shadowrealm'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Mute a user from being able to talk.',
                     usage: 'mute [@user} <time> <reason>',
                     examples: ['mute @user bullying']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MUTE_MEMBERS'],
             clientPermissions: ['MANAGE_ROLES'],

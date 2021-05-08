@@ -6,13 +6,11 @@ export default class Avatar extends Command {
         super('avatar', {
             aliases: ['avatar', 'pfp', 'icon', 'ava'],
             category: 'Utility',
-            description: [
-                {
+            description: {
                     content: 'Gets the avatar of a member',
                     usage: 'avatar [@user]',
                     examples: ['avatar @user', 'avatar 1337']
-                }
-            ],
+            },
             clientPermissions: ['EMBED_LINKS'],
             ratelimit: 3,
             args: [

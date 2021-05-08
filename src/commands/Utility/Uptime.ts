@@ -7,13 +7,11 @@ export default class Uptime extends Command {
         super('uptime', {
             aliases: ['uptime'],
             category: 'Utility',
-            description: [
-                {
+            description: {
                     content: 'Returns the uptime of the bot',
                     usage: 'uptime',
                     examples: ['uptime']
-                }
-            ],
+            },
             ratelimit: 3
         })
     }

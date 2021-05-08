@@ -6,13 +6,11 @@ export default class Ping extends Command {
         super('ping', {
             aliases: ['ping'],
             category: 'Utility',
-            description: [
-                {
+            description: {
                     content: 'Pong.',
                     usage: 'ping',
                     examples: ['ping']
-                }
-            ],
+            },
             ratelimit: 3
         })
     }

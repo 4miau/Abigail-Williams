@@ -8,13 +8,11 @@ export default class Unmute extends Command {
         super('unmute', {
             aliases: ['unmute', 'unsilence', 'unshadowrealm'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Unmutes a user',
                     usage: 'unmute [@user] <reason>',
                     examples: ['unmute @user false mute']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_ROLES'],
             clientPermissions: ['MANAGE_ROLES'],

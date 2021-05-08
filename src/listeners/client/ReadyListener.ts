@@ -35,13 +35,5 @@ export default class ReadyListener extends Listener {
                 ])
 
         }
-    }
-}
-
-/*
-{}
-                    botstatus.activityType,
-                    botstatus.status,
-                    botstatus.url
         
 */

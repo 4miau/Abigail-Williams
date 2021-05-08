@@ -9,13 +9,11 @@ export default class Warn extends Command {
         super('warn', {
             aliases: ['warn'],
             category: 'Moderation',
-            description: [
-                {
+            description: {
                     content: 'Warns a user',
                     usage: 'warn [@user] <reason>',
                     examples: ['warn @user spamming']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['VIEW_AUDIT_LOG'],
             clientPermissions: ['VIEW_AUDIT_LOG'],

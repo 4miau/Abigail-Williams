@@ -9,13 +9,11 @@ export default class EightBall extends Command {
         super('8ball', {
             aliases: ['8ball', '8b', 'eightball'],
             category: 'Fun',
-            description: [
-                {
+            description: {
                     content: 'Ask the 8ball a question and see what answer you get back!',
                     usage: '8ball [question]',
                     examples: ['8ball Do I have friends?']
-                }
-            ],
+            },
             clientPermissions: ['SEND_MESSAGES'],
             ratelimit: 5,
             args: [

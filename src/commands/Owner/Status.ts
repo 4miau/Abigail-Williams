@@ -11,13 +11,11 @@ export default class Status extends Command {
         super('status', {
             aliases: ['status', 'setstatus'],
             category: 'Owner',
-            description: [
-                {
+            description: {
                     content: 'Sets my status',
                     usage: 'status [status]',
                     examples: ['status dnd']
-                }
-            ],
+            },
             ownerOnly: true,
             ratelimit: 3,
             args: [

@@ -6,13 +6,11 @@ export default class UserWhitelist extends Command {
         super('userwhitelist', {
             aliases: ['userwhitelist', 'uwhitelist', 'whitelistuser', 'adduser'],
             category: 'Configuration',
-            description: [
-                {
+            description: {
                     content: 'Adds user to the bot whitelist for commands',
                     usage: 'userwhitelist [@user]',
                     examples: ['userwhitelist @user']
-                }
-            ],
+            },
             channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,
