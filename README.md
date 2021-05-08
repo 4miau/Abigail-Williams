@@ -71,8 +71,8 @@ Optionally:
 
 #### Here are a list of the current commands (only those that are functional):
 ---
-## Fun:
 
+## Fun:
 <ul>
   <li>8ball</li>
   <li>Gayrate</li>
@@ -94,6 +94,8 @@ Optionally:
   <li>SetPrefix</li>
   <li>SetSupportRole</li>
   <li>Setup (Modmail)</li>
+  <li>UserBlacklist</li>
+  <li>UserWhitelist</li>
 </ul>
 
 ## Moderation:
@@ -104,6 +106,7 @@ Optionally:
   <li>Kick</li>
   <li>Mute</li>
   <li>Prune</li>
+  <li>SetNickname</li>
   <li>Slowmode</li>
   <li>Unban</li>
   <li>Unmute</li>
