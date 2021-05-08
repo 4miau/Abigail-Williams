@@ -1,7 +1,5 @@
 import { Listener } from 'discord-akairo'
-import { Message } from 'discord.js'
-
-import { BotStatus } from '../../models/BotStatus'
+import winston from 'winston'
 
 export default class ReadyListener extends Listener {
     public constructor() {
@@ -13,7 +11,21 @@ export default class ReadyListener extends Listener {
     }
 
     public async exec(): Promise<void> {
-        console.log(`${this.client.user.tag} has successfully connected.`)
+        const logger = winston.createLogger({
+            transports: [
+                new winston.transports.Console(),
+                new winston.transports.File({ 'filename': 'winston-log' })
+            ]
+        })
+
+        logger.log('info', `${this.client.user.tag} has successfully connected.`)
+    }
+}
+
+/*
+import { Message } from 'discord.js'
+
+import { BotStatus } from '../../models/BotStatus'
 
         const statusRepo = this.client.db.getRepository(BotStatus)
         if (await statusRepo.find().then(bsArr => bsArr.length > 0)) {
