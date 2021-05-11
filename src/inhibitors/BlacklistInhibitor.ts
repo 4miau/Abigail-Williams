@@ -13,13 +13,13 @@ export default class BlacklistInhibitor extends Inhibitor {
         //blacklistedChannels
         const blacklistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
         if (blacklistedChannels) {
-            (blacklistedChannels.includes(message.channel.id)) ? () => { return true } : void 0
+            if (blacklistedChannels.includes(message.channel.id) && message.author.id !== this.client.ownerID) return true
         }
 
         //blacklistedUsers
         const blacklistedUsers: string[] = this.client.settings.get(message.guild, 'user-blacklist', [])
         if (blacklistedUsers) {
-            if (blacklistedUsers.includes(message.author.id)) return true
+            if (blacklistedUsers.includes(message.author.id) && message.author.id !== this.client.ownerID) return true
         }
 
         //blacklistedFromModmail
