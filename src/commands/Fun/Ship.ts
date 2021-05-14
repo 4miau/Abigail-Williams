@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMemberResolvable, GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { getRandomIntRange } from '../../utils/Functions'
+import { getRandomIntRange } from '../../util/Functions'
 
 export default class Ship extends Command {
     public constructor() {

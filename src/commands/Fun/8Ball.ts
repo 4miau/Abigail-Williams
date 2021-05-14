@@ -1,8 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
-import { eightBallReplies } from '../../utils/Constants'
-import { getRandomInt } from '../../utils/Functions'
+import { eightBallReplies } from '../../util/Constants'
+import { getRandomInt } from '../../util/Functions'
 
 export default class EightBall extends Command {
     public constructor() {

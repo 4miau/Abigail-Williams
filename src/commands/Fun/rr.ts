@@ -1,8 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
-import { bulletsMin, bulletsMax, bulletsTotal, emojiList, deadList, liveList } from '../../utils/Constants'
-import { getRandomInt } from '../../utils/Functions'
+import { bulletsMin, bulletsMax, bulletsTotal, emojiList, deadList, liveList } from '../../util/Constants'
+import { getRandomInt } from '../../util/Functions'
 
 export default class RussianRoulette extends Command {
     public constructor() {
