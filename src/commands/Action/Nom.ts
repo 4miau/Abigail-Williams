@@ -24,15 +24,22 @@ export default class Nom extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Provide a member to nom.')
-        if (member.user.id === message.author.id) return message.util!.send('You really shouldn\'t nom yourself...')
+        if (member && member.user.id === message.author.id) return message.util!.send('You really shouldn\'t nom yourself...')
         
         const nomGif = await _GetAnimeSFW('nom')
 
-        return message.util!.send(new MessageEmbed()
+        if (!member) {
+            return message.util!.send(new MessageEmbed()
+                .setDescription(`**${message.author.tag}** is nomming!`)
+                .setColor('RANDOM')
+                .setImage(nomGif.url)
+            )
+        } else {
+            return message.util!.send(new MessageEmbed()
             .setDescription(`**${message.author.tag}** is nomming **${member.user.tag}!**`)
             .setColor('RANDOM')
             .setImage(nomGif.url)
         )
+        }
     }
 }
