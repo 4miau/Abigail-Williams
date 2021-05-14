@@ -18,19 +18,19 @@ Also please read the note towards the bottom in case you are wondering whether y
 (PS: these are features to come, and have not yet been implemented as the bot is WIP)
 ---
 
-### ___Modmail___
+### ___Modmail___ (WIP)
 
 #### Modmail will allow members to DM the bot when they require support in a server, and having a thread opened inside a discord where the person who requires support interacts to staff/support by DM'ing the bot while staff/support send their replies via the thread opened. It will be simple to set up, contain a lot of configuration for the staff to customise how threads are set up, how they are closed, and how they are managed while open.
 
-### ___Moderation___
+### ___Moderation___ (80%)
 
 #### abby-bot will have a lot of moderation commands with many possible arguments, making it easy for staff and moderators to be able to have an easier life when handling with moderation, there'll be a lot of configuration such as setting up mute roles and mod roles.
 
-### ___Giveaways___
+### ___Giveaways___ (WIP)
 
 #### Users will be able to dynamically set up giveaways, being able to choose the amount of winners that are picked out. I may possibly decide to make benefits, in which people with set roles will be able to have double/triple their entries, allowing them to have higher chances of winner with the ability to configure which roles these will apply to.
 
-### ___Platform Promotion___
+### ___Platform Promotion___ (33%)
 
 #### This is a feature I believe will take a while but will be very much worth it, abby-bot will post: Youtube, Twitch & Twitter posts a while after specific channels, streamers or users produce content. As to who will be able to be configured and will dynamically use APIs to check whenever a post is made and update it in a determined discord text channel.
 
@@ -72,6 +72,53 @@ Optionally:
 #### Here are a list of the current commands (only those that are functional):
 ---
 
+## Action:
+<ul>
+  <li>Bite</li>
+  <li>Blush</li>
+  <li>Bonk</li>
+  <li>Bully</li>
+  <li>Cringe</li>
+  <li>Cry</li>
+  <li>Cuddle</li>
+  <li>Dance</li>
+  <li>Happy</li>
+  <li>HighFive</li>
+  <li>HoldHand</li>
+  <li>Hug</li>
+  <li>Kill</li>
+  <li>Kiss</li>
+  <li>Lick</li>
+  <li>Nom</li>
+  <li>Pat</li>
+  <li>Poke</li>
+  <li>Slap</li>
+  <li>Smile</li>
+  <li>Smug</li>
+  <li>Wave</li>
+  <li>Wink</li>
+  <li>Yeet</li>
+</ul>
+
+## Anime:
+<ul>
+  <li>AnimeQuote</li>
+  <li>Neko</li>
+  <li>Waifu</li>
+</ul>
+
+## Configuration:
+<ul>
+  <li>ChannelBlacklist</li>
+  <li>ChannelWhitelist</li>
+  <li>SetMuteRole</li>
+  <li>SetPrefix</li>
+  <li>SetSupportRole</li>
+  <li>Setup</li>
+  <li>UserBlacklist</li>
+  <li>UserWhitelist</li>
+</ul>
+
 ## Fun:
 <ul>
   <li>8ball</li>
@@ -84,26 +131,25 @@ Optionally:
 ## General:
 <ul>
   <li>About</li>
+  <li>Help</li>
 </ul>
 
-## Configuration:
+## Images:
 <ul>
-  <li>ChannelBlacklist</li>
-  <li>ChannelWhitelist</li>
-  <li>SetMuteRole</li>
-  <li>SetPrefix</li>
-  <li>SetSupportRole</li>
-  <li>Setup (Modmail)</li>
-  <li>UserBlacklist</li>
-  <li>UserWhitelist</li>
+  <li>Bunny (WIP)</li>
+  <li>Cat</li>
+  <li>Danbooru (WIP)</li>
+  <li>Dog (outdated API)</li>
 </ul>
 
 ## Moderation:
-
 <ul>
   <li>Ban</li>
+  <li>CreateRole</li>
+  <li>DeleteRole</li>
   <li>Fixname</li>
   <li>Kick</li>
+  <li>ManageRole</li>
   <li>Mute</li>
   <li>Prune</li>
   <li>SetNickname</li>
@@ -113,12 +159,27 @@ Optionally:
   <li>Warn</li>
 </ul>
 
-## Utility
-
+## Twitch
 <ul>
-  <li>Ping</li>
+  <li>AddStreamer</li>
+  <li>AddStreamerPing</li>
+  <li>RemoveStreamer</li>
+  <li>RemoveStreamerPing</li>
+  <li>StreamerPings</li>
+  <li>Streamers</li>
+  <li>TwitchFeedChannel</li>
+  <li>TwitchSetMessage</li>
+</ul>
+
+*Note: TwitchSetMessage is PER streamer, same with AddStreamerPing for customisability and for it to be more dynamic.*
+
+## Utility
+<ul>
   <li>Avatar</li>
+  <li>Ping</li>
+  <li>Roles</li>
   <li>Uptime</li>
+  <li>Userinfo</li>
 </ul>
 
 # Contributing
