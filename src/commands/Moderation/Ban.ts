@@ -5,7 +5,7 @@ import ms from 'ms'
 import { Repository } from 'typeorm'
 
 import { Bans } from '../../models/Bans'
-import { maxBanDays, minBanDays } from '../../utils/Constants'
+import { maxBanDays, minBanDays } from '../../util/Constants'
 
 export default class Ban extends Command {
     public constructor() {

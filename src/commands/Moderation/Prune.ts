@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message } from 'discord.js'
 
-import { flags, ONE } from '../../utils/Constants'
+import { flags, ONE } from '../../util/Constants'
 
 export default class Prune extends Command {
     public constructor() {

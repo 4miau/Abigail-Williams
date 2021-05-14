@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { Message, GuildMember } from 'discord.js'
 
-import { fixnameMax } from '../../utils/Constants'
+import { fixnameMax } from '../../util/Constants'
 
 export default class Fixname extends Command {
     public constructor() {

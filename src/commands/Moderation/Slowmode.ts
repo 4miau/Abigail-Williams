@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, GuildChannel, GuildChannelResolvable } from 'discord.js'
 import ms from 'ms'
 
-import { secondsConvert } from '../../utils/Constants'
+import { secondsConvert } from '../../util/Constants'
 
 export default class Slowmode extends Command {
     public constructor() {

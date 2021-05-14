@@ -63,10 +63,3 @@ export default class Mute extends Command {
         }
     }
 }
-
-
-/*
-                this.client.settings.set(message.guild, 'mutes.user', userResolved.id)
-                this.client.settings.set(message.guild, 'mutes.moderator', message.author.id)
-                this.client.settings.set(message.guild, 'mutes.reason', reason ? reason : 'No reason specified')
-*/

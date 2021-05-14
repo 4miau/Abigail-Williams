@@ -30,14 +30,15 @@ export default class Unban extends Command {
         })
     }
 
-    public async exec(message: Message, {user, reason}: {user: string, reason: string}): Promise<void> {
-        if (user) {
-            await message.guild.fetchBan(user)
-            .then(bannedUser => {
-                message.guild.members.unban(bannedUser.user.id, reason ? reason : 'No reason specified')
-                message.util!.send('User has been unbanned from the server')
+    public async exec(message: Message, {user, reason}: {user: string, reason: string}): Promise<Message> {
+        if (!user) return message.util!.send('Okay, so who am I meant to unban then? Provide a user please.')
+
+        await message.guild.fetchBans()
+            .then(buCol => buCol.find(bu => bu.user.username === user || bu.user.id === user))
+            .then(bu => {
+                message.guild.members.unban(bu.user, reason ? reason : 'No reason specified')
+                message.util!.send('User has been unbanned from the server.')
             })
-            .catch(() => message.util!.send(`Failed to unban user, can't find user`))
-        }
+            .catch(() => message.util!.send('Unable to find this user, please try again.'))
     }
 }
