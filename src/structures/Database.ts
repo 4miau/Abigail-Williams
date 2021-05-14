@@ -4,8 +4,9 @@ import { dbName } from '../Config'
 import { Warns } from '../models/Warns'
 import { Bans } from '../models/Bans'
 import { MuteRole } from '../models/MuteRole'
-import { Settings } from '../models/Settings'
 import { BotStatus } from '../models/BotStatus'
+import { Giveaways } from '../models/Giveaways'
+import { Settings } from '../models/Settings'
 
 const connectionManager: ConnectionManager = new ConnectionManager()
 connectionManager.create({
@@ -17,6 +18,7 @@ connectionManager.create({
         Bans,
         MuteRole,
         BotStatus,
+        Giveaways,
         Settings
     ]
 })

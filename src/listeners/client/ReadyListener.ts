@@ -1,5 +1,8 @@
 import { Listener } from 'discord-akairo'
+import { TextChannel, Message } from 'discord.js';
 
+import { Giveaways } from '../../models/Giveaways';
+import GiveawayManager from '../../structures/GiveawayManager'
 import { postMessage, _GetUserByName } from '../../util/Functions';
 
 export default class ReadyListener extends Listener {
@@ -13,6 +16,20 @@ export default class ReadyListener extends Listener {
 
     public async exec(): Promise<void> {
         this.client.logger.log('INFO', `${this.client.user.tag} has successfully connected.`)
+
+        const giveawayRepo = this.client.db.getRepository(Giveaways)
+
+        setInterval(async () => {
+            const giveaways: Giveaways[] = await giveawayRepo.find()
+            giveaways.filter(g => g.end <= Date.now()).map(async g => {
+                const msg = await (this.client.channels.cache.get(g.channel) as TextChannel).fetch()
+                    .catch(() => void 0)
+                
+                if (!msg) return giveawayRepo.delete(g)
+
+                GiveawayManager.end(giveawayRepo, msg)
+            })
+        }, 3e5)
 
         setInterval(async () => {
             this.client.guilds.cache.forEach(async guild => {
