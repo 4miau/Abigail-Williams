@@ -6,7 +6,6 @@ export const Logger = createLogger({
         format.label({ 'label': 'BOT'}),
         format.timestamp({ 'format': 'YYYY/MM/DD HH:mm:ss'}),
         format.colorize(),
-        format.json(),
         format.printf((info: any): string => {
             const { timestamp, label, level, message, ...rest } = info
             return `[${timestamp}][${label}][${level}]: ${message}${
@@ -19,7 +18,6 @@ export const Logger = createLogger({
         'WARN': 1,
         'CAUTION': 2,
         'INFO': 3,
-        'DEBUG': 4,
     },
     transports: [
         new transports.Console({
@@ -28,7 +26,6 @@ export const Logger = createLogger({
                 'WARN': 'yellow',
                 'CAUTION': 'green',
                 'INFO': 'gray',
-                'DEBUG': 'magenta',
             }}),
             level: 'INFO'
         }),

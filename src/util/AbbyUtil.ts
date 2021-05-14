@@ -5,9 +5,6 @@ import * as util from "./Functions";
 export default class AbbyUtil extends ClientUtil {
     public constructor(client: AkairoClient) {
         super(client)
-
-        this.getRandomInt = this.getRandomInt
-        this.getRandomIntRange = this.getRandomIntRange
     }
 
     //MISC FUNCTIONS

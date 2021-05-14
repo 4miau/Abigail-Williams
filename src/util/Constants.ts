@@ -52,6 +52,30 @@ export const commandsGithub: string = 'https://github.com/notmiauu/abby-bot#comm
 export const pages: readonly number[] = [1, 2] 
 
 /*
+    GAMES
+*/
+
+export const legendHeader = {
+    'Wraith' : 'https://i.imgur.com/yRjWyHu.png',
+    'Loba': 'https://i.imgur.com/6Z9ccJQ.png',
+    'Caustic': 'https://i.imgur.com/vzIWTIv.jpg',
+    'Bangalore': 'https://i.imgur.com/Ak6d3S7.jpg',
+    'Mirage': 'https://i.imgur.com/f5d1Kco.jpg',
+    'Wattson': 'https://i.imgur.com/8piOEse.png',
+    'Rampart': 'https://i.imgur.com/Q7ex72r.jpg',
+    'Horizon': 'https://i.imgur.com/cyFCQbj.jpg',
+    'Valkyrie': 'https://i.imgur.com/VqRmJTK.jpg',
+    'Crypto': 'https://i.imgur.com/XNU6S04.jpg',
+    'Pathfinder': 'https://i.imgur.com/uyRmSHh.jpg',
+    'Revenant': 'https://i.imgur.com/22XJPph.jpg',
+    'Bloodhound': 'https://i.imgur.com/ZxXTaQA.jpg',
+    'Octane': 'https://i.imgur.com/dcQRJjq.jpg',
+    'Lifeline': 'https://i.imgur.com/RyjVl6t.jpg',
+    'Gibraltar': 'https://i.imgur.com/NvMRNuo.jpg',
+    'Fuse': 'https://i.imgur.com/ckMAUri.jpg'
+}
+
+/*
     MODERATION
 */
 
@@ -106,3 +130,5 @@ export const streamDefaultMessage: string = `{streamer} has gone live! {link}`
 
 export const ZERO: number = 0
 export const ONE: number = 1
+
+export const modmailGuild = '542751800739233798'

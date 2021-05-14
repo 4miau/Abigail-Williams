@@ -2,7 +2,7 @@ import { Guild, GuildMember, MessageEmbed, TextChannel } from "discord.js"
 import axios from 'axios'
 import moment, { now } from "moment"
 
-import { twitchClientID, twitchClientSecret, danbooruAPIkey } from "../Config"
+import { twitchClientID, twitchClientSecret, danbooruAPIkey, apexAPIkey } from "../Config"
 import { Colours } from "./Colours"
 
 
@@ -10,6 +10,16 @@ import { Colours } from "./Colours"
 
 export function getRandomInt(length: number): number {
     return Math.floor(Math.random() * length)
+}
+
+export function ConvertRank(rank: string): string {
+    if (rank.includes('Bronze')) return '<:1Bronze:842770590993350687>'
+    if (rank.includes('Silver')) return '<:2Silver:842770591614631966>'
+    if (rank.includes('Gold')) return '<:3Gold:842770591798394900>'
+    if (rank.includes('Platinum')) return '<:4Platinum:842770592424001586>'
+    if (rank.includes('Diamond')) return '<:5Diamond:842770592411025448>'
+    if (rank.includes('Master')) return '<:6Master:842770593027850260>'
+    if (rank.includes('Apex Predator')) return '<:7ApexPredator:842770592553238548>'
 }
 
 //ARRAY-BASED FUNCTIONS
@@ -106,6 +116,7 @@ export async function _DanbooruQuery(tag: string): Promise<any> {
         'method': 'GET'
     })
     .then(res => res.data)
+    .catch(void 0)
 
     if (query) return query
     return null
@@ -147,6 +158,7 @@ export async function _GetStream(streamerName: string): Promise<any> {
             'method': 'GET'
         })
         .then(res => res.data.data)
+        .catch(void 0)
 
         if (findStream) return findStream
         return null
@@ -155,4 +167,19 @@ export async function _GetStream(streamerName: string): Promise<any> {
 export async function _GetAnimeSFW(category: string): Promise<any> {
     return await axios.get(`https://api.waifu.pics/sfw/${category}`, { 'method': 'GET' })
         .then(res => res.data)
+        .catch(null)
+}
+
+export async function _GetApexPlayer(platform: string, name: string): Promise<any> {
+    const player = await axios.get(`https://public-api.tracker.gg/v2/apex/standard/profile/${platform}/${name}`, {
+        'headers': {
+            'TRN-Api-Key': apexAPIkey
+        },
+        'method': 'GET'
+    })
+    .then(res => res.data.data)
+    .catch(void 0)
+
+    if (player) return player
+    return null
 }
