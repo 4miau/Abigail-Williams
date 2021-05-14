@@ -4,7 +4,7 @@ import { Message, TextChannel } from 'discord.js'
 export default class TwitchFeedChannel extends Command {
     public constructor() {
         super('twitchfeedchannel', {
-            aliases: ['twitchsub', 'twitchsubchannel', 'twitchfeedchannel'],
+            aliases: ['twitchfeedchannel', 'twitchsubchannel'],
             category: 'Twitch',
             description: {
                 content: 'Manages the channel where messages are posted',
@@ -27,6 +27,6 @@ export default class TwitchFeedChannel extends Command {
         if (!channel) return message.util!.send('Please provide a channel to subscribe to')
 
         this.client.settings.set(message.guild, 'twitch.twitch-feedchannel', channel.id)
-        return message.util!.send(`${channel.name} is the channel that I will now be announcing streams in!`)
+        return message.util!.send(`#${channel.name} is the channel that I will now be announcing streams in!`)
     }
 }

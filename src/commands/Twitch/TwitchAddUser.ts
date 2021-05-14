@@ -1,7 +1,7 @@
 import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
-import { _GetUser } from "../../utils/Functions";
+import { _GetUserByName } from "../../util/Functions";
 
 export default class TwitchAddUser extends Command {
     public constructor() {
@@ -27,7 +27,7 @@ export default class TwitchAddUser extends Command {
 
     public async exec(message: Message, {streamer}: {streamer: string}): Promise<Message> {
         if (streamer) {
-            const findUser = await _GetUser(streamer)
+            const findUser = await _GetUserByName(streamer)
 
             if (findUser) {
                 let twitchUsers: string[] = this.client.settings.get(message.guild, 'twitch.twitch-users', [])
