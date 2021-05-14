@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { MessageEmbed, TextChannel } from 'discord.js'
 import { Message, CategoryChannel, Role, Guild } from 'discord.js'
 
-import { Colours } from '../../utils/Colours'
+import { Colours } from '../../util/Colours'
 
 export default class Setup extends Command {
     public constructor () {

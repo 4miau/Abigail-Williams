@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message, RoleResolvable, Role } from 'discord.js'
+import { Message, Role } from 'discord.js'
 
 export default class SetSupportRole extends Command {
     public constructor() {

@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { GuildMember, GuildMemberResolvable, Message } from 'discord.js'
+import { GuildMemberResolvable, Message } from 'discord.js'
 
 export default class UserBlacklist extends Command {
     public constructor() {
