@@ -1,11 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Entity, Column, PrimaryColumn } from 'typeorm'
 
 @Entity('muterole')
 export class MuteRole {
-    @PrimaryGeneratedColumn()
-    id!: number
-    
-    @Column({type: 'varchar', length: 22})
+    @PrimaryColumn({type: 'varchar', length: 22})
     guild!: string
 
     @Column({type: 'varchar', length: 22})
