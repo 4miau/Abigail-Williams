@@ -9,15 +9,15 @@ package-lock.json
 src/Config.ts
 src/Bot.ts
 src/client
+.vscode/abby-snippets.code-snippets
 
 #Testing Purposes
 src/commands/Owner/ArgsTest.ts
-src/Comments.md
-
 
 # Progress & Logs
 todos
 CommandsList.md
+src/Comments.md
 src/twitchApiReturns.md
 
 # Configs
