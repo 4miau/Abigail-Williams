@@ -4,7 +4,7 @@ import { Message } from 'discord.js'
 export default class Ping extends Command {
     public constructor() {
         super('ping', {
-            aliases: ['ping'],
+            aliases: ['ping', 'hello'],
             category: 'Utility',
             description: {
                     content: 'Pong.',
@@ -15,7 +15,13 @@ export default class Ping extends Command {
         })
     }
 
-    public exec(message: Message): Promise<Message> {
-        return message.util!.send(`Pong! ${this.client.ws.ping}ms!`)
+    public async exec(message: Message): Promise<Message> {
+        const sent = await message.util!.send('Pong!')
+        const timeDiff = <any>(sent.editedAt || sent.createdAt) - <any>(message.editedAt || message.createdAt)
+        return message.util!.send([
+            'Pong!',
+            `🔂 **RTT**: ${timeDiff} ms`,
+            `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`
+        ])
     }
 }

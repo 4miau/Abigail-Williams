@@ -1,6 +1,6 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
-import { secondsConvert } from '../../utils/Constants'
+import { secondsConvert } from '../../util/Constants'
 
 export default class Uptime extends Command {
     public constructor() {

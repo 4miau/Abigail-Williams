@@ -1,8 +1,8 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { Colours } from '../../utils/Colours'
-import { splitArrayNth } from '../../utils/Functions'
+import { Colours } from '../../util/Colours'
+import { chunkNewLine } from '../../util/Functions'
 
 export default class Roles extends Command {
     public constructor() {
@@ -37,7 +37,7 @@ export default class Roles extends Command {
                 .setThumbnail(message.guild.iconURL())
                 .setColor(Colours.SkyBlue)
                 .addField(`**${message.guild.name}'s total roles:** [${message.guild.roles.cache.size - 1}]`, `${member.guild.roles.cache.size - 1 > 0 ?
-                    splitArrayNth(message.guild.roles.cache.map(r => r)
+                    chunkNewLine(message.guild.roles.cache.map(r => r)
                     .sort((a, b) => b.position - a.position)
                     .map(role => role.name )
                     .filter(name => name !== '@everyone'), 3).join(', ') : 'None'}`)
@@ -48,7 +48,7 @@ export default class Roles extends Command {
             .setAuthor(`${member.user.tag}`, member.user.displayAvatarURL())
             .setThumbnail(member.user.displayAvatarURL())
             .setColor(Colours.SkyBlue)
-            .addField(`**Roles:** [${member.roles.cache.size - 1}]`, `${member.roles.cache.size - 1 > 0 ? splitArrayNth(member.roles.cache.map(r => r)
+            .addField(`**Roles:** [${member.roles.cache.size - 1}]`, `${member.roles.cache.size - 1 > 0 ? chunkNewLine(member.roles.cache.map(r => r)
                 .sort((a, b) => b.position - a.position)
                 .map(role => role.name)
                 .filter(name => name !== '@everyone'), 3).join(', ') : 'None'}`)
