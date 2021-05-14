@@ -1,7 +1,6 @@
 import { Listener } from 'discord-akairo'
-import winston from 'winston'
 
-import { _GetUser } from '../../utils/Functions';
+import { postMessage, _GetUserByName } from '../../util/Functions';
 
 export default class ReadyListener extends Listener {
     public constructor() {
@@ -13,65 +12,32 @@ export default class ReadyListener extends Listener {
     }
 
     public async exec(): Promise<void> {
-        const logger = winston.createLogger({
-            transports: [
-                new winston.transports.Console(),
-                new winston.transports.File({ 'filename': 'winston-log' })
-            ]
-        })
-
-        logger.log('info', `${this.client.user.tag} has successfully connected.`)
-
-        //Twitch Configuration Settings if non-existent
-        ;(async () => {
-            for (const guild of this.client.guilds.cache) {
-                const twitchMessage = this.client.settings.get(guild[1], 'twitch.twitch-message', '')
-                if (!twitchMessage) this.client.settings.set(guild[1], 'twitch.twitch-message', `{streamer} has gone live! {link}`)
-                else continue
-            }
-        })() 
-        //
+        this.client.logger.log('INFO', `${this.client.user.tag} has successfully connected.`)
 
         setInterval(async () => {
-            this.client.guilds.cache.forEach(guild => {
-                const streamers: string[] = this.client.settings.get(guild, 'twitch.twitch-users', [])
+            this.client.guilds.cache.forEach(async guild => {
+                const streamers: { name: string, message: string, pings: string[] , posted: boolean }[] = this.client.settings.get(guild, 'twitch.twitch-streamers', [])
                 if (streamers) {
-                    streamers.forEach(async streamer => {
-                        return await _GetUser(streamer)
-                            .then(user => {
-                                logger.log('info', user.broadcaster_login + ': ' + user.is_live)
-                                return user.is_live
-                            })
-                    })
+                    for (const streamer of streamers) {
+                        const isLive: boolean = await _GetUserByName(streamer.name).then(user => user.is_live)
+                            
+                        if (isLive && !streamer.posted) {
+                            const feedChannelID = this.client.settings.get(guild, 'twitch.twitch-feedchannel', '')
+
+                            if (feedChannelID) {
+                                postMessage(guild, feedChannelID, streamer)
+                                streamer.posted = true
+                            }
+                        }
+                        if (streamer.posted && await _GetUserByName(streamer.name).then(streamer => !streamer.is_live)) streamer.posted = false
+                    }
                 }
-            });
+                
+                await this.client.settings.set(guild, 'twitch.twitch-streamers', streamers)
+            })
         }, 6e5)
     }
 }
 
-/*
-import { Message } from 'discord.js'
 
-import { BotStatus } from '../../models/BotStatus'
-
-        const statusRepo = this.client.db.getRepository(BotStatus)
-        if (await statusRepo.find().then(bsArr => bsArr.length > 0)) {
-            const botstatus = await statusRepo.find()
-                .then(bsArr => bsArr.find(bs => bs.id))
-            let decoyMessage: Message
-            
-            botstatus.type === 'status' ?
-                this.client.commandHandler.runCommand(decoyMessage, this.client.commandHandler.findCommand('status'), [
-                   botstatus.activityType,
-                    botstatus.status,
-                    botstatus.url
-                ])
-                : 
-                this.client.commandHandler.runCommand(decoyMessage, this.client.commandHandler.findCommand('activity'), [
-                    botstatus.activityType,
-                    botstatus.status,
-                    botstatus.url
-                ])
-
-        }
-*/
+//6e5 is default
