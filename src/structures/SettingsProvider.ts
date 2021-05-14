@@ -21,24 +21,24 @@ export default class SettingsProvider extends Provider {
 
     public get<T>(guild: string | Guild, key: string, defaultValue: any): T | any {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
+        const data = this.items.get(id)
 
         if (this.items.has(id)) {
-            return _.get(this.items.get(id), key, defaultValue)
+            return _.get(data, key, defaultValue)
         }
-
-        //MAKE EFFICIENT WAY TO GET MULTIPLE ENTITIES WITH ARRAY
 
         return defaultValue
     }
 
     public getArr<T>(guild: string | Guild, props: {key: string, defaultValue: any}[]): T | any {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
+        const data = this.items.get(id)
 
         let propsArr = []
 
         for(const prop of props) {
             if (this.items.has(id)) {
-                propsArr.push(_.get(this.items.get(id), prop.key, prop.defaultValue))
+                propsArr.push(_.get(data, prop.key, prop.defaultValue))
             }  
         } 
 
@@ -98,11 +98,23 @@ export default class SettingsProvider extends Provider {
 
     }
 
-    public delete(guild: string | Guild): Promise<DeleteResult> {
+    public delete(guild: string | Guild, key: string): Promise<DeleteResult> {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
-        
-        this.items.delete(id)
-        return this.repo.delete(id)
+        const data = this.items.get(id) || {}
+
+        _.delete(data, key)
+
+        return this.repo
+        .createQueryBuilder()
+        .insert()
+        .into(Settings)
+        .values({
+            'guild': id,
+            'settings': JSON.stringify(data)
+        })
+        .onConflict('("guild") DO UPDATE SET "settings" = :settings')
+        .setParameter('settings', JSON.stringify(data))
+        .execute()
     }
 
     public clear(guild: string | Guild): Promise<DeleteResult> {
