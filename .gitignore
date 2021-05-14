@@ -12,6 +12,8 @@ src/client
 
 #Testing Purposes
 src/commands/Owner/ArgsTest.ts
+src/Comments.md
+
 
 # Progress & Logs
 todos
