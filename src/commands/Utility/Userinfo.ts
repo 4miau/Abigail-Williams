@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, GuildMember, MessageEmbed } from 'discord.js'
 import moment from 'moment'
 
-import { chunkNewLine, getJoinPosition } from '../../util/Functions'
+import { chunk, getJoinPosition } from '../../util/Functions'
 import { Colours } from '../../util/Colours'
 
 
@@ -39,10 +39,10 @@ export default class UserInfo extends Command {
                 .addField('Account Created', moment(member.user.createdAt).format('dddd, MMMM Do YYYY @ h:mm:ss a') + '\u200B\u200B')
                 .addField('Join Date', moment(member.joinedAt).format('dddd, MMMM Do YYYY @ h:mm:ss a') + '\u200B\u200B')
                 .addField('Join Position', getJoinPosition(member, message.guild))
-                .addField(`Roles [${member.roles.cache.size - 1}]`, `${ member.roles.cache.size - 1 > 0 ? chunkNewLine(member.roles.cache.map(r => r)
+                .addField(`Roles [${member.roles.cache.size - 1}]`, `${ member.roles.cache.size - 1 > 0 ? member.roles.cache.map(r => r)
                     .sort((a, b) => b.position - a.position)
                     .map(role => role.name )
-                    .filter(name => name !== '@everyone'), 3).join(', ') : 'None'}`
+                    .filter(name => name !== '@everyone').join(', ') : 'None'}`
                 )
             )
         }
