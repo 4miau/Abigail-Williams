@@ -3,7 +3,7 @@ import { Message } from 'discord.js'
 import { Repository } from 'typeorm'
 
 import { BotStatus } from '../../models/BotStatus'
-import { miauTwitch } from '../../utils/Constants'
+import { miauTwitch } from '../../util/Constants'
 
 export default class Activity extends Command {
     public constructor() {

@@ -25,7 +25,8 @@ export default class Build extends Command {
 
     public exec(message: Message, {command}: {command: string}): Promise<Message> {
         try {
-            this.client.commandHandler.register(this.client.commandHandler.load(command, false))
+            this.client.commandHandler.register(this.client.commandHandler.load(command))
+            this.client.logger.log('CAUTION', 'You can not reload commands that you load in as class modules. So they potentially won\'t be built properly.')
             return message.util!.reply(`${command} has been built successfully.`)
         } catch (err) {
             return message.util!.reply('This command has already been loaded or I can not load it in.')
