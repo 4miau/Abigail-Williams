@@ -2,8 +2,8 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import { stripIndents } from 'common-tags'
 
-import { Colours } from '../../utils/Colours'
-import { secondsConvert } from '../../utils/Constants'
+import { Colours } from '../../util/Colours'
+import { secondsConvert } from '../../util/Constants'
 
 export default class About extends Command {
     public constructor() {
