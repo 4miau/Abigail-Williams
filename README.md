@@ -61,10 +61,26 @@ These are just some simple requirements you will need in order to host the bot, 
 # You can install this by running "npm i discord.js in your terminal"
 ```
 
+<ul>
+  <li>axios</li>
+</ul>
+
+```diff
+# You can install this by running "npm i axios in your terminal"
+```
+
+<ul>
+  <li>typescript</li>
+<ul>
+
 Optionally:
 <ul>
   <li>sqlite3 (if you wish to use sqlite for the database)</li>
   <li>typeorm (this is useful for storing connections and repositories while connecting to db)</li>
+  <li>dot-prop (useful for SettingsProvider)</li>
+  <li>winston (logging purposes, more efficient than console logging)</li>
+  <li>moment (very useful for working with dates and formatting date strings)</li>
+  <li>common-tags (useful for working with new lines on string literals, without using '\n')</li>
 </ul>
 
 # Commands
@@ -100,6 +116,8 @@ Optionally:
   <li>Yeet</li>
 </ul>
 
+**[⬆ Back to Commands](#commands)**
+
 ## Anime:
 <ul>
   <li>AnimeQuote</li>
@@ -107,10 +125,13 @@ Optionally:
   <li>Waifu</li>
 </ul>
 
+**[⬆ Back to Commands](#commands)**
+
 ## Configuration:
 <ul>
   <li>ChannelBlacklist</li>
   <li>ChannelWhitelist</li>
+  <li>MessageLogs (deleted message logs)</li>
   <li>SetMuteRole</li>
   <li>SetPrefix</li>
   <li>SetSupportRole</li>
@@ -118,6 +139,8 @@ Optionally:
   <li>UserBlacklist</li>
   <li>UserWhitelist</li>
 </ul>
+
+**[⬆ Back to Commands](#commands)**
 
 ## Fun:
 <ul>
@@ -128,11 +151,22 @@ Optionally:
   <li>Ship</li>
 </ul>
 
+**[⬆ Back to Commands](#commands)**
+
 ## General:
 <ul>
   <li>About</li>
   <li>Help</li>
 </ul>
+
+**[⬆ Back to Commands](#commands)**
+
+## Games:
+<ul>
+  <li>ApexLegends</li>
+</ul>
+
+**[⬆ Back to Commands](#commands)**
 
 ## Images:
 <ul>
@@ -142,12 +176,16 @@ Optionally:
   <li>Dog (outdated API)</li>
 </ul>
 
+**[⬆ Back to Commands](#commands)**
+
 ## Moderation:
 <ul>
   <li>Ban</li>
   <li>CreateRole</li>
   <li>DeleteRole</li>
+  <li>EndGiveaway</li>
   <li>Fixname</li>
+  <li>Giveaway</li>
   <li>Kick</li>
   <li>ManageRole</li>
   <li>Mute</li>
@@ -158,6 +196,8 @@ Optionally:
   <li>Unmute</li>
   <li>Warn</li>
 </ul>
+
+**[⬆ Back to Commands](#commands)**
 
 ## Twitch
 <ul>
@@ -173,6 +213,8 @@ Optionally:
 
 *Note: TwitchSetMessage is PER streamer, same with AddStreamerPing for customisability and for it to be more dynamic.*
 
+**[⬆ Back to Commands](#commands)**
+
 ## Utility
 <ul>
   <li>Avatar</li>
@@ -182,6 +224,8 @@ Optionally:
   <li>Userinfo</li>
 </ul>
 
+**[⬆ Back to Commands](#commands)**
+
 # Contributing
 
 ### For those that wish to contribute to the bot, it'd be greatly appreciated. If you wish to contribute then please proceed with the following steps:
@@ -190,6 +234,8 @@ Optionally:
 - Create a new branch hosting the changes `git checkout -b new-branch`
 - After making updates to this branch, push it to your forked repository `git push remote new-branch`
 - `Submit a pull request` with a summary of the changes/features added
+
+**[⬆ Back to the top](#description)**
 
 # Author
 
