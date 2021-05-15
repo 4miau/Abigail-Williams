@@ -51,9 +51,6 @@ These are just some simple requirements you will need in order to host the bot, 
 
 <ul>
   <li>@types/node</li>
-</ul>
-
-<ul>
   <li>Discord.js latest version is recommended</li>
 </ul>
 
