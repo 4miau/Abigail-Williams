@@ -8,7 +8,7 @@ export default class ApexLegends extends Command {
     public constructor() {
         super('apexlegends', {
             aliases: ['apexlegends', 'apex', 'getapexplayer'],
-            category: '',
+            category: 'Games',
             description: {
                 content: 'Gets stats on Apex Legends player',
                 usage: 'apex [platform] [name]',
