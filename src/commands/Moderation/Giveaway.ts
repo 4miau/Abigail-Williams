@@ -19,7 +19,7 @@ export default class Giveaway extends Command {
                 examples: ['giveaway 3d 5w discord nitro', 'giveaway 5d'],
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_GUILD'],
+            userPermissions: ['EMBED_LINKS', 'MANAGE_GUILD'],
             ratelimit: 3,
             args: [
                 {
@@ -67,7 +67,6 @@ export default class Giveaway extends Command {
             Giveaway is hosted by ${message.author}!
             `)
             .setFooter(`Ends at • ${moment(end).utcOffset(1).format('YYYY/M/DD hh:mm:ss')} ${winners > 1 ? ' | ' + winners + ' winners' : ''}`)
-            //.setTimestamp(end)
         )
 
         msg.react('🎉')
