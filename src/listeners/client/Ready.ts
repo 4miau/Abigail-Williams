@@ -1,5 +1,6 @@
 import { Listener } from 'discord-akairo'
-import { TextChannel, Message } from 'discord.js';
+import { TextChannel } from 'discord.js';
+import { VoicePacket } from 'erela.js';
 
 import { Giveaways } from '../../models/Giveaways';
 import GiveawayManager from '../../structures/GiveawayManager'
@@ -16,7 +17,9 @@ export default class Ready extends Listener {
 
     public async exec(): Promise<void> {
         this.client.logger.log('INFO', `${this.client.user.tag} has successfully connected.`)
-
+        this.client.manager.init(this.client.user.id)
+        this.client.on('raw', (d: VoicePacket) => this.client.manager.updateVoiceState(d))
+        
         const giveawayRepo = this.client.db.getRepository(Giveaways)
 
         setInterval(async () => {

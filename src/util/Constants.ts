@@ -110,14 +110,6 @@ export enum flags {
 }
 
 /*
-    OWNER
-*/
-
-//Activity + Status
-
-export const miauTwitch: string = 'https://twitch.tv/notmiauu'
-
-/*
     TWITCH
 */
 
