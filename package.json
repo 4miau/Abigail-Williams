@@ -1,20 +1,31 @@
 {
-  "dependencies": {
-    "@types/ms": "^0.7.31",
-    "@types/node": "^15.0.2",
-    "axios": "^0.21.1",
-    "common-tags": "^1.8.0",
-    "discord-akairo": "^8.1.0",
-    "discord.js": "^12.5.3",
-    "dot-prop": "^6.0.1",
-    "moment": "^2.29.1",
-    "sqlite": "^4.0.21",
-    "sqlite3": "^5.0.2",
-    "typeorm": "^0.2.32",
-    "typescript": "^4.2.4",
-    "winston": "^3.3.3"
-  },
-  "devDependencies": {
-    "@types/common-tags": "^1.8.0"
-  }
+    "dependencies": {
+        "@types/ms": "^0.7.31",
+        "@types/node": "^15.3.0",
+        "axios": "^0.21.1",
+        "common-tags": "^1.8.0",
+        "discord-akairo": "^8.1.0",
+        "discord.js": "^12.5.3",
+        "dot-prop": "^6.0.1",
+        "erela.js": "^2.3.3",
+        "erela.js-spotify": "^1.2.0",
+        "moment": "^2.29.1",
+        "node-abort-controller": "^2.0.0",
+        "sqlite": "^4.0.21",
+        "sqlite3": "^5.0.2",
+        "typeorm": "^0.2.32",
+        "typescript": "^4.2.4",
+        "undici": "^3.3.6",
+        "v8": "^0.1.0",
+        "winston": "^3.3.3",
+        "yarn": "^1.22.10"
+    },
+    "name": "abby",
+    "version": "1.0.0",
+    "main": "./dist/Bot.js",
+    "scripts": {
+        "start": "node ./dist/Bot.js",
+        "dev": "nodemon ./dist/Bot.js"
+    },
+    "author": "miau"
 }
