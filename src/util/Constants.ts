@@ -76,6 +76,12 @@ export const legendHeader = {
 }
 
 /*
+    MUSIC
+*/
+
+
+
+/*
     MODERATION
 */
 
@@ -123,4 +129,3 @@ export const streamDefaultMessage: string = `{streamer} has gone live! {link}`
 export const ZERO: number = 0
 export const ONE: number = 1
 
-export const modmailGuild = '542751800739233798'
