@@ -15,31 +15,29 @@ export default class ClearDBKey extends Command {
             ratelimit: 3,
             args: [
                 {
+                    id: 'key',
+                    type: 'string',
+                    match: 'phrase',
+                },
+                {
                     id: 'server',
                     type: 'guild',
                     match: 'phrase',
-                    unordered: true
                 },
-                {
-                    id: 'key',
-                    type: 'string',
-                    match: 'rest',
-                    unordered: true
-                }
             ]
         })
     }
 
-    public async exec(message: Message, {server, key}: {server: Guild, key: string}): Promise<Message> {
+    public async exec(message: Message, {key, server}: {key: string, server: Guild}): Promise<Message> {
         if (!server) {
             this.client.guilds.cache.forEach(async guild => {
                 await this.client.settings.delete(guild, key)
             })
-            this.client.logger.log('DEBUG', 'Cleared key from all servers.')
+            this.client.logger.log('INFO', 'Cleared key from all servers.')
             return message.util!.send('Cleared key from all servers.')
         } else {
             await this.client.guilds.fetch(server.id).then(g => {
-                this.client.logger.log('DEBUG', `Cleared key from ${g.name}`)
+                this.client.logger.log('INFO', `Cleared key from ${g.name}`)
                 this.client.settings.delete(g, key)
             })
             return message.util!.send(`Cleared the key from database for the server.`)

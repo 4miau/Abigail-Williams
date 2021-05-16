@@ -4,7 +4,7 @@ import { Repository } from 'typeorm'
 
 
 import { BotStatus } from '../../models/BotStatus'
-import { miauTwitch } from '../../util/Constants'
+import { miauTwitch } from '../../util/PersonalConstants'
 
 export default class Status extends Command {
     public constructor() {

@@ -1,6 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
+import { modmailGuild } from '../../util/PersonalConstants'
+
 export default class Leave extends Command {
     public constructor() {
         super('leave', {
@@ -23,6 +25,7 @@ export default class Leave extends Command {
     }
 
     public async exec(message: Message, {server}: {server: string}): Promise<any> {
+        if (!server || message.guild.id === modmailGuild) return message.util!.send('I can not leave this guild.')
         if (!server) await message.guild.leave()
 
         const guildResolved = this.client.util.resolveGuild(server, this.client.guilds.cache)
