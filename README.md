@@ -67,6 +67,7 @@ These are just some simple requirements you will need in order to host the bot, 
 ```
 
 <ul>
+  <li>erela.js</li>
   <li>typescript</li>
 <ul>
 
