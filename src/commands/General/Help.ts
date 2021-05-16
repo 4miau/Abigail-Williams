@@ -62,7 +62,8 @@ export default class Help extends Command {
 
     private async run(message: Message, page: null | number): Promise<Message> {
         const pages = [
-            [ 'General', 'Images', 'Action', 'Anime', 'Fun', 'Utility' ],
+            [ 'General', 'Images', 'Action', 'Anime', 'Fun', 'Games' ],
+            [ 'Utility', 'Music' ],
             [ 'Twitch', 'Modmail', 'Moderation', 'Configuration' ],
             [ 'Owner' ]
         ]
