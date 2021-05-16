@@ -11,8 +11,6 @@ export default class MessageListener extends Listener {
     }
 
     public exec(message: Message) {
-        if (message.author.id === this.client.ownerID && message.content === `<@!${this.client.user.id}> <3`) {
-            message.channel.send('<3')
-        }
+        if (message.author.id === this.client.ownerID && message.content === `<@!${this.client.user.id}> <3`) message.channel.send('<3')
     }
 }
