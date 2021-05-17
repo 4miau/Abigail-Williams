@@ -18,7 +18,6 @@ export default class Ready extends Listener {
     public async exec(): Promise<void> {
         this.client.logger.log('INFO', `${this.client.user.tag} has successfully connected.`)
         this.client.manager.init(this.client.user.id)
-        this.client.on('raw', (d: VoicePacket) => this.client.manager.updateVoiceState(d))
         
         const giveawayRepo = this.client.db.getRepository(Giveaways)
 
