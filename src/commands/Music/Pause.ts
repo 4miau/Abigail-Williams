@@ -11,6 +11,7 @@ export default class Pause extends Command {
                 usage: 'pause',
                 examples: ['pause'],
             },
+            channel: 'guild',
             ratelimit: 3,
         })
     }

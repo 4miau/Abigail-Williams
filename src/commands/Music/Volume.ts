@@ -11,6 +11,7 @@ export default class Volume extends Command {
                 usage: 'volume <1-100>',
                 examples: ['volume', 'volume 50'],
             },
+            channel: 'guild',
             ownerOnly: true,
             ratelimit: 3,
             args: [

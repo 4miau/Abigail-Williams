@@ -11,6 +11,7 @@ export default class Skip extends Command {
                 usage: 'skip <tracksToSkip>',
                 examples: ['skip', 'skip 5'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

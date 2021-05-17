@@ -13,6 +13,7 @@ export default class Search extends Command {
                 usage: 'search [query/link]',
                 examples: ['search Never Gonna Give You Up'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

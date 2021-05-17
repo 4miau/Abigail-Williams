@@ -11,6 +11,7 @@ export default class Loop extends Command {
                 usage: 'loop <track/queue>',
                 examples: ['loop', 'loop track', 'loop queue'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

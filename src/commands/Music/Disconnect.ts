@@ -11,6 +11,7 @@ export default class Disconnect extends Command {
                 usage: 'disconnect',
                 examples: ['disconnect'],
             },
+            channel: 'guild',
             ratelimit: 3,
         })
     }

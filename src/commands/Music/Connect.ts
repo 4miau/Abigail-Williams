@@ -11,6 +11,7 @@ export default class Connect extends Command {
                 usage: 'connect',
                 examples: ['connect'],
             },
+            channel: 'guild',
             ratelimit: 3,
         })
     }
@@ -23,15 +24,15 @@ export default class Connect extends Command {
             if (this.client.manager.players.first().voiceChannel === usersVC.id) 
                 return message.util!.send('I\'m already in that VC silly.')
 
-        const player = this.client.manager.create({
+        this.client.manager.create({
             'guild': message.guild.id,
             'voiceChannel': usersVC.id,
             'textChannel': message.channel.id,
             'node': 'root',
-            'volume': 100
+            'selfDeafen': true,
+            'volume': 100,
         })
-
-        player.connect()
+        .connect()
 
         return message.util!.send(`I have successfully connected to the voice channel.`)
     }
