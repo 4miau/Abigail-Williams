@@ -129,3 +129,14 @@ export const streamDefaultMessage: string = `{streamer} has gone live! {link}`
 export const ZERO: number = 0
 export const ONE: number = 1
 
+export const changeLog: string[] = [
+    '[ADD] Music commands',
+    '[ADD] Softban with efficient error handling',
+    '[FIX] Giveaways no longer stops the bot',
+    '[UPD] Can play more songs, increased node process limit',
+    '[FIX] Fixed bunny image API (still API dependent)',
+    '[UPD] More Apex Legends data is displayed now, still more to come.',
+    '[FIX] Help command now loads faster',
+    '[FIX] API-based commands are slightly faster.',
+    '[ADD] New feedback command, help me so I can upgrade!',
+]

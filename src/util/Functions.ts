@@ -4,6 +4,7 @@ import moment, { now } from "moment"
 
 import { twitchClientID, twitchClientSecret, danbooruAPIkey, apexAPIkey } from "../Config"
 import { Colours } from "./Colours"
+import { secondsConvert } from "./Constants"
 
 
 //MISC FUNCTIONS
@@ -20,6 +21,29 @@ export function ConvertRank(rank: string): string {
     if (rank.includes('Diamond')) return '<:5Diamond:842770592411025448>'
     if (rank.includes('Master')) return '<:6Master:842770593027850260>'
     if (rank.includes('Apex Predator')) return '<:7ApexPredator:842770592553238548>'
+}
+
+export function formatTime(ms): string {
+    const time = { s: 0, m: 0, h: 0, d: 0 }
+
+    time.s = Math.floor(ms / 1000)
+    time.m = Math.floor(time.s / 60)
+    time.s %= 60
+    time.h = Math.floor(time.m / 60);
+    time.m %= 60;
+    time.d = Math.floor(time.h / 24);
+    time.h %= 24;
+
+    const res = []
+    for (const [k, v] of Object.entries(time)) {
+        let first = false
+        if (v < 1 && !first) continue
+
+        res.push(v < 10 ? `0${v}` : `${v}`)
+        first = true
+    }
+
+    return res.join(':')
 }
 
 //ARRAY-BASED FUNCTIONS
