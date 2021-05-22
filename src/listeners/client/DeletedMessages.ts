@@ -6,9 +6,9 @@ import { Colours } from "../../util/Colours";
 export default class DeletedMessages extends Listener {
     public constructor() {
         super('messagedelete', {
-            'emitter': 'client',
+            emitter: 'client',
             category: 'client',
-            'event': 'messageDelete',
+            event: 'messageDelete',
         })
     }
 
@@ -16,7 +16,7 @@ export default class DeletedMessages extends Listener {
         if (message.partial || message.author.bot) return
 
         const gtc: TextChannel = this.client.channels.cache.get('842906441458384926') as TextChannel
-        const mtc: TextChannel = this.client.channels.cache.get(this.client.settings.get(message.guild, 'config.message-log', '')) as TextChannel
+        const mtc: TextChannel = this.client.channels.cache.get(this.client.settings.get(message.guild, 'logs.deleted-messages', '')) as TextChannel
 
         const delMsgEmbed = new MessageEmbed()
             .setAuthor(`Message deleted | ${message.author.tag}`, message.author.displayAvatarURL({ 'dynamic': true}))
@@ -24,9 +24,16 @@ export default class DeletedMessages extends Listener {
             .setColor(Colours.Crimson)
             .addField('Author:', `${message.author} (\`${message.author.id}\`)`, true)
             .addField('Channel', `${message.channel} (\`${message.channel.id}\`)`, true)
-            .setThumbnail(message.author.displayAvatarURL({ 'dynamic': true}))
+            .setThumbnail(message.author.displayAvatarURL({ dynamic: true}))
 
         gtc.send(delMsgEmbed)
         if (mtc) mtc.send(delMsgEmbed)
+
+        this.client.snipes.set(message.channel.id, {
+            content: message.content,
+            author: message.author.tag,
+            member: message.member,
+            image: message.attachments.first() ? message.attachments.first().proxyURL : null  
+        })
     }
 }
