@@ -25,7 +25,17 @@ export default class Eval extends Command {
     }
 
     public async exec(message: Message): Promise<any> {
-        if (message.content.includes('this.client.token') || message.content.includes('token')) return message.util!.send('You\'re a little cheeky one, aren\'t ya')
+        const bannedEvalWords = [
+            'this.client.token',
+            'token',
+            'api',
+            'spotifyclient',
+            'host',
+            'port',
+            'password',
+        ]
+
+        if (bannedEvalWords.some(s => message.content.toLowerCase().includes(s))) return message.util!.send('You\'re a little cheeky one, aren\'t ya')
 
         const reply = await message.util.send(new MessageEmbed()
             .setTitle('Processing JavaScript code...')
