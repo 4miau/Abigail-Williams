@@ -16,14 +16,16 @@ application.yml
 src/util/PersonalConstants.ts
 
 #Testing Purposes
-src/commands/Owner/ArgsTest.ts
+src/commands/Owner/Test.ts
 src/util/NodeProcesses.ts
+src/Archive
 
 # Progress & Logs
 todos
 CommandsList.md
 src/Comments.md
 src/twitchApiReturns.md
+git-notes.md
 
 # Configs
 tsconfig.json
