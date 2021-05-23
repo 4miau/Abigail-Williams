@@ -92,7 +92,10 @@ export default class Play extends Command {
                 message.channel.send('Please enter a number indicating which song you would like to add to the queue.', embed)
                 
                 try {
-                    const userResponse = Number((await message.channel.awaitMessages((msg: Message) => msg.author.id === message.author.id, { 'max': 1, 'time': 30000 })).first().content)
+                    const userResponse = Number((await message.channel.awaitMessages((msg: Message) => msg.author.id === message.author.id, { 
+                        'max': 1, 
+                        'time': 30000 
+                    })).first().content)
                     const track = tracks[userResponse - 1]
         
                     player.queue.add(track)
@@ -106,7 +109,5 @@ export default class Play extends Command {
                 }
 
         }
-
-        return message.util!.send('hi')
     }
 }
