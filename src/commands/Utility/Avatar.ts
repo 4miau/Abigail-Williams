@@ -1,4 +1,4 @@
-import { Command } from 'discord-akairo'
+import { Argument, Command } from 'discord-akairo'
 import { Message, MessageEmbed, User, ImageSize } from 'discord.js'
 
 export default class Avatar extends Command {
@@ -16,7 +16,7 @@ export default class Avatar extends Command {
             args: [
                 {
                     id: 'member',
-                    type: 'string',
+                    type: Argument.union('string', 'member', 'user'),
                     match: 'rest',
                     default: (msg: Message) => msg.member.id
                 },
@@ -34,7 +34,7 @@ export default class Avatar extends Command {
         })
     }
 
-    public exec(message: Message, {member, size}: {member: string, size: number}): Promise<Message> {
+    public exec(message: Message, {member, size}): Promise<Message> {
         try {
             const userResolved: User = this.client.util!.resolveUser(member, this.client.users.cache, false)
     
