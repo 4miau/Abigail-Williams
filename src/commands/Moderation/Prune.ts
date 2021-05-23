@@ -1,5 +1,5 @@
-import { Command } from 'discord-akairo'
-import { GuildMember, Message } from 'discord.js'
+import { Argument, Command } from 'discord-akairo'
+import { GuildMember, Message, User } from 'discord.js'
 
 import { flags, ONE } from '../../util/Constants'
 
@@ -25,15 +25,16 @@ export default class Prune extends Command {
                 },
                 {
                     id: 'args',
+                    type: Argument.union('member', 'string'),
                     match: 'rest'
                 }
             ]
         })
     }
 
-    private parseFlag(message: Message, flag: string): number {
+    private parseFlag(message: Message, flag: any): number {
         if (!flag) return 12
-        if (message.guild.members.resolve(flag) || message.guild.members.resolve(flag.substring(3, flag.length - 1))) return 10
+        if (message.guild.members.resolve(flag) || flag instanceof GuildMember) return 10
 
         flag.startsWith('-') ? flag = flag.substring(1) : void 0
         if (flag.startsWith('"') && flag.endsWith('"')) return 11
@@ -111,11 +112,13 @@ export default class Prune extends Command {
             },
             10 : async () => { //GuildMember flag (specific guildmember)
                 await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => {
-                        const userResolved: GuildMember = args.startsWith('<') ? message.guild.members.resolve(args.substring(3, args.length - 1)) : message.guild.members.resolve(args)
-                        return message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.author.id === userResolved.id))
+                    .then(async msgCollection => {
+                        const userResolved: GuildMember = typeof args === 'object' ? args : message.guild.members.resolve(args)
+                        //message.guild.members.resolve(args) 
+                        //const userResolved: GuildMember = args.startsWith('<') ? message.guild.members.resolve(args.substring(3, args.length - 1)) : message.guild.members.resolve(args)
+                        return await message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.author.id === userResolved.id))
                     })
-                    .then(col => realMessages = col.size)
+                    .then(col => realMessages = col.size - 1)
             },
             11 : async () => { //Words flag
                 await message.channel.messages.fetch({ 'limit': messages })
@@ -130,18 +133,16 @@ export default class Prune extends Command {
         }
 
         ;(argCaller === 0 ? async () => { //INVALID flag, not member or word(s)
-            return await message.util!.send('Please provide a valid flag')
-            .then(m => setTimeout(() => {
-                m.delete()
-            }, 5000))
+            message.delete({ timeout: 5000 })
+            return await (await message.util!.send('Please provide a valid flag')).delete({ timeout: 5000 })
+
         } : async () => { //ELSE IS A VALID FLAG
-            await argsFunc[argCaller].call('')
-            return await message.util!.send(`${realMessages ? realMessages + ' messages have successfully been deleted.' : 'No messages have been deleted.'}`)
-                .then(m => {
-                    !message.deleted ? message.delete() : void 0
-                    setTimeout(() => { m.delete() }, 5000)
-                    return m
-            })})()
+            await argsFunc[argCaller].call()
+            return await (await message.util!.send(
+                `${realMessages ? (realMessages) + `${realMessages > 1 ? ' messages have successfully been deleted.' : ' message has been deleted.'}` : 'No messages have been deleted.'}
+            `)).delete({ timeout: 5000})
+            
+        })()
     }
 }
 
