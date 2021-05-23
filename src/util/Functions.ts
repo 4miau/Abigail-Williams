@@ -78,7 +78,7 @@ export function appendDMFile(ac: AkairoClient, message: Message) {
         err ? ac.logger.log('ERROR', `Error Message: ${err}`) : void 0
 
         fs.appendFile(join(directory, `${message.author.tag}`), 
-        `[${moment(message.createdAt).format('YYYY/MM/DD HH:mm:ss')}] ${message.author.tag} (${message.author.id}) : ${message.content}`,
+        `[${moment(message.createdAt).format('YYYY/MM/DD HH:mm:ss')}] ${message.author.tag} (${message.author.id}) : ${message.content}\n`,
         err => ac.logger.log('ERROR', `${err}`))
     })
 }
