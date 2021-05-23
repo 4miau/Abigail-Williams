@@ -50,6 +50,11 @@ export default class Setup extends Command {
     public async exec(message: Message): Promise<Message> {
         const serverSetup = this.client.settings.get(message.guild, 'modmail.modmail-hasSetup', false)
 
+        const e = new MessageEmbed()
+            .setAuthor('Modmail Setup Complete', message.guild.icon)
+            .setDescription(`This is the modmail logs channel. Logs of completed threads will be stored here.\n
+            Anyone who can see this channel is able to use modmail commands.`)
+
         if (!serverSetup) {
             message.util!.send('Please wait as this is a first time setup...')
 
@@ -62,11 +67,7 @@ export default class Setup extends Command {
                     return tc
                 }) //Sets permissions for the channel
 
-            modmailChannel.send(new MessageEmbed()
-                .setAuthor('Modmail Setup Complete', message.guild.icon)
-                .setDescription(`This is the modmail logs channel. Logs of completed threads will be stored here.\n
-                Anyone who can see this channel is able to use modmail commands.`)
-            )
+            modmailChannel.send(e)
 
             this.client.settings.setArr(message.guild, [
                 {'key': 'modmail.support-role', 'value': supportRole.id},
@@ -106,6 +107,7 @@ export default class Setup extends Command {
                 const currentCategory: CategoryChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'modmail.modmail-category', '')) as CategoryChannel
                 const newTextChannel: TextChannel = await this.createModmailChannel(message.guild, currentCategory)
                 this.client.settings.set(message.guild, 'modmail.modmail-channel', newTextChannel.id)
+                newTextChannel.send(e)
             }
             //Pardon this messy code ^
 
