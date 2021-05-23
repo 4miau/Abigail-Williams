@@ -30,7 +30,7 @@ export default class Bite extends Command {
         const biteGif = await _GetAnimeSFW('bite')
 
         return message.util!.send(new MessageEmbed()
-            .setDescription(`**${message.author.tag}** has bitten **${member.user.tag}!** Ouch!`)
+            .setDescription(`**${message.author.tag}** bit **${member.user.tag}!** Ouch!`)
             .setColor('RANDOM')
             .setImage(biteGif.url)
         )
