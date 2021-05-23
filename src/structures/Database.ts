@@ -1,12 +1,11 @@
 import { ConnectionManager } from 'typeorm'
 import { dbName } from '../Config'
 
-import { Warns } from '../models/Warns'
-import { Bans } from '../models/Bans'
-import { MuteRole } from '../models/MuteRole'
 import { BotStatus } from '../models/BotStatus'
 import { Giveaways } from '../models/Giveaways'
 import { Settings } from '../models/Settings'
+import { Case } from '../models/Case'
+import { MemberData } from '../models/MemberData'
 
 const connectionManager: ConnectionManager = new ConnectionManager()
 connectionManager.create({
@@ -14,11 +13,10 @@ connectionManager.create({
     type: 'sqlite',
     database: './db.sqlite',
     entities: [
-        Warns,
-        Bans,
-        MuteRole,
+        Case,
         BotStatus,
         Giveaways,
+        MemberData,
         Settings
     ]
 })
