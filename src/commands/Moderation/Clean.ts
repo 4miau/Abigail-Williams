@@ -11,6 +11,7 @@ export default class Clean extends Command {
                 usage: 'clean',
                 examples: ['clean'],
             },
+            channel: 'guild',
             userPermissions: ['MANAGE_MESSAGES', 'VIEW_AUDIT_LOG'],
             ratelimit: 3,
         })
