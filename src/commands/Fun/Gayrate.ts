@@ -24,23 +24,23 @@ export default class Gayrate extends Command {
         })
     }
 
-    public exec(message: Message, {member}: {member: GuildMemberResolvable}): Promise<Message> {
-        const userResolved: GuildMember = message.guild.members.resolve(member)
-
+    public exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
         const gayRate: number = Math.floor(Math.random() * 100)
 
-        if (userResolved && userResolved.id !== message.author.id) {
+        if (member && member.id !== message.author.id) {
             return message.util!.send(new MessageEmbed()
                 .setTitle('Gayrate Result')
                 .setColor('RANDOM')
-                .addField('gayRate', `${userResolved.displayName} is ${gayRate}% gay`, true)
+                .setDescription(`${member.displayName} is rated as **${gayRate}%** gay.`)
+                .setFooter(`Executed by ${message.author.tag}`)
                 .setTimestamp(Date.now())
             )
         } else {
             return message.util!.send(new MessageEmbed()
                 .setTitle('Gayrate Result')
                 .setColor('RANDOM')
-                .addField('gayRate', `you are ${gayRate}% gay`, true)
+                .setDescription(`You are rated as being **${gayRate}%** gay.`)
+                .setFooter(`Executed by ${message.author.tag}`)
                 .setTimestamp(Date.now())
             )
         }
