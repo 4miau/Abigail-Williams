@@ -6,7 +6,7 @@ import * as _ from 'dot-prop'
 import { Settings } from '../models/Settings'
 
 export default class SettingsProvider extends Provider {
-    public repo: Repository<any>
+    protected repo: Repository<any>
 
     public constructor(repository: Repository<any>) {
         super()
