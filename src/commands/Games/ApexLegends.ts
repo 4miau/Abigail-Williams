@@ -38,7 +38,8 @@ export default class ApexLegends extends Command {
         if (!platform) return message.util!.send('You need a platform to search for (psn, xbox, pc).')
         if (!name) return message.util!.send('You need to provide a name to search for.')
 
-        const player = await _GetApexPlayer(platform, name)
+        const player = await _GetApexPlayer(platform, name) ? await _GetApexPlayer(platform, name) : null
+        
 
         if (!player) return message.util!.send('Unable to find this user.')
 
@@ -47,7 +48,7 @@ export default class ApexLegends extends Command {
             .setColor(Colours.Crimson)
             .addField('Account & Total Stats', `
             Level: ${player.segments[0].stats.level.value ? player.segments[0].stats.level.value + '/ 500' : 'Unable to get level' } 
-            Total Kills: ${player.segments[0].stats.kills.value}
+            Total Kills: ${player.segments[0].stats.kills ? player.segments[0].stats.kills.value : '0 kills this season'}
             `, true)
             .addField('Score', `${player.segments[0].stats.rankScore.value + ' RP'}`, true)
             .addField('Rank', `${player.segments[0].stats.rankScore.metadata ? 
