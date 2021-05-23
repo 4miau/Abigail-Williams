@@ -21,7 +21,8 @@ export default class RemoveStreamerPing extends Command {
                 },
                 {
                     id: 'role',
-                    type: 'role'
+                    type: 'role',
+                    match: 'rest'
                 }
             ]
         })

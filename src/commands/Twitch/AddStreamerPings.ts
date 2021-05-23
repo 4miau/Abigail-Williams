@@ -21,7 +21,8 @@ export default class AddStreamerPing extends Command {
                 },
                 {
                     id: 'role',
-                    type: 'role'
+                    type: 'role',
+                    match: 'rest'
                 }
             ]
         })

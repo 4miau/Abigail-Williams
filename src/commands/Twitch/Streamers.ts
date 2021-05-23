@@ -26,8 +26,6 @@ export default class Streamers extends Command {
             let nameList: string[] = []
             for (const streamer of streamerList) nameList.push(streamer.name)
 
-            this.client.logger.log('ERROR', `${streamerList.length} is empty however it passes the truthy test.`)
-
             return message.util!.send(nameList.join('\n'))
         }
 
