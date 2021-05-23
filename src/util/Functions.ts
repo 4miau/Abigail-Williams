@@ -1,10 +1,14 @@
-import { Guild, GuildMember, MessageEmbed, TextChannel } from "discord.js"
+import { AkairoClient } from "discord-akairo"
+import { Guild, GuildMember, MessageEmbed, TextChannel, Collection, Snowflake, Message } from "discord.js"
 import axios from 'axios'
 import moment, { now } from "moment"
+import fs from 'fs'
+import { join } from "path"
 
-import { twitchClientID, twitchClientSecret, danbooruAPIkey, apexAPIkey } from "../Config"
+import { twitchClientID, twitchClientSecret, danbooruAPIkey, apexAPIkey, twitterToken } from "../Config"
 import { Colours } from "./Colours"
-import { secondsConvert } from "./Constants"
+import BotClient from '../client/BotClient'
+
 
 
 //MISC FUNCTIONS
@@ -23,7 +27,7 @@ export function ConvertRank(rank: string): string {
     if (rank.includes('Apex Predator')) return '<:7ApexPredator:842770592553238548>'
 }
 
-export function formatTime(ms): string {
+export function formatTime(ms: number): string {
     const time = { s: 0, m: 0, h: 0, d: 0 }
 
     time.s = Math.floor(ms / 1000)
@@ -35,7 +39,7 @@ export function formatTime(ms): string {
     time.h %= 24;
 
     const res = []
-    for (const [k, v] of Object.entries(time)) {
+    for (const [_, v] of Object.entries(time)) {
         let first = false
         if (v < 1 && !first) continue
 
@@ -46,21 +50,45 @@ export function formatTime(ms): string {
     return res.join(':')
 }
 
+//FILE-ACCESS FUNCTIONS
+
+export function createFileDirs() {
+    fs.mkdir(join(__dirname, '..', 'bulkLogs'), () => void 0)
+    fs.mkdir(join(__dirname, '..', 'DMs'), () => void 0)
+}
+
+export function createDelMsgFile(ac: AkairoClient, deletedMessages: Collection<Snowflake, Message>) {
+    const directory = join(__dirname, '..', 'bulkLogs')
+
+    fs.readdir(directory, (err, files) => {
+        err ? ac.logger.log('ERROR', `Error Message: ${err}`) : void 0
+
+        const noOfLogs: number = files.length + 1
+
+        fs.writeFile(join(directory, `bulk-log [${noOfLogs}]`), deletedMessages.map(dm => {
+            return `[${moment(dm.createdAt).format('YYYY/MM/DD HH:mm:ss')}] ${dm.author.tag} (${dm.author.id}) : ${dm.content}`
+        }).join('\n'), err => ac.logger.log('ERROR', `${err}`))
+    })
+}
+
+export function appendDMFile(ac: AkairoClient, message: Message) {
+    const directory = join(__dirname, '..', 'DMs')
+
+    fs.readdir(directory, (err) => {
+        err ? ac.logger.log('ERROR', `Error Message: ${err}`) : void 0
+
+        fs.appendFile(join(directory, `${message.author.tag}`), 
+        `[${moment(message.createdAt).format('YYYY/MM/DD HH:mm:ss')}] ${message.author.tag} (${message.author.id}) : ${message.content}`,
+        err => ac.logger.log('ERROR', `${err}`))
+    })
+}
+
 //ARRAY-BASED FUNCTIONS
 
 export function getRandomIntRange(min: number, max: number): number {
     min = Math.ceil(min)
     max = Math.floor(max)
     return Math.floor(Math.random() * ((max - min) + 1))
-}
-
-export function shuffleArray(arr: string[]): string[] {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j: number = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]]
-    }
-
-    return arr
 }
 
 export function chunk(arr: string[], size: number): string[] {
@@ -121,9 +149,9 @@ export async function postMessage(guild: Guild, feedChannelID: string, streamer:
     
     const addEmbed = feedMessage.endsWith('-embed')
 
-    if (!addEmbed) return (await feedChannel.send(`${streamer.pings ? streamer.pings.join(', ') : ''}\n` + feedMessage)).suppressEmbeds(true)
+    if (!addEmbed) return (await feedChannel.send(`${streamer.pings ? streamer.pings.join(', ') : ''} ` + feedMessage)).suppressEmbeds(true)
     else {
-        return await feedChannel.send(`${streamer.pings ? streamer.pings.join(', ') : ''}\n` + feedMessage.replace('-embed', '') + '\n', {
+        return await feedChannel.send(`${streamer.pings ? streamer.pings.join(', ') : ''}\n` + feedMessage.replace('-embed', '') + ' ', {
             embed: streamEmbed
                 .setFooter(`Abigail Williams - ${moment(now()).utcOffset(1).format('YYYY/M/DD hh:mm:ss a')}`)
         })
@@ -195,6 +223,10 @@ export async function _GetAnimeSFW(category: string): Promise<any> {
 }
 
 export async function _GetApexPlayer(platform: string, name: string): Promise<any> {
+    if (platform === 'pc') platform = 'origin'
+    if (platform === 'xbox') platform = 'xbl'
+    //platform === 'pc' ? 'origin' : platform
+    //platform === 'xbox' ? 'xbl' : platform
     const player = await axios.get(`https://public-api.tracker.gg/v2/apex/standard/profile/${platform}/${name}`, {
         'headers': {
             'TRN-Api-Key': apexAPIkey
@@ -205,5 +237,44 @@ export async function _GetApexPlayer(platform: string, name: string): Promise<an
     .catch(void 0)
 
     if (player) return player
+    return null
+}
+
+export async function _GetTwitterUser(twitterUsername: string): Promise<any> {
+    const user = await axios.get(`https://api.twitter.com/2/users/by/username/${twitterUsername}?user.fields=pinned_tweet_id,description&expansions=pinned_tweet_id&tweet.fields=created_at`, {
+        'headers': {
+            'Authorization': `Bearer ${twitterToken}`
+        },
+        'method': 'GET'
+    })
+    .then(res => res.data)
+    .catch(void 0)
+
+    console.log(user.data)
+    console.log(user.includes.tweets)
+
+    if (user) return user
+    return null
+}
+
+export async function _GetUserLatestPosts(twitterUserID: string): Promise<any> {
+    const timeline = await axios.get(`https://api.twitter.com/2/users/${twitterUserID}/tweets?&expansions=attachments.media_keys,in_reply_to_user_id&media.fields=media_key,url`, {
+        'headers': {
+            'Authorization': `Bearer ${twitterToken}`
+        },
+        'method': 'GET'
+    })
+    .then(res => res.data)
+    .catch(void 0)
+
+    console.log(timeline.data)
+    console.log('-----------------------')
+    console.log(timeline.includes.users)
+    console.log('-----------------------')
+    console.log(timeline.includes.media)
+    console.log('-----------------------')
+    console.log(timeline.metadata)
+    
+    if (timeline) return timeline
     return null
 }

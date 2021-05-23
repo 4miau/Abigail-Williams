@@ -1,3 +1,5 @@
+//*COMMANDS
+
 /*
     FUN
 */
@@ -76,12 +78,6 @@ export const legendHeader = {
 }
 
 /*
-    MUSIC
-*/
-
-
-
-/*
     MODERATION
 */
 
@@ -94,14 +90,12 @@ export const fixnameMax: number = 9999
 export const slowmodeRange: number[] = [0, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600, 7200, 21600] //ms -> s
 export const secondsConvert: number = 1000
 
-//Ban
+//Mute
 
-export const minBanDays: number = 8.64e7 //1 DAY
-export const maxBanDays: number = 2.6e9 //30 DAYS
+export const minMuteTime: number = 6e3 //1 Minute
+export const maxMuteTime: number = 2.6e9 //30 DAYS
 
 //Prune
-
-export const msgFlags: string[] = ['-text', '-emojis', '-bots', '-images', '-embeds', '-mentions', '-links', '-invites', '-left']
 
 export enum flags {
     'text' = 1,
@@ -114,6 +108,13 @@ export enum flags {
     'left',
     'member'
 }
+
+/*
+    CONFIGURATION
+*/
+
+export const deleteLogFlags = ['-d', '-delete']
+export const editLogFlags = ['-e', '-edit']
 
 /*
     TWITCH
@@ -140,3 +141,15 @@ export const changeLog: string[] = [
     '[FIX] API-based commands are slightly faster.',
     '[ADD] New feedback command, help me so I can upgrade!',
 ]
+
+
+//8.64e7 //1 DAY
+//2.6e9 //30 DAYS
+
+//* LISTENERS
+
+/*
+    MESSAGE
+*/
+
+export const inviteDetection: string[] = ['discord.gg/', 'discord.gg', 'gg/', 'discordapp.com/invite/', '.gg/', '. gg/', 'gg /', 'gg /']

@@ -14,8 +14,6 @@ export default class AbbyUtil extends ClientUtil {
 
     getRandomIntRange(min: number, max: number): number { return util.getRandomIntRange(min, max) }
 
-    shuffleArray(arr: string[]): string[] { return util.shuffleArray(arr) }
-
     chunk(arr: string[], size: number): string[] { return util.chunk(arr, size) }
 
     chunkNewLine(arr: string[], size: number): string[] { return util.chunkNewLine(arr, size) }
