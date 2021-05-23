@@ -11,6 +11,7 @@ export default class ChannelWhitelist extends Command {
                     usage: 'channelwhitelist [#blacklistedChannel]',
                     examples: ['channelwhitelist #blacklistedChannel']
             },
+            channel: 'guild',
             userPermissions: ['MANAGE_GUILD', 'MANAGE_CHANNELS'],
             ratelimit: 3,
             args: [

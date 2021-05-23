@@ -25,12 +25,12 @@ export default class Prefix extends Command {
 
     public async exec(message: Message, {prefix}: {prefix: string}): Promise<Message> {
         if (!prefix) {
-            const currentPrefix = this.client.settings.get(message.guild, 'config.prefix', 'a.')
+            const currentPrefix = this.client.settings.get(message.guild, 'prefix', 'a.')
             return message.util!.send(`The server's current prefix is ${currentPrefix}`)
         }
 
         if (prefix.length < 10) {
-            this.client.settings.set(message.guild, 'config.prefix', prefix)
+            this.client.settings.set(message.guild, 'prefix', prefix)
             return message.util!.send(`I have set the new server prefix to ${prefix}`)
         }
 

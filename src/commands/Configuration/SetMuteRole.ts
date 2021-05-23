@@ -40,7 +40,7 @@ export default class setMuteRole extends Command {
         const muteRole: Role = message.guild.roles.resolve(role)
 
         if (muteRole) {
-            this.client.settings.set(message.guild, 'mute-role', muteRole.id)
+            this.client.settings.set(message.guild, 'muteRole', muteRole.id)
             return message.util!.send('New muterole has been successfully set.')
         }
 
