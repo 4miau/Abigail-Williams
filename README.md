@@ -122,7 +122,8 @@ Optionally:
   <li>Wink</li>
   <li>Yeet</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Anime:
@@ -131,7 +132,8 @@ Optionally:
   <li>Neko</li>
   <li>Waifu</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Automod:
@@ -139,7 +141,8 @@ Optionally:
   <li>AntiEveryone</li>
   <li>AntiInvite</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Configuration:
@@ -158,7 +161,8 @@ Optionally:
   <li>UserBlacklist</li>
   <li>UserWhitelist</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Fun:
@@ -170,14 +174,16 @@ Optionally:
   <li>Say</li>
   <li>Ship</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Games:
 <ul>
   <li>ApexLegends</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## General:
@@ -191,7 +197,8 @@ Optionally:
   <li>Snipe</li>
   <li>Suggest</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Images:
@@ -201,7 +208,8 @@ Optionally:
   <li>Danbooru (WIP)</li>
   <li>Dog (outdated API)</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Moderation:
@@ -226,7 +234,8 @@ Optionally:
   <li>Unmute</li>
   <li>Warn</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Twitch
@@ -242,14 +251,16 @@ Optionally:
 </ul>
 
 *Note: TwitchSetMessage is PER streamer, same with AddStreamerPing for customisability and for it to be more dynamic.*
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Twitter
 <ul>
   <li>AddTwitterUser</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 ## Utility
@@ -261,7 +272,8 @@ Optionally:
   <li>Uptime</li>
   <li>Userinfo</li>
 </ul>
-
+<br>
+  
 **[⬆ Back to Commands](#commands)**
 
 # Contributing
@@ -272,7 +284,8 @@ Optionally:
 - Create a new branch hosting the changes `git checkout -b new-branch`
 - After making updates to this branch, push it to your forked repository `git push remote new-branch`
 - `Submit a pull request` with a summary of the changes/features added
-
+<br>
+  
 **[⬆ Back to the top](#description)**
 
 # Author
