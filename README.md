@@ -283,8 +283,8 @@ Solely authored and maintained by miau.
 
 ### Note
 
-##### Note 1: I shall permit this bot's code (commands, listeners & inhibitors, etc) to be open to the public so that you may use the code from this bot to study & learn from. However, you may not invite this bot to servers, and you will have to figure out how to recreate certain files, host the bot and make a database yourself. You can not just directly dump this repository in order to make your bot, you will need to have some understanding with discord-akairo & Node.js.
+##### I shall permit this bot's code to be used to study & learn from. However, to host the bot, you will have to figure out how to recreate certain files, host the bot and make a database yourself. You can not just directly dump this repository in order to make your bot, you will need to have decent understanding with discord-akairo (read the docs) & Node.js.
 
-##### Note 2: I would like to give credit to iCrawl as the case system is influenced by him (specifically Case.ts, MuteManager.ts, Cases.ts & ModUtil.ts). I was thinking for quite a long while as to how to approach this system for the most efficient way to get, display & store moderation cases/logs. He's quite the genius.
+##### I would like to give credit to iCrawl as the case system is influenced by him (specifically Case.ts, MuteManager.ts, Cases.ts & ModUtil.ts). I was thinking for quite a long while as to how to approach this system for the most efficient way to get, display & store moderation cases/logs. He's quite the genius.
 
-##### Note 3: I would like to apologise if my code is not ideal, or great. I am currently learning TypeScript. I appreciate all contributions, whether it is for addition of features of to clean existing code. If it is to clean code please specify the name of the file and the line it is meant to start from.
+##### I would like to apologise if my code is not ideal, or great. I am currently learning TypeScript. I appreciate all contributions, whether it is for addition of features of to clean existing code. If it is to clean code please specify the name of the file and the line it is meant to start from.
