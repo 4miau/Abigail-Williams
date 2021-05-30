@@ -25,6 +25,9 @@ export default class Help extends Command {
     public async exec(message: Message, {commandOrpage}: {commandOrpage: string}): Promise<Message> {
         if (commandOrpage) {
             if (this.client.commandHandler.findCommand(commandOrpage)) {
+                if (this.client.commandHandler.findCommand(commandOrpage).categoryID === 'Owner' && !this.client.isOwner(message.author.id)) {
+                    return message.util!.send('Only the owner can run help on owner commands of course.')
+                }
                 const command: Command = this.client.commandHandler.findCommand(commandOrpage)
                 return message.util!.send(new MessageEmbed()
                     .setAuthor(`Help | ${command}`, this.client.user.displayAvatarURL())
@@ -64,7 +67,7 @@ export default class Help extends Command {
         const pages = [
             [ 'General', 'Images', 'Action', 'Anime', 'Fun', 'Games' ],
             [ 'Utility', 'Music', 'Twitch', 'Twitter' ],
-            [ 'Modmail', 'Moderation', 'Configuration', 'Automod' ],
+            [ 'Modmail', 'Moderation', 'Logging', 'Configuration', 'Automod' ],
             [ 'Owner' ]
         ]
 
@@ -109,5 +112,3 @@ export default class Help extends Command {
         )
     }
 }
-
-//Sorry for the horrible code in advance.
