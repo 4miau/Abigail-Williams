@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { GuildMember, GuildMemberResolvable } from 'discord.js'
+import { GuildMember } from 'discord.js'
 import { Message } from 'discord.js'
 
 export default class SetNickname extends Command {
@@ -29,17 +29,10 @@ export default class SetNickname extends Command {
         })
     }
 
-    public async exec(message: Message, {member, nickname}: {member: GuildMemberResolvable, nickname: string}): Promise<Message> {
-        const resolvedUser: GuildMember = message.guild.members.resolve(member)
+    public async exec(message: Message, {member, nickname}: {member: GuildMember, nickname: string}): Promise<Message> {
+        if (!member.manageable) return message.util!.send('I can not change this user\'s nickname, you should move my role above theirs!')
 
-        try {
-            await resolvedUser.setNickname(nickname)
-            return message.util!.send(`Successfully changed user's nickname`)
-        } catch (err) {
-            return message.util!.send(`Could not change user's nickname, please try again.`)
-        }
-        
+        await member.setNickname(nickname)
+        return message.util!.send(`I have set this user\'s nickname successfully.`)
     }
 }
-
-//TODO: Check role position
