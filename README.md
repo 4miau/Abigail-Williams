@@ -22,7 +22,7 @@ Also please read the note towards the bottom in case you are wondering whether y
 
 #### Modmail will allow members to DM the bot when they require support in a server, and having a thread opened inside a discord where the person who requires support interacts to staff/support by DM'ing the bot while staff/support send their replies via the thread opened. It will be simple to set up, contain a lot of configuration for the staff to customise how threads are set up, how they are closed, and how they are managed while open.
 
-### ___Moderation___ (85%)
+### ___Moderation___ (87%)
 
 #### abby-bot will have a lot of moderation commands with many possible arguments, making it easy for staff and moderators to be able to have an easier life when handling with moderation, there'll be a lot of configuration such as setting up mute roles and mod roles. You will also be able to determine where modlogs should be posted dynamically.
 
@@ -34,7 +34,7 @@ Also please read the note towards the bottom in case you are wondering whether y
 
 #### This is a feature I believe will take a while but will be very much worth it, abby-bot will post: Youtube, Twitch & Twitter posts a while after specific channels, streamers or users produce content. As to who will be able to be configured and will dynamically use APIs to check whenever a post is made and update it in a determined discord text channel.
 
-### ___Automoderation___ (10%)
+### ___Automoderation___ (40%)
 
 #### Users will be able to enable automoderation to make server moderating easier, this will handle: everyone pings, mass-mentioning, invite links/possible promoting, maximum lines, maximum emojis, spam
 
@@ -56,7 +56,6 @@ These are just some simple requirements you will need in order to host the bot, 
 ```
 
 <ul>
-  <li>@types/node</li>
   <li>Discord.js latest version is recommended</li>
 </ul>
 
@@ -88,6 +87,7 @@ Optionally:
   <li>moment (very useful for working with dates and formatting date strings)</li>
   <li>common-tags (useful for working with new lines on string literals, without using '\n')</li>
   <li>erela.js-spotify</li>
+  <li>node-emoji</li>
 </ul>
 
 # Commands
@@ -140,6 +140,8 @@ Optionally:
 <ul>
   <li>AntiEveryone</li>
   <li>AntiInvite</li>
+  <li>MaxLines</li>
+  <li>MaxMentions</li>
 </ul>
 <br>
   
@@ -147,9 +149,15 @@ Optionally:
 
 ## Configuration:
 <ul>
+  <li>AddEmote</li>
   <li>ChannelBlacklist</li>
   <li>ChannelWhitelist</li>
-  <li>MessageLogs</li>
+  <li>EditGiveaway</li>
+  <li>Giveaway</li>
+  <li>LeaveMessage</li>
+  <li>RemoveEmote</li>
+  <li>SetAutoRole</li>
+  <li>SetBotNotice</li>
   <li>SetModmailChannel</li>
   <li>SetMuteRole</li>
   <li>SetPrefix</li>
@@ -190,9 +198,7 @@ Optionally:
 <ul>
   <li>About</li>
   <li>Changelog</li>
-  <li>EndGiveaway</li>
   <li>Feedback</li>
-  <li>Giveaway</li>
   <li>Help</li>
   <li>Snipe</li>
   <li>Suggest</li>
@@ -203,10 +209,22 @@ Optionally:
 
 ## Images:
 <ul>
-  <li>Bunny</li>
+  <li>Bunny (API down)</li>
   <li>Cat</li>
   <li>Danbooru (WIP)</li>
-  <li>Dog (outdated API)</li>
+  <li>Dog</li>
+  <li>Duck</li>
+</ul>
+<br>
+  
+**[⬆ Back to Commands](#commands)**
+
+## Logging:
+<ul>
+  <li>SetMessageLog</li>
+  <li>SetModlog</li>
+  <li>SetRoleLog</li>
+  <li>SetUserLog</li>
 </ul>
 <br>
   
@@ -223,6 +241,7 @@ Optionally:
   <li>Fixname</li>
   <li>Kick</li>
   <li>ManageRole</li>
+  <li>Massban</li>
   <li>Mute</li>
   <li>Pardon</li>
   <li>Prune</li>
@@ -237,6 +256,26 @@ Optionally:
 <br>
   
 **[⬆ Back to Commands](#commands)**
+
+## Music
+<ul>
+  <li>ClearQueue</li>
+  <li>Connect</li>
+  <li>Disconnect</li>
+  <li>Loop</li>
+  <li>NowPlaying</li>
+  <li>Pause</li>
+  <li>Play</li>
+  <li>Queue</li>
+  <li>Search</li>
+  <li>Seek</li>
+  <li>SetDJRole</li>
+  <li>Shuffle</li>
+  <li>Skip</li>
+  <li>Volume</li>
+</ul>
+
+<br>
 
 ## Twitch
 <ul>
@@ -269,7 +308,6 @@ Optionally:
   <li>Mods</li>
   <li>Ping</li>
   <li>Roles</li>
-  <li>Uptime</li>
   <li>Userinfo</li>
 </ul>
 <br>
