@@ -35,7 +35,8 @@ export default class Gayrate extends Command {
                 .setFooter(`Executed by ${message.author.tag}`)
                 .setTimestamp(Date.now())
             )
-        } else {
+        }
+        else {
             return message.util!.send(new MessageEmbed()
                 .setTitle('Gayrate Result')
                 .setColor('RANDOM')
