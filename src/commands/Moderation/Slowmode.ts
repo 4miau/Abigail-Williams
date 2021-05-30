@@ -1,5 +1,5 @@
-import { Command } from 'discord-akairo'
-import { Message, GuildChannel, GuildChannelResolvable } from 'discord.js'
+import { Argument, Command } from 'discord-akairo'
+import { Message, GuildChannel, GuildChannelResolvable, TextChannel } from 'discord.js'
 import ms from 'ms'
 
 import { secondsConvert } from '../../util/Constants'
@@ -21,55 +21,39 @@ export default class Slowmode extends Command {
             args: [
                 {
                     id: 'channel',
-                    type: 'string'
+                    type: 'textChannel',
+                    unordered: true
                 },
                 {
                     id: 'timer',
-                    type: (_: Message, str: string): null | number => {
-                        if (str) {
-                            if (Number(ms(str))) return Number(ms(str))
-                        }
-                        
-                        return null
-
-                    }
+                    type: Argument.union('time'),
+                    default: 0,
+                    unordered: true
+                    
                 }
             ]
         })
     }
 
-    public exec(message: Message, {channel, timer}: {channel: GuildChannelResolvable, timer: number}): Promise<Message> {
-        let textChannel: GuildChannel
+    public exec(message: Message, {channel, timer}: {channel: TextChannel, timer: number}): Promise<Message> {
+        if (!channel && !timer) return message.util.send('You need to at the very least provide a timer for the command to work.')
+        if (timer < 5000 && timer !== 0) return message.util!.send('Please add a time modifier if you are not using milliseconds (e.g. 5s, 1h)')
 
         if (channel) {
-            ;(!message.mentions.channels.first() ? () => { //uses current channel
-                timer = isNaN(parseInt(channel.toString())) ? timer : Number(ms(channel.toString()))
-                textChannel = isNaN(parseInt(channel.toString())) ? message.guild.channels.resolve(channel) : message.guild.channels.resolve(message.channel.id)
-
-                if (timer < 5000 && timer !== 0) return message.util!.send('Please add a time modifier if you are not using milliseconds (e.g. 5s, 1h)')
-
-                try {
-                    textChannel.edit({'rateLimitPerUser': Math.floor(timer / secondsConvert)})
-                    return message.util!.send('Slowmode set successfully.')
-                } catch (err) {
-                    console.log(err)
-                    return message.util!.send('Please input a valid time.')
-                }
-            } : () => { //channel was mentioned
-                textChannel = message.mentions.channels.first()
-                
-                if (timer < 5000 && timer !== 0) return message.util!.send('Please add a time modifier if you are not using milliseconds (e.g. 5s, 1h)')
-
-                try {
-                    textChannel.edit({'rateLimitPerUser': Math.floor(timer / secondsConvert)})
-                    return message.util!.send('Slowmode set successfully.')
-                } catch(err) {
-                    console.log(err)
-                    return message.util!.send('HI I GOT HERE SOMEHOW')    
-                }
-            })()
-        } else {
-            return message.util!.send('Please provide a time.')
+            try {
+                channel.edit({ rateLimitPerUser: Math.floor(timer / 1000)})
+                return message.util!.send('Slowmode set successfully.')
+            } catch {
+                return message.util!.send('Please input a valid time.')
+            }
+        }
+        else {
+            try {
+                (message.channel as TextChannel).edit({ rateLimitPerUser: Math.floor(timer / 1000)})
+                return message.util!.send('Slowmode set successfully.')
+            } catch {
+                return message.util!.send('Please provide a time.')
+            }
         }
     }
 }
