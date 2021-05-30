@@ -19,6 +19,7 @@ src/util/PersonalConstants.ts
 src/commands/Owner/Test.ts
 src/util/NodeProcesses.ts
 src/Archive
+src/classes/PlayerModule.ts
 
 # Progress & Logs
 todos
