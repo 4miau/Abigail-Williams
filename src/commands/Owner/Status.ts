@@ -27,7 +27,7 @@ export default class Status extends Command {
                 {
                     id: 'statusMsg',
                     type: 'string',
-                    match: 'restContent'
+                    match: 'rest'
                 },
                 {
                     id: 'twitchURL',
@@ -56,7 +56,7 @@ export default class Status extends Command {
                 case 'offline':
                 case 'invisible':
                 case 'invis':
-                    this.client.user.setPresence({'status': 'invisible', 'activity': {name: statusMsg ? statusMsg : ''}})
+                    this.client.user.setPresence({status: 'invisible', activity: {name: statusMsg ? statusMsg : ''}})
                     await statusRepo.update({ 'id': 1 }, { //UPDATE 2 WHERE 1 (only 1 entry, ID always = 1)
                         'type' : 'status',
                         'activityType': 'invisible',
@@ -65,7 +65,7 @@ export default class Status extends Command {
                     break
                 case 'on':
                 case 'online':
-                    this.client.user.setPresence({'status': 'online', 'activity': {name: statusMsg ? statusMsg : ''}})
+                    this.client.user.setPresence({status: 'online', activity: {name: statusMsg ? statusMsg : ''}})
                     await statusRepo.update({ 'id': 1 }, {
                         'type' : 'status',
                         'activityType': 'online',
@@ -74,7 +74,7 @@ export default class Status extends Command {
                     break
                 case 'away':
                 case 'idle':
-                    this.client.user.setPresence({'status': 'idle', 'activity': {name: statusMsg ? statusMsg : ''}})
+                    this.client.user.setPresence({status: 'idle', activity: {name: statusMsg ? statusMsg : ''}})
                     await statusRepo.update({ 'id': 1 }, {
                         'type' : 'status',
                         'activityType': 'idle',
@@ -83,7 +83,7 @@ export default class Status extends Command {
                     break
                 case 'dnd':
                 case 'donotdisturb':
-                    this.client.user.setPresence({'status': 'dnd', 'activity': {name: statusMsg ? statusMsg : ''}})
+                    this.client.user.setPresence({'status': 'dnd', activity: {name: statusMsg ? statusMsg : ''}})
                     await statusRepo.update({ 'id': 1 }, {
                         'type' : 'status',
                         'activityType': 'dnd',
@@ -93,21 +93,21 @@ export default class Status extends Command {
                 case 'streaming':
                 case 'stream':
                     if (statusMsg) {
-                        await this.client.user.setPresence({'activity': {'type': 'STREAMING' ,name: statusMsg ? statusMsg : '', url: twitchURL ? twitchURL : miauTwitch }})
+                        await this.client.user.setPresence({activity: {type: 'STREAMING', name: statusMsg ? statusMsg : '', url: twitchURL ? twitchURL : miauTwitch }})
                         await statusRepo.update({ 'id': 1 }, {
-                            'type' : 'activity',
-                            'status': statusMsg ? statusMsg : '',
-                            'url': twitchURL ? twitchURL : miauTwitch
+                            type: 'activity',
+                            status: statusMsg ? statusMsg : '',
+                            url: twitchURL ? twitchURL : miauTwitch
                         })
                     } else {
-                        return message.util!.send('You must accompany a message when setting my status as streaming!')
+                        if (!message.author.bot) return message.util!.send('You must accompany a message when setting my status as streaming!')
                     } 
                     break
                 default:
-                    return message.util!.send('This is not a valid status!')
+                    if (!message.author.bot) return message.util!.send('This is not a valid status!')
             }
             
-            return message.util!.send(`${statusMsg ? 'I have set my status to ' + statusMsg : 'I am now on ' + status}.`)
+            if (!message.author.bot) return message.util!.send(`${statusMsg ? 'I have set my status to ' + statusMsg : 'I am now on ' + status}`)
         }
     }
 }
