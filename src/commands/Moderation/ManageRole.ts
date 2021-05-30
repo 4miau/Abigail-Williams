@@ -64,3 +64,5 @@ export default class ManageRole extends Command {
         }
     }
 }
+
+//TODO: Try using Generator Args instead of standard args to clean up the args, learn gen args

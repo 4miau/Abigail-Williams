@@ -34,3 +34,5 @@ export default class DeleteRole extends Command {
         }
     }
 }
+
+//TODO: Check if role is manageable, then you can leave out the try-catch

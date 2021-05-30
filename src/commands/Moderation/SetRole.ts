@@ -11,6 +11,7 @@ export default class SetRole extends Command {
                 usage: 'role [@user] [role]',
                 examples: ['role @user']
             },
+            channel: 'guild',
             userPermissions: ['MANAGE_ROLES'],
             clientPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,

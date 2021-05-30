@@ -1,7 +1,5 @@
-import { Argument, Command } from 'discord-akairo'
+import { Command } from 'discord-akairo'
 import { Message, GuildMember } from 'discord.js'
-import moment, { now } from 'moment'
-import ms from 'ms'
 
 import { Repository } from 'typeorm'
 
@@ -20,7 +18,6 @@ export default class Ban extends Command {
                     flags: ['-s']
             },
             channel: 'guild',
-            userPermissions: ['BAN_MEMBERS'],
             clientPermissions: ['SEND_MESSAGES', 'EMBED_LINKS', 'SEND_MESSAGES'],
             ratelimit: 3,
             args: [
@@ -48,6 +45,15 @@ export default class Ban extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('BAN_MEMBERS', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message, {member, reason, skip}: {member: GuildMember, days: number, reason: string, skip: boolean}): Promise<any> {        
@@ -100,13 +106,5 @@ export default class Ban extends Command {
     }
 }
 
-/*
-                    type: (_: Message, str: string) => {
-                        if (str) {
-                            if (Number(ms(str)) < minBanDays && Number(ms(str)) > maxBanDays) {
-                                return Number(ms(str))
-                            }
-                        }
-                        return 0
-                    },
-*/
+
+//TODO: Simple optimization on ban

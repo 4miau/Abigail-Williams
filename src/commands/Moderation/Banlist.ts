@@ -11,7 +11,7 @@ export default class Banlist extends Command {
                 usage: 'banlist [page]',
                 examples: ['banlist', 'banlist 3'],
             },
-            userPermissions: ['VIEW_AUDIT_LOG'],
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -23,6 +23,15 @@ export default class Banlist extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('VIEW_AUDIT_LOG', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message, {page}: {page: number}): Promise<Message> {
@@ -49,20 +58,3 @@ export default class Banlist extends Command {
         return await message.util!.send(e)
     }
 }
-
-/*
-        const perPage = 5
-        page = player.queue.length ? page : 1
-
-        const end = page * perPage
-        const start = end - perPage
-
-        const tracks = queue.slice(start, end)
-
-        if (queue.current) { e.addField("Current", `[${queue.current.title}](${queue.current.uri}) request by: ${queue.current.requester}`) }
-
-        if (!tracks.length) e.setDescription(`No tracks in ${page > 1 ? `page ${page}` : "the queue"}.`)
-        else e.setDescription(tracks.map((track, i) => `${start + (++i)} - [${track.title}](${track.uri}) request by: ${queue.current.requester}`).join("\n"))
-
-        const maxPages = Math.ceil(queue.length / perPage)
-*/

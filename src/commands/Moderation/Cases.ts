@@ -29,7 +29,6 @@ export default class Cases extends Command {
                 usage: 'case [caseID]',
                 examples: ['case 13'],
             },
-            userPermissions: ['VIEW_AUDIT_LOG', 'MANAGE_GUILD'],
             channel: 'guild',
             ratelimit: 3,
             args: [
@@ -44,6 +43,15 @@ export default class Cases extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('VIEW_AUDIT_LOG', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message, {caseID}: {caseID: string | number}): Promise<Message> {

@@ -12,9 +12,17 @@ export default class Clean extends Command {
                 examples: ['clean'],
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_MESSAGES', 'VIEW_AUDIT_LOG'],
             ratelimit: 3,
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission(['VIEW_AUDIT_LOG', 'MANAGE_MESSAGES'], { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message): Promise<Message> {
