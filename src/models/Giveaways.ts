@@ -11,6 +11,9 @@ export class Giveaways {
     @Column({ 'type': 'varchar', length: 22})
     message!: string
 
+    @Column({ type: 'varchar', nullable: true})
+    reward!: string
+
     @Column({ 'type': 'integer' })
     winners!: number
 
