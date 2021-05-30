@@ -25,10 +25,19 @@ export default class AntiEveryone extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     public exec(message: Message, {state}: {state: string}): Promise<Message> {
         const automodState: boolean = this.client.settings.get(message.guild, 'auto-mod.antiEveryone', false)
 
-        if (!state) return message.util!.send(`Anti-everyone is enabled in this server: ${automodState}`)
+        if (!state) return message.util!.send(`Anti-everyone is currently enabled in this server? ${automodState}`)
         
         state.toLowerCase() === 'enable' ? 
             this.client.settings.set(message.guild, 'auto-mod.antiEveryone', true) : this.client.settings.set(message.guild, 'auto-mod.antiEveryone', false)

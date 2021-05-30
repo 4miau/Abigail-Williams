@@ -12,7 +12,6 @@ export default class Prefix extends Command {
                     examples: ['prefix a.']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,
             args: [
                 {
@@ -21,6 +20,15 @@ export default class Prefix extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message, {prefix}: {prefix: string}): Promise<Message> {

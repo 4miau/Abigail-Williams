@@ -15,10 +15,18 @@ export default class Setup extends Command {
                     examples: ['setup']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_GUILD'],
             clientPermissions: ['MANAGE_GUILD', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
             ratelimit: 3
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     private async createSupportRole(guild: Guild): Promise<Role> {
@@ -67,7 +75,7 @@ export default class Setup extends Command {
                     return tc
                 }) //Sets permissions for the channel
 
-            modmailChannel.send(e)
+            await modmailChannel.send(e)
 
             this.client.settings.setArr(message.guild, [
                 {'key': 'modmail.support-role', 'value': supportRole.id},
@@ -76,22 +84,14 @@ export default class Setup extends Command {
                 {'key': 'modmail.modmail-hasSetup', 'value': true}
             ])
 
-
-            return message.util!.send('Modmail has now been setup for this server.')
-                .then(m => {
-                    message.util!.message.delete()
-                    setTimeout(() => {
-                        m.delete()
-                    }, 5000)
-                    return m
-                })
-
-            
-        } else {
+            await message.delete({ timeout: 5000 })
+            return await (await message.util!.send('Modmail has now been setup for this server.')).delete({ timeout: 5000 })
+        }
+        else {
             const modmailArr: string[] = this.client.settings.getArr(message.guild, [
-                {'key': 'modmail.support-role', 'defaultValue': ''}, //modmailArr[0]
-                {'key': 'modmail.modmail-category', 'defaultValue': ''}, //modmailArr[1]
-                {'key': 'modmail.modmail-channel', 'defaultValue': ''} //modmailArr[2]
+                {'key': 'modmail.support-role', 'defaultValue': ''}, //modmailArr[0] - ROLE
+                {'key': 'modmail.modmail-category', 'defaultValue': ''}, //modmailArr[1] - CATEGORY
+                {'key': 'modmail.modmail-channel', 'defaultValue': ''} //modmailArr[2] - CHANNEL
             ])
 
             //Pardon this messy code v
@@ -107,20 +107,12 @@ export default class Setup extends Command {
                 const currentCategory: CategoryChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'modmail.modmail-category', '')) as CategoryChannel
                 const newTextChannel: TextChannel = await this.createModmailChannel(message.guild, currentCategory)
                 this.client.settings.set(message.guild, 'modmail.modmail-channel', newTextChannel.id)
-                newTextChannel.send(e)
+                await newTextChannel.send(e)
             }
             //Pardon this messy code ^
 
-            return message.util!.send('Server modmail configuration has been updated!')
-            .then(m => {
-                message.util!.message.delete()
-                setTimeout(() => {
-                    m.delete()
-                }, 4500)
-                return m
-            })
-            
-            
+            await message.delete({ timeout: 5000 })
+            return await (await message.util!.send('Server modmail configuration has been updated!')).delete({ timeout: 5000 })
         }
     }
 }

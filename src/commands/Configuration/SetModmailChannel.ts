@@ -12,15 +12,23 @@ export default class SetModmailChannel extends Command {
                 examples: ['setmodmailchannel #modmail-logs'],
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_CHANNELS', 'MANAGE_GUILD'],
             ratelimit: 3,
             args: [
                 {
                     id: 'channel',
-                    type: 'channel'
+                    type: 'textChannel'
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission(['MANAGE_CHANNELS', 'MANAGE_GUILD'], { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
@@ -39,6 +47,7 @@ export default class SetModmailChannel extends Command {
                 message.util!.send('New category and modmail')
             })
             .catch(() => message.util!.send('I do not have valid permissions to be able to be able to create the new category/channel.'))
-        } else return message.util!.send('New modmail channel has been created successfully.')
+        }
+        else return message.util!.send('New modmail channel has been created successfully.')
     }
 }

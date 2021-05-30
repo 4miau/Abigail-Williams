@@ -25,6 +25,15 @@ export default class AntiInvite extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     public exec(message: Message, {state}: {state: string}): Promise<Message> {
         const automodState: boolean = this.client.settings.get(message.guild, 'auto-mod.antiInvite', false)
 
