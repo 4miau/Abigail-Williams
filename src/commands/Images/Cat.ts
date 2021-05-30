@@ -2,6 +2,8 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import axios, { AxiosResponse } from 'axios'
 
+import { catAPIkey } from '../../Config'
+
 export default class Cat extends Command {
     public constructor() {
         super('cat', {
@@ -14,30 +16,39 @@ export default class Cat extends Command {
                 flags: ['-gif']
             },
             ratelimit: 3,
+            args: [
+                {
+                    id: 'gif',
+                    match: 'flag',
+                    flag: '-gif'
+                }
+            ]
         })
     }
 
-    public async exec(message: Message): Promise<Message> {
-        let cat: AxiosResponse<any>
+    public async exec(message: Message, {gif}: {gif: boolean}): Promise<Message> {
+        let cat: string
 
-        console.log(message.content.includes('-gif'))
-
-        if (message.content.includes('-gif')) {
-            cat = await axios.get('https://cataas.com/cat/gif?json=true', {
+        if (gif) {
+            cat = await axios.get('https://api.thecatapi.com/v1/images/search?mime_types=gif&order=RANDOM&page=0&limit=1', {
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'x-api-key': catAPIkey
+                },
                 'method': 'GET'
             })
-            .then(res => res.data.url)
+            .then(res => res.data[0].url)
         } else {
-            cat = await axios.get('https://cataas.com/cat/cute?json=true', {
+            cat = await axios.get('hhttps://api.thecatapi.com/v1/images/search?mime_types=jpg,png&order=RANDOM&page=0&limit=1', {
                 'method': 'GET'
             })
-            .then(res => res.data.url)
+            .then(res => res.data[0].url)
         }
 
         return message.util!.send(new MessageEmbed()
             .setDescription('Here\'s an image of a cat!')
             .setColor('RANDOM')
-            .setImage('https://cataas.com' + cat)
+            .setImage(cat)
         )
     }
 }
