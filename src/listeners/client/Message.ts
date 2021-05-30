@@ -34,9 +34,30 @@ export default class MessageListener extends Listener {
             modRole ? adminRoles.push(modRole) : void 0
 
             if (antiEveryone) {
-                if ((message.author.id === this.client.ownerID.toString()) || !adminRoles.some(r => message.member.roles.cache.some(role => role === r))) {
-                    await this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antieveryone)' })
-                }
+                if ((message.author.id === this.client.ownerID.toString()) || !adminRoles.some(r => message.member.roles.cache.some(role => role === r)))
+                    this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antieveryone)' }))
+            }
+        }
+
+        //Max Mentions
+        if (message.mentions.users) {
+            const maxMentions: number = this.client.settings.get(message.guild, 'auto-mod.maxMentions', 0)
+
+            if (maxMentions && maxMentions > 0 && message.mentions.users.size > maxMentions)
+                this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Maxmentions)'}))
+        }
+
+        //Max Lines
+        if (message.content.includes('\n')) {
+            const maxLines: number = this.client.settings.get(message.guild, 'auto-mod.maxLines', 0)
+            const modRole = message.guild.roles.resolve(modRoleID)
+            const adminRoles = message.guild.roles.cache.map(rArr => rArr).filter(r => r.permissions.has('ADMINISTRATOR') || r.permissions.has('MANAGE_GUILD'))
+
+            modRole ? adminRoles.push(modRole) : void 0
+
+            if (maxLines !== 0 && message.content.split(/\r\n|\r|\n/).length > maxLines) {
+                if (!(message.author.id === message.guild.ownerID) && !message.member.roles.cache.some(r => adminRoles.some(ar => ar === r))) 
+                    this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Maxlines)' }))
             }
         }
 
@@ -49,15 +70,9 @@ export default class MessageListener extends Listener {
             modRole ? adminRoles.push(modRole) : void 0
 
             if (antiInvite) {
-                this.client.logger.log('CAUTION', `REACHED HERE, ${message.author.id === message.guild.ownerID}`)
-                if (!(message.author.id === message.guild.ownerID) && !message.member.roles.cache.some(r => adminRoles.some(ar => ar === r))) {
-                    await this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antiinvite)' })
-                }
+                if (!(message.author.id === message.guild.ownerID) && !message.member.roles.cache.some(r => adminRoles.some(ar => ar === r))) 
+                    this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antiinvite)' }))
             }
         }
     }
 }
-
-// && !this.client.users.resolve(this.client.ownerID.toString()).dmChannel
-
-//(message.author.id === message.guild.ownerID) || !message.member.roles.cache.some(r => adminRoles.some(ar => ar === r))
