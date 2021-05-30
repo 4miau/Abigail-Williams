@@ -62,7 +62,7 @@ export default class MuteManager {
     
             mute = await caseRepo.save(newMute)
         }
-        if (mute.actionDuration.getTime() < (Date.now() + this.rate)) this.queueMute(mute)
+        if (mute.actionDuration && mute.actionDuration.getTime() < (Date.now() + this.rate)) this.queueMute(mute)
     }
 
     public async cancelMute(mute: Case) {
