@@ -19,10 +19,7 @@ export default class AnimeQuote extends Command {
     }
 
     public async exec(message: Message): Promise<Message> {
-        const animeQuote = await axios.get('https://animechan.vercel.app/api/random', {
-            'method': 'GET'
-        })
-        .then(res => res.data)
+        const animeQuote = await axios.get('https://animechan.vercel.app/api/random', { 'method': 'GET' }).then(res => res.data)
 
         return message.util!.send(new MessageEmbed()
             .setDescription(`
