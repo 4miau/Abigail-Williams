@@ -44,8 +44,6 @@ export default class Unmute extends Command {
         const totalCases: number = this.client.settings.get(message.guild, 'totalCases', 0) + 1
         const muteRole = message.guild.roles.resolve(this.client.settings.get(message.guild, 'muteRole', ''))
 
-        this.client.logger.log('CAUTION', `${totalCases}`)
-
         if (!muteRole) return message.util!.send('You need to set a mute role before being able to mute a user.')
         if (!muteRole.editable) return message.util!.send('I am unable to take the mute role to members. Please make sure my role is above this role.')
 
@@ -75,7 +73,8 @@ export default class Unmute extends Command {
                 
             if (typeof errorOnRun === 'string') return message.util!.send(errorOnRun)
 
-            return message.util!.send(`${member} has been unmuted.`)
+            message.delete({ timeout: 3000 })
+            return await message.util!.send(`${member} has been unmuted. Reason: ${reason}`)
         } else {
             return message.util!.send('This user is not muted or I am unable to remove the role from this user.')
         }
@@ -88,7 +87,6 @@ export default class Unmute extends Command {
         } catch {
             return null
         }
-        
     }
 }
 
