@@ -11,20 +11,31 @@ export default class ClearQueue extends Command {
                 usage: 'clearqueue',
                 examples: ['clearqueue'],
             },
+            channel: 'guild',
             ratelimit: 3,
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
+
+        if (!djRole) return null
+
+        const hasDJRole = message.member.roles.cache.has(djRole)
+
+        if (!hasDJRole) return 'DJ Role'
+        return null
+    }
+
     public async exec(message: Message): Promise<Message> {
         const userVC = message.member.voice.channel
-
         if (!userVC) return message.util!.send('You must be in the same VC to play a song.')
 
         const players = this.client.manager.players.size
         if (!players) return message.util!.send('I am currently not in a voice channel.')
 
         const player = this.client.manager.players.first()
-
         const queue = player.queue
 
         if (queue) {
