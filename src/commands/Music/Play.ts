@@ -12,9 +12,10 @@ export default class Play extends Command {
             category: 'Music',
             description: {
                 content: 'Plays track(s) based on a query, can be a single song or a playlist.',
-                usage: 'play [nameoftrack/link]',
-                examples: ['play https://youtube.com/song', 'play https://spotify.com/playlist', 'play https://soundcloud.com/song'],
+                usage: 'play [trackName/link]',
+                examples: ['play https://youtube.com/song', 'play https://spotify.com/playlist', 'play https://soundcloud.com/song', 'play rick astley'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,14 +26,29 @@ export default class Play extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
+
+        if (!djRole) return null
+
+        const hasDJRole = message.member.roles.cache.has(djRole)
+
+        if (!hasDJRole) return 'DJ Role'
+        return null
+    }
+
     public async exec(message: Message, {query}: {query: string}): Promise<Message> {
         if (!query) return message.util!.send('I need a song/title to query to add to the queue.')
         const scloud = message.attachments.first() || query //This is for soundcloud links since they need to be handled differently.
 
         const userVC = message.member.voice.channel
-        if (!userVC) return message.util!.send('You must be in the same VC to play a song.')
+        if (!userVC) return message.util!.send('You must be in a VC to play a track.')
 
-        if (!this.client.manager.players.size) {
+        if (this.client.manager.players.size) {
+            if (this.client.manager.players.first().voiceChannel !== userVC.id) return message.util!.send('You must be in the same VC to play a track.')
+        }
+        else {
             this.client.manager.create({
                 'guild': message.guild.id,
                 'voiceChannel': userVC.id,
@@ -111,3 +127,5 @@ export default class Play extends Command {
         }
     }
 }
+
+//TODO: Uh, to be honest, just see if you can simplify the code but I am actually pretty satisfied with this command

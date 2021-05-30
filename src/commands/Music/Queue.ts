@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed, VoiceChannel } from 'discord.js'
-import { Colours } from '../../util/Colours'
 
 export default class Queue extends Command {
     public constructor() {
@@ -24,6 +23,18 @@ export default class Queue extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
+
+        if (!djRole) return null
+
+        const hasDJRole = message.member.roles.cache.has(djRole)
+
+        if (!hasDJRole) return 'DJ Role'
+        return null
     }
 
     public exec(message: Message, {page}: {page: number}): Promise<Message> {

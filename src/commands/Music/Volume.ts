@@ -23,6 +23,18 @@ export default class Volume extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
+
+        if (!djRole) return null
+
+        const hasDJRole = message.member.roles.cache.has(djRole)
+
+        if (!hasDJRole) return 'DJ Role'
+        return null
+    }
+
     public exec(message: Message, {volume}: {volume: number}): Promise<Message> {
         if (volume && isNaN(volume)) return message.util!.send('If you wish to provide a number, it needs to be a number...')
         const players = this.client.manager.players.size

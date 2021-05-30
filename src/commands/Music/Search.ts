@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message, MessageEmbed } from 'discord.js'
+import { Message, MessageEmbed, Role } from 'discord.js'
 import { Track } from 'erela.js'
 import { Colours } from '../../util/Colours'
 
@@ -44,6 +44,10 @@ export default class Search extends Command {
 
         this.client.logger.log('INFO', `${songs.tracks.map(t => `${t.title}`).join(', ')}`)
 
+        const djRole: Role = message.guild.roles.resolve(this.client.settings.get(message.guild, 'djRole', ''))
+
+        if (djRole && !message.member.roles.cache.has(djRole.id)) return message.util!.send(embed)
+
         if (userVC && player) {
             message.util!.send('Please enter a number indicating which song you would like to add to the queue.', embed)
 
@@ -52,7 +56,8 @@ export default class Search extends Command {
                 const track = tracks[userResponse - 1]
     
                 player.queue.add(track)
-            } catch (err) { 
+            } 
+            catch { 
                 message.util!.message.delete({ 'timeout': 2000})
                 return await message.channel.send('Please provide a number to add to the queue. Please try again.')
                     .then(msg => msg.delete({ 'timeout': 2000 }))
