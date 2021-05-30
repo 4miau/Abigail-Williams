@@ -27,26 +27,28 @@ export default class RussianRoulette extends Command {
 
     public async exec(message: Message, {bullets}: {bullets: number}): Promise<Message> {
         if (bullets < bulletsMin) return message.util!.send('You coward, you need at least 1 bullet in the chamber!')
-        if (bullets > bulletsMax) return message.util!.send('Woah, you really must be trying to get yourself killed.')
+        else if (bullets > bulletsMax) return message.util!.send('Woah, you really must be trying to get yourself killed.')
 
         const dead: boolean = (Math.floor(Math.random() * bulletsTotal) < bullets)
+        
+        const reply = await message.util!.send(`You load ${bullets === 1 ? 'a bullet' : bullets + ' bullets'} into the revolver, give it a spin, and place it against your head.`)
 
-        return await (message.util!.send(`You load ${bullets === 1 ? 'a bullet' : bullets + ' bullets'} into the revolver, give it a spin, and place it against your head.`)
-                .then(msg => { return msg.channel.send(`${emojiList[getRandomInt(emojiList.length)]} :gun:`)})
-                .then(msg => {
-                    const lastMsg = message.util!.lastResponse.content
+        return await message.channel!.send(`${emojiList[getRandomInt(emojiList.length)]} :gun:`)
+            .then(msg => {
+                const prevContent = message.util!.lastResponse.content
 
-                    return message.util!.edit(setTimeout(() => {
-                        if (dead) {
-                            message.util!.edit(lastMsg + `\n***BOOM***, ${deadList[getRandomInt(deadList.length)]}`)
-                            msg.edit(':boom::gun:')
-                        } else {
-                            message.util!.edit(lastMsg + `\n***Click***, ${liveList[getRandomInt(liveList.length)]}`)
-                            msg.edit(':relieved::gun:')
-                        }
-                    }, 4000))
-                })
-        )
+                setTimeout(() => {
+                    if (dead) {
+                        reply.edit(prevContent + `\n***BOOM***, ${deadList[getRandomInt(deadList.length)]}`)
+                        msg.edit(':boom::gun:')
+                    }
+                    else {
+                        reply.edit(prevContent + `\n***Click***, ${liveList[getRandomInt(liveList.length)]}`)
+                        msg.edit(':relieved::gun:')
+                    }
+                }, 4000)
 
+                return msg
+            })
     }
 }

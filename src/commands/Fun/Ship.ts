@@ -28,17 +28,12 @@ export default class Ship extends Command {
         })
     }
 
-    public exec(message: Message, {memberOne, memberTwo}: {memberOne: GuildMemberResolvable, memberTwo: GuildMemberResolvable}): Promise<Message> {
-        const userOne: GuildMember = message.guild.members.resolve(memberOne)
-        const userTwo: GuildMember = message.guild.members.resolve(memberTwo)
+    public exec(message: Message, {memberOne, memberTwo}: {memberOne: GuildMember, memberTwo: GuildMember}): Promise<Message> {
+        if (!memberOne || !memberTwo) return message.util!.send('Provide 2 members to ship, Specifically 2..')
 
-        if (userOne && userTwo) {
-            return message.util!.send(new MessageEmbed()
-                .setTitle('The ship has set sail')
-                .setDescription(`:ship: ${userOne} and ${userTwo} have a ship level of ${getRandomIntRange(0, 99)}%`)
-            )
-        } else {
-            message.util!.send('Please provide 2 members to ship.')
-        }
+        return message.util!.send(new MessageEmbed()
+            .setTitle('The ship has set sail')
+            .setDescription(`:ship: ${memberOne} and ${memberTwo} have a ship level of ${getRandomIntRange(0, 99)}%`)
+        )
     }
 }

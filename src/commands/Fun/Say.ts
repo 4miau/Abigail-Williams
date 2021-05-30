@@ -23,8 +23,8 @@ export default class Say extends Command {
         })
     }
     
-    public exec(message: Message, {words}: {words: string}) {
-        message.util!.message.delete()
+    public async exec(message: Message, {words}: {words: string}) {
+        await message.util!.message.delete()
         return message.util!.send(words)
     }
 }
