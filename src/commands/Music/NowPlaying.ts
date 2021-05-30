@@ -18,9 +18,20 @@ export default class NowPlaying extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
+
+        if (!djRole) return null
+
+        const hasDJRole = message.member.roles.cache.has(djRole)
+
+        if (!hasDJRole) return 'DJ Role'
+        return null
+    }
+
     public exec(message: Message): Promise<Message> {
         const players = this.client.manager.players
-
         if (!players.size) return message.util!.send('I am currently not in a VC.')
 
         const player = players.first()

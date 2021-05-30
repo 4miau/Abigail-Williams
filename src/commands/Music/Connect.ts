@@ -16,6 +16,18 @@ export default class Connect extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
+
+        if (!djRole) return null
+
+        const hasDJRole = message.member.roles.cache.has(djRole)
+
+        if (!hasDJRole) return 'DJ Role'
+        return null
+    }
+
     public exec(message: Message): Promise<Message> {
         const usersVC = message.member.voice.channel
         if (!usersVC) return message.util!.send('You must be in a VC for me to connect.')
