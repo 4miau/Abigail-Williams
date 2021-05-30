@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
-import { now } from "moment";
 
 @Entity('cases')
 export class Case {
