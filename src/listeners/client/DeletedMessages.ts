@@ -19,15 +19,17 @@ export default class DeletedMessages extends Listener {
         const mtc: TextChannel = this.client.channels.cache.get(this.client.settings.get(message.guild, 'logs.deleted-messages', '')) as TextChannel
 
         const delMsgEmbed = new MessageEmbed()
-            .setAuthor(`Message deleted | ${message.author.tag}`, message.author.displayAvatarURL({ 'dynamic': true}))
-            .setDescription(`**Message Content:**\n${message.content}`)
+            .setAuthor(`Message deleted | ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true}))
             .setColor(Colours.Crimson)
+            .addField('**Message Content:**', message.content)
             .addField('Author:', `${message.author} (\`${message.author.id}\`)`, true)
             .addField('Channel', `${message.channel} (\`${message.channel.id}\`)`, true)
             .setThumbnail(message.author.displayAvatarURL({ dynamic: true}))
 
-        gtc.send(delMsgEmbed)
         if (mtc) mtc.send(delMsgEmbed)
+
+        delMsgEmbed.setDescription(`**Server:** ${message.guild.name} (${message.guild.id})`)
+        gtc.send(delMsgEmbed)
 
         this.client.snipes.set(message.channel.id, {
             content: message.content,
