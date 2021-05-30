@@ -16,7 +16,10 @@ export default class Coinflip extends Command {
                 {
                     id: 'HoT', //Heads or Tails
                     type: (_: Message, str: string) => {
-                        if (str) if (str === 'tails' || str === 'heads') return str
+                        if (str) {
+                            if (str.toLowerCase() === 'heads') return str
+                            if (str.toLowerCase() === 'tails') return str
+                        }
                         return null
                     }
                 }
@@ -25,13 +28,11 @@ export default class Coinflip extends Command {
     }
 
     public exec(message: Message, {HoT}: {HoT: string}): Promise<Message> {
-        if (!HoT) return message.util!.send('You must either choose heads or tails to flip the coin.')
+        if (!HoT) return message.util!.send('You must provide at least heads or tails.')
 
-        const choices = ['heads', 'tails']
+        const headsortails = ['heads', 'tails']
+        const winner = headsortails[Math.floor(Math.random() * 2)]
 
-        const win = choices[Math.floor(Math.random() * 2)]
-
-        if (win === HoT) return message.util!.send(`The coin landed on ${HoT.toLowerCase()}. You win.`)
-        else return message.util!.send(`Unfortunately the coin landed on ${win === 'tails' ? 'tails' : 'heads'}. You lose.`)
+        return winner === HoT ? message.util!.send(`You have won! It landed on ${winner}`) : message.util!.send(`Unlucky! The coin landed on ${winner}.`)
     }
 }
