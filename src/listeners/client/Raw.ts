@@ -1,5 +1,5 @@
-import { Listener } from "discord-akairo";
-import { VoicePacket } from "erela.js";
+import { Listener } from 'discord-akairo';
+import { VoicePacket } from 'erela.js';
 
 export default class Raw extends Listener {
     public constructor() {
