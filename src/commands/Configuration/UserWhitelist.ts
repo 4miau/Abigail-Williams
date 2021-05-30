@@ -12,28 +12,47 @@ export default class UserWhitelist extends Command {
                     examples: ['userwhitelist @user']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,
             args: [
                 {
                     id: 'member',
                     type: 'member',
+                },
+                {
+                    id: 'global',
+                    match: 'flag',
+                    flag: '-global'
                 }
             ]
         })
     }
 
-    public exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
+    public exec(message: Message, {member, global}: {member: GuildMember, global: boolean}): Promise<Message> {
         if (!member) return message.util!.send('You must provide a valid user to whitelist.')
 
-        let userWhitelist: string[] = this.client.settings.get(message.guild, 'user-blacklist', [])
-        
-        if (userWhitelist.includes(member.user.id)) {
-            userWhitelist = userWhitelist.filter(bc => bc !== member.user.id)
-            this.client.settings.set(message.guild, 'user-blacklist', userWhitelist)
-            return message.util!.send('User has now been whitelisted')
+        if (global && this.client.isOwner(message.author.id)) {
+            const globalUserBlacklist: string[] = this.client.settings.get('global', 'user-blacklist', [])
+
+            if (!globalUserBlacklist.includes(member.user.id)) return message.util!.send('This user is not globally blacklisted.')
+
+            this.client.settings.set('global', 'user-blacklist', globalUserBlacklist.filter(gbc => gbc !== member.user.id))
+            return message.util!.send('User is no longer globally blacklisted.')
         }
 
-        return message.util!.send('User is not blacklisted.')
+        const userBlacklist: string[] = this.client.settings.get(message.guild, 'user-blacklist', [])
+
+        if (!userBlacklist.includes(member.user.id)) return message.util!.send('This user is not blacklisted.')
+
+        this.client.settings.set(message.guild, 'user-blacklist', userBlacklist.filter(bc => bc !== member.user.id))
+        return message.util!.send('User has now been whitelisted')
     }
 }

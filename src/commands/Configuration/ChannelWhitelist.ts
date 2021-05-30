@@ -12,15 +12,23 @@ export default class ChannelWhitelist extends Command {
                     examples: ['channelwhitelist #blacklistedChannel']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_GUILD', 'MANAGE_CHANNELS'],
             ratelimit: 3,
             args: [
                 {
                     id: 'channel',
-                    type: 'channel'
+                    type: 'textChannel'
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission(['MANAGE_GUILD', 'MANAGE_CHANNELS'], { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public exec(message: Message, {channel}: {channel: Channel}): Promise<Message> {
@@ -29,8 +37,7 @@ export default class ChannelWhitelist extends Command {
         let whitelistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
         
         if (whitelistedChannels.includes(channel.id)) {
-            whitelistedChannels = whitelistedChannels.filter(bc => bc !== channel.id)
-            this.client.settings.set(message.guild, 'channel-blacklist', whitelistedChannels)
+            this.client.settings.set(message.guild, 'channel-blacklist', whitelistedChannels.filter(bc => bc !== channel.id))
             return message.util!.send('Channel has been removed from the whitelist.')
         }
 

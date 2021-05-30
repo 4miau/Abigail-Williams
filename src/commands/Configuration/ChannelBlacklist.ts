@@ -12,15 +12,23 @@ export default class ChannelBlacklist extends Command {
                     examples: ['blacklist #lobby']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_GUILD'],
             ratelimit: 3,
             args: [
                 {
                     id: 'channel',
-                    type: 'channel',
+                    type: 'textChannel',
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
     }
 
     public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
@@ -28,9 +36,7 @@ export default class ChannelBlacklist extends Command {
 
         const blacklistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
 
-        if (blacklistedChannels.includes(channel.id)) {
-            return message.util!.send('The channel is already blacklisted from commands.')
-        }
+        if (blacklistedChannels.includes(channel.id)) return message.util!.send('The channel is already blacklisted from commands.')
 
         blacklistedChannels.push(channel.id)
         this.client.settings.set(message.guild, 'channel-blacklist', blacklistedChannels)
