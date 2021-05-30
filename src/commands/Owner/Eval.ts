@@ -35,7 +35,7 @@ export default class Eval extends Command {
             'password',
         ]
 
-        if (bannedEvalWords.some(s => message.content.toLowerCase().includes(s))) return message.util!.send('You\'re a little cheeky one, aren\'t ya')
+        if (bannedEvalWords.some(s => message.content.toLowerCase().includes(s))) return message.util!.send('You\'re a little cheeky one, aren\'t ya, master..')
 
         const reply = await message.util.send(new MessageEmbed()
             .setTitle('Processing JavaScript code...')
