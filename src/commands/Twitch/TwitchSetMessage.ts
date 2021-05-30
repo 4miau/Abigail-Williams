@@ -19,8 +19,7 @@ export default class TwitchSetMessage extends Command {
                     '-embed = Adds an embed (must be at the end)'
                 ]
             },
-            ownerOnly: true,
-            userPermissions: ['MANAGE_GUILD'],
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -35,6 +34,14 @@ export default class TwitchSetMessage extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+
+        if (!hasStaffRole) return 'Server Administrator'
+        return null
     }
 
     public async exec(message: Message, {streamer, streamMessage}: {streamer: string, streamMessage: string}): Promise<Message> {

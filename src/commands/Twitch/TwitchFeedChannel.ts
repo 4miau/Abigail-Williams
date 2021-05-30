@@ -8,19 +8,26 @@ export default class TwitchFeedChannel extends Command {
             category: 'Twitch',
             description: {
                 content: 'Manages the channel where messages are posted',
-                usage: 'twitchsubchannel [#channel]',
+                usage: 'twitchsubchannel [channel]',
                 examples: ['twitchsubchannel #announcements']
             },
-            ownerOnly: true,
-            userPermissions: ['MANAGE_CHANNELS'],
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
                     id: 'channel',
-                    type: 'channel'
+                    type: 'textChannel'
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+
+        if (!hasStaffRole) return 'Server Administrator'
+        return null
     }
 
     public exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
