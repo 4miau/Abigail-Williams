@@ -37,9 +37,9 @@ export default class Feedback extends Command {
         const fbChannel = this.client.channels.cache.get(feedbackChannel) as TextChannel
         fbChannel.send(embed)
 
-        return message.util!.send(`
-        Feedback has been sent to the bot owner, thank you for contributing if your submission was not a troll.
-        PS: Troll submissions will get you blacklisted from the command.
-        `)
+        return message.util!.send(
+            `Feedback has been sent to the bot owner, thank you for contributing if your submission was not a troll.\n` + 
+            `PS: Troll submissions will get you blacklisted from the command.`
+        )
     }
 }
