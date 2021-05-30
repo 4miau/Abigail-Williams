@@ -13,8 +13,7 @@ export default class RemoveStreamer extends Command {
                 usage: 'removestreamer [streamer-name]',
                 examples: ['removestreamer notmiauu']
             },
-            ownerOnly: true,
-            userPermissions: ['MANAGE_GUILD'],
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -23,6 +22,14 @@ export default class RemoveStreamer extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+
+        if (!hasStaffRole) return 'Server Administrator'
+        return null
     }
 
     public async exec(message: Message, {streamerName}: {streamerName: string}): Promise<Message> {

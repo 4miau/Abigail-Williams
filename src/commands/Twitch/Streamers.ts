@@ -11,6 +11,7 @@ export default class Streamers extends Command {
                 usage: 'streamers',
                 examples: ['streamers'],
             },
+            channel: 'guild',
             ratelimit: 3,
         })
     }

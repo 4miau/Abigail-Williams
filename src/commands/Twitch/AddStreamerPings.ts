@@ -11,7 +11,7 @@ export default class AddStreamerPing extends Command {
                 usage: 'addstreamping [streamer] [role]',
                 examples: ['addstreamping notmiauu everyone', 'addstreamping notmiauu @role'],
             },
-            ownerOnly: true,
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -28,6 +28,15 @@ export default class AddStreamerPing extends Command {
         })
     }
 
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+
+        if (!hasStaffRole) return 'Server Administrator'
+        return null
+    }
+
     public async exec(message: Message, {streamer, role}: {streamer: string, role: Role}): Promise<Message> {
         if (!streamer) return message.util!.send('Please provide a streamer to add a ping for.')
         if (!role) return message.util!.send('Ehm... you need a valid role to provide as a ping.')
@@ -39,6 +48,17 @@ export default class AddStreamerPing extends Command {
             posted: boolean }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', [])
 
         if (!twitchUsers || twitchUsers.length === 0) return message.util!.send('You need to add streamers onto the watchlist to assign role pings.')
+
+        if (streamer === 'all') {
+            this.client.settings.set(message.guild, 'twitch.twitch-streamers', twitchUsers.map(s => {
+                if (s.pings.includes(role.id) || s.pings.includes(role.name)) return;
+                role !== message.guild.roles.everyone ? s.pings.push(role.id) : s.pings.push('@everyone')
+
+                return s
+            }))
+
+            return message.util!.send('Role has been successfully added to the mention list of all streamers it is not currently added for already.')
+        }
 
         const serverPings = twitchUsers.findIndex(s => s.name === streamer)
 

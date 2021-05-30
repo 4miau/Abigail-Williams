@@ -14,8 +14,7 @@ export default class AddStreamer extends Command {
                 usage: 'addstreamer [streamer-name]',
                 examples: ['addstreamer user notmiauu']
             },
-            ownerOnly: true,
-            userPermissions: ['MANAGE_GUILD'],
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -24,6 +23,14 @@ export default class AddStreamer extends Command {
                 }
             ]
         })
+    }
+
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+
+        if (!hasStaffRole) return 'Server Administrator'
+        return null
     }
 
     public async exec(message: Message, {streamerName}: {streamerName: string}): Promise<Message> {
@@ -48,7 +55,7 @@ export default class AddStreamer extends Command {
                 posted: false
             })
 
-            await this.client.settings.set(message.guild, 'twitch.twitch-streamers', twitchUsers)
+            this.client.settings.set(message.guild, 'twitch.twitch-streamers', twitchUsers)
             return message.util!.send(`${streamer.broadcaster_login} has been added to the twitch user watchlist.`)
         }
     }

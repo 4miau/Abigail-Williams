@@ -11,6 +11,7 @@ export default class StreamerPings extends Command {
                 usage: 'streamerpings [streamer-name]',
                 examples: ['streamerpings notmiauu'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
