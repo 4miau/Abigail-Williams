@@ -101,16 +101,16 @@ export default class Activity extends Command {
                     await statusRepo.update({ 'id': 1 }, {
                         'type' : 'activity',
                         'activityType': 'COMPETING',
-                        'status': activityMsg ? activityMsg : ''
+                        'status': activityMsg ? activityMsg : '',
                     }) 
                     break
                 default:
-                    return message.util!.send('You must supply a valid activity type!')
+                    if (!message.author.bot) return message.util!.send('You must supply a valid activity type!')
             }
 
-            return message.util!.send(`${activityMsg ? 'I have changed my activity to ' + activityType + ' ' + activityMsg : 'My activity remains unchanged.'}`)
+            if (!message.author.bot) return message.util!.send(`${activityMsg ? 'I have changed my activity to ' + activityType + ' ' + activityMsg : 'My activity remains unchanged.'}`)
         }
 
-        return message.util!.send('You need to provide at least an activity type')
+        if (!message.author.bot) return message.util!.send('You need to provide at least an activity type')
     }
 }
