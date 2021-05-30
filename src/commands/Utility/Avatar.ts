@@ -39,13 +39,14 @@ export default class Avatar extends Command {
             const userResolved: User = this.client.util!.resolveUser(member, this.client.users.cache, false)
     
             return message.util!.send(new MessageEmbed()
+                .setAuthor(`Avatar | ${userResolved.tag}`)
                 .setTitle(`Avatar | ${userResolved.tag}`)
                 .setColor('RANDOM')
                 .setDescription(`${userResolved.tag}'s avatar`)
                 .setImage(userResolved.displayAvatarURL({ format: 'png', size: size as ImageSize, dynamic: true }))
                 .setFooter(`${userResolved.tag}`)
             )
-        } catch (err) {
+        } catch {
             return message.util!.reply('There was an error retrieving this user, please try again!')
         }
 

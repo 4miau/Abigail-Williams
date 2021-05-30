@@ -15,6 +15,7 @@ export default class Mods extends Command {
                     usage: 'mods',
                     examples: ['mods']
             },
+            channel: 'guild',
             ratelimit: 3
         })
     }

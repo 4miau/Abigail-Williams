@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, GuildMember, MessageEmbed } from 'discord.js'
 import moment from 'moment'
 
-import { chunk, getJoinPosition } from '../../util/Functions'
+import { getJoinPosition } from '../../util/Functions'
 import { Colours } from '../../util/Colours'
 
 
