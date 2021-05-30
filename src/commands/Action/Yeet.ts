@@ -13,6 +13,7 @@ export default class Yeet extends Command {
                 usage: 'yeet [@user]',
                 examples: ['yeet @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

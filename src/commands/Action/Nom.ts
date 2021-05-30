@@ -13,6 +13,7 @@ export default class Nom extends Command {
                 usage: 'nom [@user]',
                 examples: ['nom @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -34,12 +35,13 @@ export default class Nom extends Command {
                 .setColor('RANDOM')
                 .setImage(nomGif.url)
             )
-        } else {
+        }
+        else {
             return message.util!.send(new MessageEmbed()
             .setDescription(`**${message.author.tag}** is nomming **${member.user.tag}!**`)
             .setColor('RANDOM')
             .setImage(nomGif.url)
-        )
+            )
         }
     }
 }

@@ -13,6 +13,7 @@ export default class Kiss extends Command {
                 usage: 'kiss [@user]',
                 examples: ['kiss @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

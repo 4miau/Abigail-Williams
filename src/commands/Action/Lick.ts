@@ -13,6 +13,7 @@ export default class Lick extends Command {
                 usage: 'lick [@user]',
                 examples: ['lick @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

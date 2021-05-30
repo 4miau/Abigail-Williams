@@ -13,6 +13,7 @@ export default class HighFive extends Command {
                 usage: 'highfive [@user]',
                 examples: ['highfive @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

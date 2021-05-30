@@ -13,6 +13,7 @@ export default class Kill extends Command {
                 usage: 'kill [@user]',
                 examples: ['kill @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

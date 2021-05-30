@@ -13,6 +13,7 @@ export default class HoldHand extends Command {
                 usage: 'holdhands [@user]',
                 examples: ['holdhands @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

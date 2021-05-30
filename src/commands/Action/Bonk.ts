@@ -13,6 +13,7 @@ export default class Bonk extends Command {
                 usage: 'bonk [@user]',
                 examples: ['bonk @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

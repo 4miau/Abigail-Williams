@@ -13,6 +13,7 @@ export default class Slap extends Command {
                 usage: 'slap [@user]',
                 examples: ['slap @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

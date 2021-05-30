@@ -13,6 +13,7 @@ export default class Pat extends Command {
                 usage: 'pat [@user]',
                 examples: ['pat @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

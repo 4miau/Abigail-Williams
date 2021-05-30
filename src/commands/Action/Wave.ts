@@ -32,7 +32,8 @@ export default class Wave extends Command {
                 .setColor('RANDOM')
                 .setImage(waveGif.url)
             )
-        } else {
+        }
+        else {
             return message.util!.send(new MessageEmbed()
                 .setDescription(`**${message.author.tag}** is waving at **${member.user.tag}**!`)
                 .setColor('RANDOM')

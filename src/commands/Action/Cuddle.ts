@@ -13,6 +13,7 @@ export default class Cuddle extends Command {
                 usage: 'cuddle [@user]',
                 examples: ['cuddle @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

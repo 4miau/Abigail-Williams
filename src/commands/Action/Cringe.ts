@@ -13,6 +13,7 @@ export default class Cringe extends Command {
                 usage: 'cringe <@user>',
                 examples: ['cringe', 'cringe @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -32,13 +33,15 @@ export default class Cringe extends Command {
                 .setColor('RANDOM')
                 .setImage(cringeGif.url)
             )
-        } else if (member.user.id === message.author.id) {
+        }
+        else if (member.user.id === message.author.id) {
             return message.util!.send(new MessageEmbed()
             .setDescription(`**${message.author.tag}** is cringing at themselves, oh dear.`)
             .setColor('RANDOM')
             .setImage(cringeGif.url)
-        )
-        } else {
+            )
+        }
+        else {
             return message.util!.send(new MessageEmbed()
                 .setDescription(`**${message.author.tag}** is cringing because of **${member.user.tag}**.`)
                 .setColor('RANDOM')

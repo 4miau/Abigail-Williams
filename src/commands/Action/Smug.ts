@@ -13,6 +13,7 @@ export default class Smug extends Command {
                 usage: 'smug',
                 examples: ['smug'],
             },
+            channel: 'guild',
             ratelimit: 3
         })
     }

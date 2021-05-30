@@ -13,6 +13,7 @@ export default class Hug extends Command {
                 usage: 'hug [@user]',
                 examples: ['hug @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -34,7 +35,8 @@ export default class Hug extends Command {
                 .setColor('RANDOM')
                 .setImage(hugGif.url)
             )
-        } else {
+        }
+        else {
             return message.util!.send(new MessageEmbed()
                 .setDescription(`**${message.author.tag}** has hugged **${member.user.tag}!**`)
                 .setColor('RANDOM')

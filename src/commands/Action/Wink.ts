@@ -32,7 +32,8 @@ export default class Wink extends Command {
                 .setColor('RANDOM')
                 .setImage(winkGif.url)
             )
-        } else {
+        }
+        else {
             return message.util!.send(new MessageEmbed()
                 .setDescription(`**${message.author.tag}** winks at **${member.user.tag}!**`)
                 .setColor('RANDOM')

@@ -13,6 +13,7 @@ export default class Bully extends Command {
                 usage: 'bully [@user]',
                 examples: ['bully @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

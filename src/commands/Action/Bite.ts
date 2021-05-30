@@ -13,6 +13,7 @@ export default class Bite extends Command {
                 usage: 'bite [@user]',
                 examples: ['bite @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {

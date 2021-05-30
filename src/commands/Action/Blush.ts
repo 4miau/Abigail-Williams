@@ -13,6 +13,7 @@ export default class Blush extends Command {
                 usage: 'blush <@user>',
                 examples: ['blush', 'blush @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -32,7 +33,8 @@ export default class Blush extends Command {
                 .setColor('RANDOM')
                 .setImage(blushGif.url)
             )
-        } else {
+        }
+        else {
             return message.util!.send(new MessageEmbed()
                 .setDescription(`**${message.author.tag}** is blushing because of **${member.user.tag}**!`)
                 .setColor('RANDOM')

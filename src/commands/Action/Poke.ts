@@ -13,6 +13,7 @@ export default class pokeGif extends Command {
                 usage: 'poke [@user]',
                 examples: ['poke @user'],
             },
+            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
