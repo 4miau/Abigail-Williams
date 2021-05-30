@@ -7,7 +7,7 @@ import { Colours } from '../../util/Colours'
 export default class Snipe extends Command {
     public constructor() {
         super('snipe', {
-            aliases: ['Snipe'],
+            aliases: ['snipe'],
             category: 'General',
             description: {
                 content: 'Snipes the last deleted message.',
