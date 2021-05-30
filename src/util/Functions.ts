@@ -1,5 +1,5 @@
 import { AkairoClient } from "discord-akairo"
-import { Guild, GuildMember, MessageEmbed, TextChannel, Collection, Snowflake, Message } from "discord.js"
+import { Guild, GuildMember, MessageEmbed, TextChannel, Collection, Snowflake, Message, Role } from "discord.js"
 import axios from 'axios'
 import moment, { now } from "moment"
 import fs from 'fs'
@@ -7,7 +7,6 @@ import { join } from "path"
 
 import { twitchClientID, twitchClientSecret, danbooruAPIkey, apexAPIkey, twitterToken } from "../Config"
 import { Colours } from "./Colours"
-import BotClient from '../client/BotClient'
 
 
 
@@ -79,7 +78,7 @@ export function appendDMFile(ac: AkairoClient, message: Message) {
 
         fs.appendFile(join(directory, `${message.author.tag}`), 
         `[${moment(message.createdAt).format('YYYY/MM/DD HH:mm:ss')}] ${message.author.tag} (${message.author.id}) : ${message.content}\n`,
-        err => ac.logger.log('ERROR', `${err}`))
+        err => void 0)
     })
 }
 
@@ -110,6 +109,91 @@ export function getJoinPosition(member: GuildMember, guild: Guild): number {
 
     const memberIDArr = guild.members.cache.sort((a: any, b: any) =>  a.joinedAt - b.joinedAt).keyArray()
     return (memberIDArr.findIndex(id => id === member.id) + 1)
+}
+
+export async function manageAutorole(message: Message, role: Role, autoRoles: { human: string[], bots: string[], all: string[] }, target: string, add: boolean ): Promise<Message> {
+    const manageAutoRole = {
+        'human': async (add: boolean) => {
+            add ?
+            () => {
+                if (!autoRoles.human || autoRoles.human.length <= 0) {
+                    this.client.settings.set(message.guild, 'autoRoles.human', [role.id])
+                    return message.util!.send('Successfully added new autorole for humans.')
+                }
+                if (autoRoles.human && autoRoles.human.includes(role.id)) return message.util!.send('This role is already on the autorole list for humans.')
+                
+                autoRoles.human.push(role.id)
+                this.client.settings.set(message.guild, 'autoRoles.human', autoRoles.human)
+
+                return message.util!.send('Successfully added new autorole for humans.')
+            } :
+            () => {
+                if (!autoRoles.human || autoRoles.human.length === 0) return message.util!.send('There are no autoroles for humans exclusively.')
+                if (!autoRoles.human.includes(role.id)) return message.util!.send('This role is not on the human autorole list.')
+ 
+                this.client.settings.set(message.guild, 'autoRoles.human', autoRoles.human.filter(ar => ar !== role.id))
+                return message.util!.send('Successfully removed role from the human autorole list.')
+            }
+        },
+
+        'bots': async (add: boolean) => {
+            add ?
+            () => {
+                if (!autoRoles.bots || autoRoles.bots.length === 0) {
+                    this.client.settings.set(message.guild, 'autoRoles.bots', [role.id])
+                    return message.util!.send('Successfully added new autorole for bots.')
+                }
+                if (autoRoles.bots.includes(role.id)) return message.util!.send('This role is already on the autorole list for bots.')
+
+                autoRoles.bots.push(role.id)
+                this.client.settings.set(message.guild, 'autoRoles.bots', autoRoles.bots)
+                
+                return message.util!.send('Successfully added new autorole for bots.')
+            } :
+            () => {
+                if (!autoRoles.bots || autoRoles.bots.length === 0) return message.util!.send('There are no autoroles for bots exclusively.')
+                if (!autoRoles.bots.includes(role.id)) return message.util!.send('This role is not on the bots autorole list.')
+ 
+                this.client.settings.set(message.guild, 'autoRoles.bots', autoRoles.bots.filter(ar => ar !== role.id))
+                return message.util!.send('Successfully removed role from the bot autorole list.')
+            }
+        },
+
+        'all': async (add: boolean) => {
+            add ?
+            () => {
+                if (!autoRoles.all || autoRoles.all.length === 0) {
+                    this.client.settings.set(message.guild, 'autoRoles.all', [role.id])
+                    return message.util!.send('Successfully added a new autorole for all users.')
+                }
+                if (autoRoles.all.includes(role.id)) return message.util!.send('This role is already on the autorole list for all users.')
+
+                autoRoles.all.push(role.id)
+                this.client.settings.set(message.guild, 'autoROles.all', autoRoles.all)
+                
+                return message.util!.send('Successfully added the new autorole for all users')
+            } :
+            () => {
+                if (!autoRoles.all || autoRoles.all.length === 0) return message.util!.send('There are no autoroles for specifically all users')
+                if (!autoRoles.all.includes(role.id)) return message.util!.send('This role is not on the autorole list for all users.')
+ 
+                this.client.settings.set(message.guild, 'autoRoles.all', autoRoles.all.filter(ar => ar !== role.id))
+                return message.util!.send('Successfully removed role from the list for all users.')
+            }
+        }
+    }
+
+    return manageAutoRole[target].call(add)
+}
+
+export function createWelcomeMessage(member: GuildMember, content: string): string {
+    return content
+        .replaceAll('{user}', `${member}`)
+        .replaceAll('{userName}', `${member.user.username}`)
+        .replaceAll('{nick}', member.nickname ? member.nickname : member.displayName)
+        .replaceAll('{server}', member.guild.name)
+        .replaceAll('{time}', `${moment(member.joinedAt).utcOffset(1).format('YYYY/MM/DD HH:mm:ss')}`)
+
 }
 
 //API-BASED FUNCTIONS
@@ -225,8 +309,7 @@ export async function _GetAnimeSFW(category: string): Promise<any> {
 export async function _GetApexPlayer(platform: string, name: string): Promise<any> {
     if (platform === 'pc') platform = 'origin'
     if (platform === 'xbox') platform = 'xbl'
-    //platform === 'pc' ? 'origin' : platform
-    //platform === 'xbox' ? 'xbl' : platform
+    
     const player = await axios.get(`https://public-api.tracker.gg/v2/apex/standard/profile/${platform}/${name}`, {
         'headers': {
             'TRN-Api-Key': apexAPIkey
@@ -266,14 +349,6 @@ export async function _GetUserLatestPosts(twitterUserID: string): Promise<any> {
     })
     .then(res => res.data)
     .catch(void 0)
-
-    console.log(timeline.data)
-    console.log('-----------------------')
-    console.log(timeline.includes.users)
-    console.log('-----------------------')
-    console.log(timeline.includes.media)
-    console.log('-----------------------')
-    console.log(timeline.metadata)
     
     if (timeline) return timeline
     return null

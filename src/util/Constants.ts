@@ -183,7 +183,7 @@ export const streamDefaultMessage: string = `{streamer} has gone live! {link}`
 export const ZERO: number = 0
 export const ONE: number = 1
 
-export const changeLogTypes: string[] = [ 'ADD', 'DEL', 'UPD', 'FIX', 'CHO' ]
+export const changeLogTypes: string[] = [ 'ADD', 'DEL', 'UPD', 'FIX', 'CHO', 'REWRITE' ]
 
 //8.64e7 //1 DAY
 //2.6e9 //30 DAYS
