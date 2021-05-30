@@ -76,7 +76,7 @@ These are just some simple requirements you will need in order to host the bot, 
   <li>typescript</li>
   <li>undici</li>
   <li>node-abort-controller (for music)</li>
-<ul>
+</ul>
 
 Optionally:
 <ul>
