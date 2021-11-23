@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Cuddle extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Cuddle extends Command {
                 usage: 'cuddle [@user]',
                 examples: ['cuddle @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,16 +24,16 @@ export default class Cuddle extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Provide a member to cuddle.')
-        if (member.user.id === message.author.id) return message.util!.send('You can\'t cuddle yourself! Don\'t be so lonely!')
+        if (!member) return message.util.send('Provide a member to cuddle.')
+        if (member.user.id === message.author.id) return message.util.send('You can\'t cuddle yourself! Don\'t be so lonely!')
         
         const cuddleGif = await _GetAnimeSFW('cuddle')
-        
-        return message.util!.send(new MessageEmbed()
-            .setDescription(`**${message.author.tag}** has hugged **${member.user.tag}!**`)
+
+        const e = new MessageEmbed()
+            .setDescription(`**${message.author.tag}** is cuddling **${member.user.tag}!**`)
             .setColor('RANDOM')
             .setImage(cuddleGif.url)
-        )
-
+        
+        return message.util.send({ embeds: [e] })
     }
 }

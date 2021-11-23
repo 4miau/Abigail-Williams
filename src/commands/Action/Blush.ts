@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Blush extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Blush extends Command {
                 usage: 'blush <@user>',
                 examples: ['blush', 'blush @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -27,19 +26,17 @@ export default class Blush extends Command {
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
         const blushGif = await _GetAnimeSFW('blush')
 
+        const e = new MessageEmbed()
+            .setColor('RANDOM')
+            .setImage(blushGif.url)
+
         if (!member || member.user.id === message.author.id) {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is blushing!`)
-                .setColor('RANDOM')
-                .setImage(blushGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** is blushing!`)
+            return message.util.send({ embeds: [e] })
         }
         else {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is blushing because of **${member.user.tag}**!`)
-                .setColor('RANDOM')
-                .setImage(blushGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** is blushing because of **${member.user.tag}**!`)
+            return message.util.send({ embeds: [e] })
         }
     }
 }

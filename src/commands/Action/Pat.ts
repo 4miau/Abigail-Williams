@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Pat extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Pat extends Command {
                 usage: 'pat [@user]',
                 examples: ['pat @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -27,15 +26,17 @@ export default class Pat extends Command {
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
         const patGif = await _GetAnimeSFW('pat')
 
-        if (!member || member.user.id === message.author.id) return message.util!.send(new MessageEmbed()
-            .setDescription(`**${message.author.tag}** has patted themselves!?`)
+        const e = new MessageEmbed()
             .setColor('RANDOM')
             .setImage(patGif.url)
-        )
-        else return message.util!.send(new MessageEmbed()
-            .setDescription(`**${message.author.tag}** has patted **${member.user.tag}!**`)
-            .setColor('RANDOM')
-            .setImage(patGif.url)
-        )
+
+        if (!member || member.user.id === message.author.id) {
+            e.setDescription(`**${message.author.tag}** has patted themselves!?`)
+            return message.util.send({ embeds: [e] })
+        }
+        else {
+            e.setDescription(`**${message.author.tag}** has patted **${member.user.tag}!**`)
+            return message.util.send({ embeds: [e] })
+        }
     }
 }

@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Nom extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Nom extends Command {
                 usage: 'nom [@user]',
                 examples: ['nom @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,23 +24,21 @@ export default class Nom extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (member && member.user.id === message.author.id) return message.util!.send('You really shouldn\'t nom yourself...')
+        if (member && member.user.id === message.author.id) return message.util.send('You really shouldn\'t nom yourself...')
         
         const nomGif = await _GetAnimeSFW('nom')
 
-        if (!member) {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is nomming!`)
-                .setColor('RANDOM')
-                .setImage(nomGif.url)
-            )
-        }
-        else {
-            return message.util!.send(new MessageEmbed()
-            .setDescription(`**${message.author.tag}** is nomming **${member.user.tag}!**`)
+        const e = new MessageEmbed()
             .setColor('RANDOM')
             .setImage(nomGif.url)
-            )
+
+        if (!member) {
+            e.setDescription(`**${message.author.tag}** is nomming!`)
+            return message.util.send({ embeds: [e] })
+        }
+        else {
+            e.setDescription(`**${message.author.tag}** is nomming **${member.user.tag}!**`)
+            return message.util.send({ embeds: [e] })
         }
     }
 }

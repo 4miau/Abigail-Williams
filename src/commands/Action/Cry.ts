@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Cry extends Command {
     public constructor() {
@@ -19,12 +19,12 @@ export default class Cry extends Command {
 
     public async exec(message: Message): Promise<Message> {        
         const cry = await _GetAnimeSFW('cry')
-        
-        return message.util!.send(new MessageEmbed()
+
+        const e = new MessageEmbed()
             .setDescription(`Oh look, **${message.author.tag}** has started crying.`)
             .setColor('RANDOM')
             .setImage(cry.url)
-        )
-
+        
+        return message.util.send({ embeds: [e] })
     }
 }

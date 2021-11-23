@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Bonk extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Bonk extends Command {
                 usage: 'bonk [@user]',
                 examples: ['bonk @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,15 +24,16 @@ export default class Bonk extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Provide a member to bonk!')
+        if (!member) return message.util.send('Provide a member to bonk!')
         if (member.user.id === message.author.id) return message.util!.send('You really shouldn\'t bonk yourself.')
         
         const bonkGif = await _GetAnimeSFW('bonk')
 
-        return message.util!.send(new MessageEmbed()
+        const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** bonked **${member.user.tag}!**`)
             .setColor('RANDOM')
             .setImage(bonkGif.url)
-        )
+
+        return message.util.send({ embeds: [e] })
     }
 }

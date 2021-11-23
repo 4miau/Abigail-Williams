@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Wink extends Command {
     public constructor() {
@@ -25,22 +25,18 @@ export default class Wink extends Command {
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {        
         const winkGif = await _GetAnimeSFW('wink')
+
+        const e = new MessageEmbed()
+            .setColor('RANDOM')
+            .setImage(winkGif.url)
         
         if (!member || member.user.id === message.author.id) {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** winked!`)
-                .setColor('RANDOM')
-                .setImage(winkGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** winked!`)
+            return message.util.send({ embeds: [e] })
         }
         else {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** winks at **${member.user.tag}!**`)
-                .setColor('RANDOM')
-                .setImage(winkGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** winks at **${member.user.tag}!**`)
+            return message.util.send({ embeds: [e] })
         }
-
-
     }
 }

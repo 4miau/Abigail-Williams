@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class pokeGif extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class pokeGif extends Command {
                 usage: 'poke [@user]',
                 examples: ['poke @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,15 +24,16 @@ export default class pokeGif extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Provide a member to poke.')
-        if (member.user.id === message.author.id) return message.util!.send('Poking yourself is a bit strange..')
+        if (!member) return message.util.send('Provide a member to poke.')
+        if (member.user.id === message.author.id) return message.util.send('Poking yourself is a bit strange..')
         
         const pokeGif = await _GetAnimeSFW('poke')
-
-        return message.util!.send(new MessageEmbed()
+        
+        const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** poked **${member.user.tag}.**`)
             .setColor('RANDOM')
             .setImage(pokeGif.url)
-        )
+
+        return message.util.send({ embeds: [e] })
     }
 }

@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Happy extends Command {
     public constructor() {
@@ -19,12 +19,12 @@ export default class Happy extends Command {
 
     public async exec(message: Message): Promise<Message> {        
         const happy = await _GetAnimeSFW('happy')
-        
-        return message.util!.send(new MessageEmbed()
+
+        const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** is happy today!`)
             .setColor('RANDOM')
             .setImage(happy.url)
-        )
-
+        
+        return message.util.send({ embeds: [e] })
     }
 }

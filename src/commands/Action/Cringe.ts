@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Cringe extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Cringe extends Command {
                 usage: 'cringe <@user>',
                 examples: ['cringe', 'cringe @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -26,27 +25,22 @@ export default class Cringe extends Command {
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
         const cringeGif = await _GetAnimeSFW('cringe')
-
-        if (!member) {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is cringing, oh man.`)
-                .setColor('RANDOM')
-                .setImage(cringeGif.url)
-            )
-        }
-        else if (member.user.id === message.author.id) {
-            return message.util!.send(new MessageEmbed()
-            .setDescription(`**${message.author.tag}** is cringing at themselves, oh dear.`)
+        
+        const e = new MessageEmbed()
             .setColor('RANDOM')
             .setImage(cringeGif.url)
-            )
+
+        if (!member) {
+            e.setDescription(`**${message.author.tag}** is cringing, oh man.`)
+            return message.util.send({ embeds: [e] })
+        }
+        else if (member.user.id === message.author.id) {
+            e.setDescription(`**${message.author.tag}** is cringing at themselves, oh dear.`)
+            return message.util.send({ embeds: [e] })
         }
         else {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is cringing because of **${member.user.tag}**.`)
-                .setColor('RANDOM')
-                .setImage(cringeGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** is cringing because of **${member.user.tag}**.`)
+            return message.util.send({ embeds: [e] })
         }
     }
 }

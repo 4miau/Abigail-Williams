@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Hug extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Hug extends Command {
                 usage: 'hug [@user]',
                 examples: ['hug @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,23 +24,21 @@ export default class Hug extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Please provide a member to hug.')
+        if (!member) return message.util.send('Please provide a member to hug.')
         
         const hugGif = await _GetAnimeSFW('hug')
+
+        const e = new MessageEmbed()
+            .setColor('RANDOM')
+            .setImage(hugGif.url)
         
         if (member.user.id === message.author.id) {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${member.user.tag}** has hugged themselves! (Must be lonely)`)
-                .setColor('RANDOM')
-                .setImage(hugGif.url)
-            )
+            e.setDescription(`**${member.user.tag}** has hugged themselves! (Must be lonely)`)
+            return message.util.send({ embeds: [e] })
         }
         else {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** has hugged **${member.user.tag}!**`)
-                .setColor('RANDOM')
-                .setImage(hugGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** has hugged **${member.user.tag}!**`)
+            return message.util.send({ embeds: [e] })
         }
     }
 }

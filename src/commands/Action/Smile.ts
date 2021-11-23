@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Smile extends Command {
     public constructor() {
@@ -19,11 +19,12 @@ export default class Smile extends Command {
 
     public async exec(message: Message): Promise<Message> {        
         const smile = await _GetAnimeSFW('smile')
-        
-        return message.util!.send(new MessageEmbed()
+
+        const e = new MessageEmbed()
             .setDescription(`Oh look, **${message.author.tag}** is smiling!`)
             .setColor('RANDOM')
             .setImage(smile.url)
-        )
+        
+        return message.util.send({ embeds: [e] })
     }
 }

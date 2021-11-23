@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Wave extends Command {
     public constructor() {
@@ -26,19 +26,17 @@ export default class Wave extends Command {
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
         const waveGif = await _GetAnimeSFW('wave')
 
+        const e = new MessageEmbed()
+            .setColor('RANDOM')
+            .setImage(waveGif.url)
+
         if (!member || member.user.id === message.author.id) {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is waving!`)
-                .setColor('RANDOM')
-                .setImage(waveGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** is waving!`)
+            return message.util.send({ embeds: [e] })
         }
         else {
-            return message.util!.send(new MessageEmbed()
-                .setDescription(`**${message.author.tag}** is waving at **${member.user.tag}**!`)
-                .setColor('RANDOM')
-                .setImage(waveGif.url)
-            )
+            e.setDescription(`**${message.author.tag}** is waving at **${member.user.tag}**!`)
+            return message.util.send({ embeds: [e] })
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Lick extends Command {
     public constructor() {
@@ -13,7 +13,6 @@ export default class Lick extends Command {
                 usage: 'lick [@user]',
                 examples: ['lick @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,15 +24,16 @@ export default class Lick extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Provide a member to lick. Weirdo.')
-        if (member.user.id === message.author.id) return message.util!.send('You can\'t lick yourself... that\'s just weird..')
+        if (!member) return message.util.send('Provide a member to lick. Weirdo.')
+        if (member.user.id === message.author.id) return message.util.send('You can\'t lick yourself... that\'s just weird..')
         
         const lickGif = await _GetAnimeSFW('lick')
 
-        return message.util!.send(new MessageEmbed()
+        const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** is licking **${member.user.tag}!** Eh...`)
             .setColor('RANDOM')
             .setImage(lickGif.url)
-        )
+
+        return message.util.send({ embeds: [e] })
     }
 }

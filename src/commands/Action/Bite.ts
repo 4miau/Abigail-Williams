@@ -1,7 +1,8 @@
+/* eslint-disable linebreak-style */
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Bite extends Command {
     public constructor() {
@@ -13,7 +14,6 @@ export default class Bite extends Command {
                 usage: 'bite [@user]',
                 examples: ['bite @user'],
             },
-            channel: 'guild',
             ratelimit: 3,
             args: [
                 {
@@ -25,15 +25,16 @@ export default class Bite extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util!.send('Provide a member to bite.')
-        if (member.user.id === message.author.id) return message.util!.send('Biting yourself? Don\'t be so weird!')
+        if (!member) return message.util.send('Provide a member to bite.')
+        if (member.user.id === message.author.id) return message.util.send('Biting yourself? Don\'t be so weird!')
         
         const biteGif = await _GetAnimeSFW('bite')
 
-        return message.util!.send(new MessageEmbed()
+        const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** bit **${member.user.tag}!** Ouch!`)
             .setColor('RANDOM')
             .setImage(biteGif.url)
-        )
+
+        return message.util.send({ embeds: [e] })
     }
 }
