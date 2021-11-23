@@ -1,34 +1,35 @@
+# Configs
+.eslintignore
+.eslintrc.json
+.prettierignore
+.vscode
+jest.config.js
+tsconfig.json
+
 # Dist
 dist
-logs
+
+#Misc
+archive
+src/typings
 
 # Packages
 node_modules
-package-lock.json
+yarn.lock
 Lavalink.jar
 
+# Progress
+git-notes.md
+plans
+
 # Sensitive
-src/Config.ts
+.env
+abby.config.js
+application.yml
 src/Bot.ts
 src/client
-.vscode/abby-snippets.code-snippets
-application.yml
-src/util/PersonalConstants.ts
 
-#Testing Purposes
-src/commands/Owner/Test.ts
-src/util/NodeProcesses.ts
-src/Archive
-src/classes/PlayerModule.ts
-
-# Progress & Logs
-todos
-CommandsList.md
-src/Comments.md
-src/twitchApiReturns.md
-git-notes.md
-
-# Configs
-tsconfig.json
-winston-log
-db.sqlite
+#Testing
+src/helper
+src/commands/Owner/Debug.ts
+tests
