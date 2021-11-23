@@ -14,20 +14,18 @@ export default class AnimeQuote extends Command {
                 usage: 'animequote',
                 examples: ['animequote'],
             },
-            ratelimit: 3,
+            ratelimit: 3
         })
     }
 
     public async exec(message: Message): Promise<Message> {
         const animeQuote = await axios.get('https://animechan.vercel.app/api/random', { 'method': 'GET' }).then(res => res.data)
 
-        return message.util!.send(new MessageEmbed()
-            .setDescription(`
-                **Anime Quote | ${animeQuote.anime}**
-                ${animeQuote.quote}
-            `)
+        const e = new MessageEmbed()
+            .setDescription(`**Anime Quote | ${animeQuote.anime}**\n${animeQuote.quote}`)
             .setColor(Colours.IndianRed)
             .setFooter('Character: ' + animeQuote.character)
-        )
+
+        return message.channel.send({ embeds: [e] })
     }
 }
