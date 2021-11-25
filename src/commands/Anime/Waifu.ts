@@ -1,11 +1,11 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/Functions'
+import { _GetAnimeSFW } from '../../util/functions/anime'
 
 export default class Waifu extends Command {
     public constructor() {
-        super('Waifu', {
+        super('waifu', {
             aliases: ['waifu'],
             category: 'Anime',
             description: {
@@ -20,10 +20,11 @@ export default class Waifu extends Command {
     public async exec(message: Message): Promise<Message> {
         const waifu = await _GetAnimeSFW('waifu')
 
-        return message.util!.send(new MessageEmbed()
+        const e = new MessageEmbed()
             .setDescription('Here\'s a random image of a waifu!')
             .setColor('RANDOM')
             .setImage(waifu.url)
-        )
+
+        return message.channel.send({ embeds: [e] })
     }
 }

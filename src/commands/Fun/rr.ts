@@ -2,7 +2,6 @@ import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
 import { bulletsMin, bulletsMax, bulletsTotal, emojiList, deadList, liveList } from '../../util/Constants'
-import { getRandomInt } from '../../util/Functions'
 
 export default class RussianRoulette extends Command {
     public constructor() {
@@ -26,24 +25,23 @@ export default class RussianRoulette extends Command {
     }
 
     public async exec(message: Message, {bullets}: {bullets: number}): Promise<Message> {
-        if (bullets < bulletsMin) return message.util!.send('You coward, you need at least 1 bullet in the chamber!')
-        else if (bullets > bulletsMax) return message.util!.send('Woah, you really must be trying to get yourself killed.')
+        if (bullets < bulletsMin) return message.channel.send('You coward, you need at least 1 bullet in the chamber!')
+        else if (bullets > bulletsMax) return message.channel.send('Woah, you really must be trying to get yourself killed.')
 
         const dead: boolean = (Math.floor(Math.random() * bulletsTotal) < bullets)
         
-        const reply = await message.util!.send(`You load ${bullets === 1 ? 'a bullet' : bullets + ' bullets'} into the revolver, give it a spin, and place it against your head.`)
+        const reply = await message.channel.send(`You load ${bullets === 1 ? 'a bullet' : bullets + ' bullets'} into the revolver, give it a spin, and place it against your head.`)
 
-        return await message.channel!.send(`${emojiList[getRandomInt(emojiList.length)]} :gun:`)
+        return message.channel.send(`${emojiList.arrayRandom()} :gun:`)
             .then(msg => {
-                const prevContent = message.util!.lastResponse.content
-
+                const lastContent = message.util.lastResponse.content
                 setTimeout(() => {
                     if (dead) {
-                        reply.edit(prevContent + `\n***BOOM***, ${deadList[getRandomInt(deadList.length)]}`)
+                        reply.edit(lastContent + `\n***BOOM***, ${deadList.arrayRandom()}`)
                         msg.edit(':boom::gun:')
                     }
                     else {
-                        reply.edit(prevContent + `\n***Click***, ${liveList[getRandomInt(liveList.length)]}`)
+                        reply.edit(lastContent + `\n***Click***, ${liveList.arrayRandom()}`)
                         msg.edit(':relieved::gun:')
                     }
                 }, 4000)

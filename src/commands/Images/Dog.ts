@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import axios from 'axios'
 
-import { dogAPIkey } from '../../Config'
+import { envs } from '../../client/Components'
 
 export default class Dog extends Command {
     public constructor() {
@@ -29,33 +29,36 @@ export default class Dog extends Command {
     public async exec(message: Message, {gif}: {gif: boolean}): Promise<Message> {
         let dog: string
 
-        if (gif) {
-            dog = await axios.get('https://api.thedogapi.com/v1/images/search?mime_types=gif&order=RANDOM&page=0&limit=1', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': dogAPIkey
-                },
-                method: 'GET'
-            })
-            .then(res => res.data[0].url)
-        }
-        else {
-            dog = await axios.get('https://api.thedogapi.com/v1/images/search?mime_types=jpg,png&order=RANDOM&page=0&limit=1', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': dogAPIkey
-                },
-                method: 'GET'
-            })
-            .then(res => res.data[0].url)
+        try {
+            if (gif) {
+                dog = await axios.get('https://api.thedogapi.com/v1/images/search?mime_types=gif&order=RANDOM&page=0&limit=1', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': envs.dogAPIkey
+                    },
+                    method: 'GET'
+                })
+                .then(res => res.data[0].url)
+            }
+            else {
+                dog = await axios.get('https://api.thedogapi.com/v1/images/search?mime_types=jpg,png&order=RANDOM&page=0&limit=1', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': envs.dogAPIkey
+                    },
+                    method: 'GET'
+                })
+                .then(res => res.data[0].url)
+            }
+        } catch {
+            return message.channel.send('Failed to fetch image, please report via my `a.feedback` command, as the API is likely temporarily down.')
         }
 
-        
-        return message.util!.send(new MessageEmbed()
-            .setDescription('Here\'s an image of a dog!')
-            .setColor('RANDOM')
-            .setImage(dog)
-        )
-        
+        const e = new MessageEmbed()
+        .setDescription('Here\'s an image of a dog!')
+        .setColor('RANDOM')
+        .setImage(dog || '`The API is currently down, please contact miau#0004 and try again later.`')
+
+        return message.channel.send({ embeds: [e] })
     }
 }

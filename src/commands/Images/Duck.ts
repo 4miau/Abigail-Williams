@@ -42,30 +42,28 @@ export default class Duck extends Command {
                 const chosen = Math.floor(Math.random() * SubaruGIFs.length)
                 e.setImage(SubaruGIFs[chosen])
 
-                return message.util!.send(e)
+                return message.channel.send({ embeds: [e] })
             }
             else {
                 const chosen = Math.floor(Math.random() * SubaruImgs.length)
                 e.setImage(SubaruImgs[chosen])
 
-                return message.util!.send(e)
+                return message.channel.send({ embeds: [e] })
             }
         }
 
-        if (gif) {
-            duck = await axios.get(`https://random-d.uk/api/v2/random?type=gif`, {method: 'GET'})
-                .then(res => res.data.url)
-        }
-        else {
-            duck = await axios.get(`https://random-d.uk/api/v2/random?type=jpg`, { method: 'GET'})
-                .then(res => res.data.url)
+        try {
+            if (gif) duck = await axios.get('https://random-d.uk/api/v2/random?type=gif', {method: 'GET'}).then(res => res.data.url)
+            else duck = await axios.get('https://random-d.uk/api/v2/random?type=jpg', { method: 'GET'}).then(res => res.data.url) 
+        } catch {
+            return message.channel.send('Failed to fetch image, please report via my `a.feedback` command, as the API is likely temporarily down.')
         }
 
         const e = new MessageEmbed()
             .setDescription('Oh looky, a random image of a duck!')
             .setColor('RANDOM')
-            .setImage(duck)
+            .setImage(duck || '`The API is currently down, please contact miau#0004 and try again later.`')
 
-        return message.util!.send(e)
+        return message.channel.send({ embeds: [e] })
     }
 }

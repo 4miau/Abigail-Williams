@@ -22,16 +22,17 @@ export default class Snipe extends Command {
         const snipe = this.client.snipes.get(message.channel.id)
 
         if (snipe) {
+            this.client.snipes.delete(message.channel.id)
+
             const e = new MessageEmbed()
                 .setAuthor(`${snipe.author}`, snipe.member.user.displayAvatarURL())
                 .setDescription(snipe.content)
                 .setColor(Colours.Mint)
                 .setFooter(moment(now()).utcOffset(1).format('YYYY/MM/DD hh:mm:ss'))
-            
-            this.client.snipes.delete(message.channel.id)
-            return message.util!.send(e)
+
+            return message.channel.send({ embeds: [e] })
         }
 
-        return message.util!.send('There\'s nothing to snipe.')
+        return message.channel.send('There\'s nothing to snipe.')
     }
 }

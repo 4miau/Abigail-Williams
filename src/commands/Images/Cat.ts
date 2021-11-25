@@ -1,8 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 
-import { catAPIkey } from '../../Config'
+import { envs } from '../../client/Components'
 
 export default class Cat extends Command {
     public constructor() {
@@ -29,26 +29,31 @@ export default class Cat extends Command {
     public async exec(message: Message, {gif}: {gif: boolean}): Promise<Message> {
         let cat: string
 
-        if (gif) {
-            cat = await axios.get('https://api.thecatapi.com/v1/images/search?mime_types=gif&order=RANDOM&page=0&limit=1', {
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'x-api-key': catAPIkey
-                },
-                'method': 'GET'
-            })
-            .then(res => res.data[0].url)
-        } else {
-            cat = await axios.get('hhttps://api.thecatapi.com/v1/images/search?mime_types=jpg,png&order=RANDOM&page=0&limit=1', {
-                'method': 'GET'
-            })
-            .then(res => res.data[0].url)
+        try {
+            if (gif) {
+                cat = await axios.get('https://api.thecatapi.com/v1/images/search?mime_types=gif&order=RANDOM&page=0&limit=1', {
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'x-api-key': envs.catAPIkey
+                    },
+                    'method': 'GET'
+                })
+                .then(res => res.data[0].url)
+            } else {
+                cat = await axios.get('hhttps://api.thecatapi.com/v1/images/search?mime_types=jpg,png&order=RANDOM&page=0&limit=1', {
+                    'method': 'GET'
+                })
+                .then(res => res.data[0].url)
+            }
+        } catch {
+            return message.channel.send('Failed to fetch image, please report via my `a.feedback` command, as the API is likely temporarily down.')
         }
 
-        return message.util!.send(new MessageEmbed()
+        const e = new MessageEmbed()
             .setDescription('Here\'s an image of a cat!')
             .setColor('RANDOM')
-            .setImage(cat)
-        )
+            .setImage(cat || '`The API is currently down, please contact miau#0004 and try again later.`')
+
+        return message.channel.send({ embeds: [e] })
     }
 }

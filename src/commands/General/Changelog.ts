@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
 import { Colours } from '../../util/Colours'
-import { botVersion } from '../../Config'
+import { envs } from '../../client/Components'
 
 export default class Changelog extends Command {
     public constructor() {
@@ -19,8 +19,7 @@ export default class Changelog extends Command {
                 {
                     id: 'page',
                     type: (_: Message, str: string): number => {
-                        if (str && Number(str)) if (Number(str) > 0) return Number(str)
-                        return 1
+                        return (str && Number(str) && Number(str) > 0) ? Number(str) : null
                     }
                 }
             ]
@@ -30,27 +29,20 @@ export default class Changelog extends Command {
     public exec(message: Message, {page}: {page: number}): Promise<Message> {
         const changeLog: { key: number, type: string, content: string }[] = this.client.settings.get('global', 'changeLog', [])
 
-        const perPage = 10
-        const maxPages = Math.ceil(changeLog.length / perPage)
+        page = !isNaN(page) ? page : 1
+        const logs = changeLog.paginate(page || 1, 10)
 
-        page = changeLog.length ? page : 1
-
-        const end = page * perPage
-        const start = end - perPage
-
-        const logs = changeLog.slice(start, end)
-
-
-        const embed = new MessageEmbed()
-            .setAuthor(`Bot Changelog | v${botVersion}`, this.client.user.displayAvatarURL())
-            .setDescription(`
-                ${logs.length > 0 ? logs.map(e => `(${e.key}) [${e.type}] : ${e.content}`).join('\n') : 
-                `No listed changelogs ${page > 1 ? `on page ${page}` : `at the moment`}`}`
+        const e = new MessageEmbed()
+            .setAuthor(`Bot Changelog | v${envs.botVersion}`, this.client.user.displayAvatarURL())
+            .setDescription(
+                !logs[0].arrayEmpty() ? 
+                    logs[0].map(e => `(${e.key}) [${e.type}] : ${e.content}`).join('\n') :
+                    'No listed changelogs ' + (page || 1 > 1 ? `on page ${page}` : 'at the moment')
             )
             .setThumbnail(this.client.users.cache.get(this.client.ownerID as string).displayAvatarURL())
             .setColor(Colours.Pinky)
-            .setFooter(`Page ${page > maxPages ? maxPages : page} of ${maxPages} | Key: ADD: Add, UPD: Update, DEL: Delete, FIX: Fix, CHO: Chore`)
+            .setFooter(`Page ${page > logs[1] ? logs[1] : page} of ${logs[1]} | Key: ADD: Add, UPD: Update, DEL: Delete, FIX: Fix, CHO: Chore`)
 
-        return message.util!.send(embed)
+        return message.channel.send({ embeds: [e] })
     }
 }

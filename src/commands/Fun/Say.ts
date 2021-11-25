@@ -24,7 +24,7 @@ export default class Say extends Command {
     }
     
     public async exec(message: Message, {words}: {words: string}) {
-        await message.util!.message.delete()
-        return message.util!.send(words)
+        message.delete()
+        return words ? message.channel.send(words) : null
     }
 }

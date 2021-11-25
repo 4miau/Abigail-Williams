@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { GuildMember, GuildMemberResolvable, Message, MessageEmbed } from 'discord.js'
+import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
 export default class Gayrate extends Command {
     public constructor() {
@@ -27,23 +27,19 @@ export default class Gayrate extends Command {
     public exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
         const gayRate: number = Math.floor(Math.random() * 100)
 
+        const e = new MessageEmbed()
+            .setTitle('Gayrate Result')
+            .setColor('RANDOM')
+            .setFooter(`Executed by ${message.author.tag}`)
+            .setTimestamp(Date.now())
+
         if (member && member.id !== message.author.id) {
-            return message.util!.send(new MessageEmbed()
-                .setTitle('Gayrate Result')
-                .setColor('RANDOM')
-                .setDescription(`${member.displayName} is rated as **${gayRate}%** gay.`)
-                .setFooter(`Executed by ${message.author.tag}`)
-                .setTimestamp(Date.now())
-            )
+            e.setDescription(`:rainbow_flag: ${member.displayName} is rated as **${gayRate}%** gay. :rainbow_flag:`)
+            return message.channel.send({ embeds: [e] })
         }
         else {
-            return message.util!.send(new MessageEmbed()
-                .setTitle('Gayrate Result')
-                .setColor('RANDOM')
-                .setDescription(`You are rated as being **${gayRate}%** gay.`)
-                .setFooter(`Executed by ${message.author.tag}`)
-                .setTimestamp(Date.now())
-            )
+            e.setDescription(`:rainbow_flag: You are rated as **${gayRate}%** gay. :rainbow_flag:`)
+            return message.channel.send({ embeds: [e] })
         }
     }
 }
