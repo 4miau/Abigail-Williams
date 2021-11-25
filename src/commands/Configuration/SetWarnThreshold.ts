@@ -25,8 +25,8 @@ export default class SetWarnThreshold extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
@@ -34,6 +34,6 @@ export default class SetWarnThreshold extends Command {
 
     public exec(message: Message, {threshold}): Promise<Message> {
         this.client.settings.set(message.guild, 'mute-threshold', threshold)
-        return message.util!.send(`Successfully set the warn threshold for this server to ${threshold}`)
+        return message.channel.send(`Successfully set the warn threshold for this server to ${threshold}`)
     }
 }

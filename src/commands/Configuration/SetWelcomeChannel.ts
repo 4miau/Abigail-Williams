@@ -24,8 +24,8 @@ export default class JoinLeaveChannel extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
@@ -34,11 +34,11 @@ export default class JoinLeaveChannel extends Command {
     public exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
         if (!channel) {
             const currChannel = this.client.settings.get(message.guild, 'join-leave.channel', '')
-            return currChannel ? message.util!.send(`<#${currChannel}>`) : message.util!.send('This server current does not have a channel for join-leaves.')
+            return currChannel ? message.channel.send(`<#${currChannel}>`) : message.channel.send('This server current does not have a channel for join-leaves.')
         }
 
         this.client.settings.set(message.guild, 'join-leave.channel', channel.id)
         
-        return message.util!.send('New text channel for join-leave messages has been set.')
+        return message.channel.send('New text channel for join-leave messages has been set.')
     }
 }

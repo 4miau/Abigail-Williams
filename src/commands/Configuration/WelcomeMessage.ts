@@ -32,8 +32,8 @@ export default class WelcomeMessage extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
@@ -42,10 +42,10 @@ export default class WelcomeMessage extends Command {
     public async exec(message: Message, {content}: {content: string}): Promise<Message> {
         if (!content) {
             this.client.settings.delete(message.guild, 'join-leave.joinMessage')
-            return message.util!.send('I have removed this server\'s current join message.')
+            return message.channel.send('I have removed this server\'s current join message.')
         }
 
         this.client.settings.set(message.guild, 'join-leave.joinMessage', content)
-        return message.util!.send('I have set this server\'s new join message.')
+        return message.channel.send('I have set this server\'s new join message.')
     }
 }

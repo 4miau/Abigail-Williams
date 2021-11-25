@@ -24,17 +24,17 @@ export default class SetSuggestChannel extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
     }
 
     public exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
-        if (!channel) return message.util!.send('Please provide a valid channel to use for suggestions.')
+        if (!channel) return message.channel.send('Please provide a valid channel to use for suggestions.')
         
         this.client.settings.set(message.guild, 'suggest-channel', channel.id)
-        return message.util!.send(`I have now set the new suggestion channel to ${channel.name} (${channel.id})`)
+        return message.channel.send(`I have now set the new suggestion channel to ${channel.name} (${channel.id})`)
     }
 }

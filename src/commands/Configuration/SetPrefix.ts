@@ -9,7 +9,7 @@ export default class Prefix extends Command {
             description: {
                     content: 'Gets/sets the server prefix',
                     usage: 'prefix <newPrefix>',
-                    examples: ['prefix a.']
+                    examples: ['prefix', 'prefix a.']
             },
             channel: 'guild',
             ratelimit: 3,
@@ -24,24 +24,21 @@ export default class Prefix extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('ADMINISTRATOR', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
     }
 
     public async exec(message: Message, {prefix}: {prefix: string}): Promise<Message> {
-        if (!prefix) {
-            const currentPrefix = this.client.settings.get(message.guild, 'prefix', 'a.')
-            return message.util!.send(`The server's current prefix is ${currentPrefix}`)
-        }
+        const serverPrefix = this.client.settings.get(message.guild, 'prefix', 'a.')
+        if (!prefix) return message.channel.send(`The server's current prefix is ${serverPrefix}`)
 
-        if (prefix.length < 10) {
+        if (prefix.length <= 8) {
             this.client.settings.set(message.guild, 'prefix', prefix)
-            return message.util!.send(`I have set the new server prefix to ${prefix}`)
+            return message.channel.send(`I have set the new server prefix to ${prefix}`)
         }
-
-        return message.util!.send('Please make your new prefix between 1-10 characters.')
+        else return message.channel.send('Please make your new prefix between 1-8 characters.')
     }
 }

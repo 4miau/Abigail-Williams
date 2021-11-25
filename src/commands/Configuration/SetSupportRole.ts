@@ -24,8 +24,8 @@ export default class SetSupportRole extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
@@ -35,15 +35,15 @@ export default class SetSupportRole extends Command {
         const currRole: Role = message.guild.roles.resolve(this.client.settings.get(message.guild, 'modmail.support-role', ''))
 
         if (!role) {
-            if (currRole) return message.util!.send(`The server's current support role is: ${currRole.name}`)
-            return message.util!.send('This server currently does not have a support role.')
+            if (currRole) return message.channel.send(`The server's current support role is: ${currRole.name}`)
+            return message.channel.send('This server currently does not have a support role.')
         }
 
         if (role) {
             this.client.settings.set(message.guild, 'modmail.support-role', role.id)
-            return message.util!.send('New support role has been set.')
+            return message.channel.send('New support role has been set.')
         }
 
-        return message.util!.send('Please provide a valid role to set as the new support role.')
+        return message.channel.send('Please provide a valid role to set as the new support role.')
     }
 }

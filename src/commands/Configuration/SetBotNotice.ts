@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message, TextChannel } from 'discord.js'
+import { GuildChannel, Message, TextChannel } from 'discord.js'
 
 export default class SetBotNotice extends Command {
     public constructor() {
@@ -16,19 +16,32 @@ export default class SetBotNotice extends Command {
             args: [
                 {
                     id: 'channel',
-                    type: 'textChannel'
+                    type: 'channel'
                 }
             ]
         })
     }
 
-    public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_CHANNELS', true) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator or Manage Channels permission missing.'
+        return null
+    }
+
+    public async exec(message: Message, {channel}: {channel: GuildChannel}): Promise<Message> {
         if (!channel) {
             await this.client.settings.delete(message.guild, 'server-notices')
-            return message.util!.send('I have successfully removed the server\'s current bot notices channel if any.')
+            return message.channel.send('I have successfully removed the server\'s current bot notices channel if any.')
         }
 
-        this.client.settings.set(message.guild, 'server-notices', channel.id)
-        return message.util!.send(`I have now set ${channel} as the channel for bot notices.`)
+        if (channel.type === 'GUILD_NEWS' || channel.type === 'GUILD_TEXT') {
+            this.client.settings.set(message.guild, 'server-notices', channel.id)
+            return message.channel.send(`I have now set ${channel} as the channel for bot notices.`)
+        }
+
+        return message.channel.send('You need to provide a text channel to set as the new bot notices channel.')
     }
 }

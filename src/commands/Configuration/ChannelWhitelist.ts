@@ -24,23 +24,22 @@ export default class ChannelWhitelist extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission(['MANAGE_GUILD', 'MANAGE_CHANNELS'], { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has(['MANAGE_GUILD', 'MANAGE_CHANNELS'], true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
     }
 
     public exec(message: Message, {channel}: {channel: Channel}): Promise<Message> {
-        if (!channel) return message.util!.send('You must provide a valid channel to whitelist.')
-
-        let whitelistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
+        if (!channel) return message.channel.send('You must provide a valid channel to whitelist.')
         
-        if (whitelistedChannels.includes(channel.id)) {
-            this.client.settings.set(message.guild, 'channel-blacklist', whitelistedChannels.filter(bc => bc !== channel.id))
-            return message.util!.send('Channel has been removed from the whitelist.')
-        }
+        const blacklistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
 
-        return message.util!.send('Channel is not blacklisted.')
+        if (blacklistedChannels?.includes(channel.id)) {
+            this.client.settings.set(message.guild, 'blacklisted-channels', blacklistedChannels.filter(c => c !== channel.toString()))
+            return message.channel.send('Channel has been removed from the whitelist.')
+        }
+        else return message.channel.send('Channel is not blacklisted.')
     }
 }
