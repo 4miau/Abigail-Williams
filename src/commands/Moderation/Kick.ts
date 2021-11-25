@@ -1,9 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message, GuildMember } from 'discord.js'
-import { Repository } from 'typeorm'
 
-import { Case } from '../../models/Case'
-import ModUtil from '../../util/ModUtil'
+import Case from '../../models/Case'
+import ModUtil from '../../util/structures/ModUtil'
 
 export default class Kick extends Command {
     public constructor() {
@@ -16,8 +15,6 @@ export default class Kick extends Command {
                     examples: ['kick @user', 'kick @user swearing too much.']
             },
             channel: 'guild',
-            userPermissions: ['KICK_MEMBERS'],
-            clientPermissions: ['SEND_MESSAGES', 'KICK_MEMBERS'],
             ratelimit: 3,
             args: [
                 {
@@ -26,7 +23,7 @@ export default class Kick extends Command {
                     prompt: {
                         start: (msg: Message) => `${msg.author}, please provide a member to kick...`,
                         retry: (msg: Message) => `${msg.author}, please provide a valid member to kick...`,
-                        cancel: () => `The command has now been cancelled.`
+                        cancel: () => 'The command has now been cancelled.'
                     }
                 },
                 {
@@ -39,31 +36,42 @@ export default class Kick extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('KICK_MEMBERS', true) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     public async exec(message: Message, {member, reason}: {member: GuildMember, reason: string}): Promise<Message> {
-        const caseRepo: Repository<Case> = this.client.db.getRepository(Case)
         const totalCases: number = this.client.settings.get(message.guild, 'totalCases', 0) + 1
 
-        if (!member.kickable) return message.util!.send('I am unable to kick that user.')
+        if (!member.kickable) return message.channel.send('I am unable to kick that user.')
 
         await member.kick(reason)
         this.client.settings.set(message.guild, 'totalCases', totalCases)
 
-        const newCase = new Case()
+        const newCase = await new Case({
+            id: await Case.countDocuments(),
+            guildID: message.guild.id,
+            messageID: message.id,
+            caseID: totalCases,
 
-        newCase.guildID = message.guild.id
-        newCase.messageID = message.id
-        newCase.caseID = totalCases
+            action: ModUtil.CONSTANTS.ACTIONS.KICK,
+            reason: reason,
 
-        newCase.action = ModUtil.CONSTANTS.ACTIONS.KICK
-        newCase.reason = reason
-        
-        newCase.targetID = member.user.id
-        newCase.targetTag = member.user.tag
-        newCase.modID = message.author.id
-        newCase.modTag = message.author.tag
+            targetID: member.user.id,
+            targetTag: member.user.tag,
+            modID: message.author.id,
+            modTag: message.author.tag,
+        }).save()
 
-        caseRepo.save(newCase)
-
-        return (await message.util!.send(`${member.user.tag} (${member.user.id}) has been kicked from the server successfully.`)).delete({ 'timeout': 5000 })
+        return message.channel.send(`${member.user.tag} (${member.user.id}) has been kicked from the server successfully.`)
+            .then(msg => {
+                setTimeout(() => { msg.delete() }, 5000)
+                return msg
+            })
     }
 }
