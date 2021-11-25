@@ -12,8 +12,6 @@ export default class SetRole extends Command {
                 examples: ['role @user']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_ROLES'],
-            clientPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,
             args: [
                 {
@@ -28,18 +26,27 @@ export default class SetRole extends Command {
         })
     }
 
-    public exec(message: Message, {member, role}: {member: GuildMember, role: Role}): Promise<Message> {
-        if (!member) return message.util!.send('Please provide a member to give a role.')
-        if (!role) return message.util!.send('Please provide a valid role.')
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_ROLES', true) || message.member.roles.cache.has(modRole)
 
-        if (member.manageable) {
-            if (member.roles.cache.find(r => r.id === role.id)) {
-                member.roles.remove(role)
-                return message.util!.send(`Successfully removed ${role.name} from ${member.user.tag}`)
-            } else {
-                member.roles.add(role)
-                return message.util!.send(`Successfully given ${role.name} to ${member.user.tag}`)
-            }
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
+    public exec(message: Message, {member, role}: {member: GuildMember, role: Role}): Promise<Message> {
+        if (!member) return message.channel.send('Please provide a member to give a role.')
+        if (!role) return message.channel.send('Please provide a valid role.')
+
+        if (!member.manageable) return message.channel.send('Unable to give/take roles from this user.')
+
+        if (member.roles.cache.find(r => r.id === role.id)) {
+            member.roles.remove(role)
+            return message.channel.send(`Successfully removed ${role.name} from ${member.user.tag}`)
+        } else {
+            member.roles.add(role)
+            return message.channel.send(`Successfully given ${role.name} to ${member.user.tag}`)
         }
     }
 }
