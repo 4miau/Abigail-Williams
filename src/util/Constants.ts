@@ -1,8 +1,6 @@
-//*COMMANDS
+//MAL
 
-/*
-    FUN
-*/
+export const MALLogo = 'https://i.imgur.com/LVxAJJf.png'
 
 //8ball
 
@@ -43,10 +41,6 @@ export const liveList: string[] = [
     'of course you survived, you are MLG!'
 ]
 
-/*
-    GENERAL
-*/
-
 //Help
 
 export const commandsGithub: string = 'https://github.com/notmiauu/abby-bot#commands'
@@ -54,10 +48,6 @@ export const commandsGithub: string = 'https://github.com/notmiauu/abby-bot#comm
 //AddEmote
 
 export const extensions: string[] = ['.png', '.jpg', '.jpeg', '.gif']
-
-/*
-    IMAGES
-*/
 
 //Duck
 
@@ -102,10 +92,6 @@ export const SubaruImgs: string[] = [
     'https://img3.gelbooru.com/images/d5/50/d5504b8a4ac0970dadf4ae4d31fdf62a.jpg',
 ]
 
-/*
-    GAMES
-*/
-
 //ApexLegends
 
 export const legendHeader = {
@@ -127,10 +113,6 @@ export const legendHeader = {
     'Gibraltar': 'https://i.imgur.com/NvMRNuo.jpg',
     'Fuse': 'https://i.imgur.com/ckMAUri.jpg'
 }
-
-/*
-    MODERATION
-*/
 
 //Fixname
 
@@ -160,38 +142,20 @@ export enum flags {
     'member'
 }
 
-/*
-    CONFIGURATION
-*/
 
-export const deleteLogFlags = ['-d', '-delete']
-export const editLogFlags = ['-e', '-edit']
+//Automation
 
-export const userLogFlags = ['avatar', 'username', 'nickname', 'join', 'leave', 'all']
+export const inviteDetection: string[] = ['discord.gg/', 'discord.gg', 'discordapp.com/invite/', '.gg/', '. gg/', 'gg /']
 
-/*
-    TWITCH
-*/
-
-export const streamDefaultMessage: string = `{streamer} has gone live! {link}`
-
-
-/*
-    MISC
-*/
+//Misc
 
 export const ZERO: number = 0
 export const ONE: number = 1
 
 export const changeLogTypes: string[] = [ 'ADD', 'DEL', 'UPD', 'FIX', 'CHO', 'REWRITE' ]
 
-//8.64e7 //1 DAY
-//2.6e9 //30 DAYS
+export const miauTwitch: string = 'https://twitch.tv/notmiauu'
+export const streamDefaultMessage: string = '{streamer} has gone live! {link}'
 
-//* LISTENERS
-
-/*
-    MESSAGE
-*/
-
-export const inviteDetection: string[] = ['discord.gg/', 'discord.gg', 'discordapp.com/invite/', '.gg/', '. gg/', 'gg /', 'gg /']
+export const modmailGuild = '542751800739233798'
+export const feedbackChannel = '843370444656607272'
