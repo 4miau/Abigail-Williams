@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message } from 'discord.js'
+import { Message, TextChannel } from 'discord.js'
 
 export default class Clean extends Command {
     public constructor() {
@@ -18,19 +18,23 @@ export default class Clean extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission(['VIEW_AUDIT_LOG', 'MANAGE_MESSAGES'], { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has(['VIEW_AUDIT_LOG', 'MANAGE_MESSAGES'], true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
     }
 
     public async exec(message: Message): Promise<Message> {
-        await message.channel.messages.fetch({ 'limit': 50 }, true, true)
-            .then(msgCol => message.channel.messages.channel.bulkDelete(msgCol.filter(msg => msg.author.bot)))
+        await message.channel.messages.fetch({ 'limit': 50 }, { cache: true, force: true })
+            .then(messages => (message.channel as TextChannel).bulkDelete(messages.filter(msg => msg.author.bot)))
             .catch(void 0)
         
-        message.delete({'timeout': 2500})
-        return (await message.util!.send('I have cleaned the channel.')).delete({ 'timeout': 5000})
+        setTimeout(() => { message.delete() }, 2500)
+        return message.channel.send('I have cleaned the channel.')
+            .then(msg => {
+                setTimeout(() => { msg.delete() }, 5000)
+                return msg
+            })   
     }
 }
