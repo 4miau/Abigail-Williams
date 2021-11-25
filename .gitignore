@@ -33,4 +33,6 @@ src/client
 src/helper
 src/commands/Owner/Debug.ts
 src/commands/Fun/Blackjack.ts
+src/structures/ProfileManagerRevamp.ts
+src/structures/ThreadManagerRevamp.ts
 tests
