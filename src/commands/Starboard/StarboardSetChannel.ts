@@ -22,7 +22,7 @@ export default class StarboardSetChannel extends Command {
                     prompt: {
                         start: (msg: Message) => `${msg.author}, provide a channel to set up starboard.`,
                         retry: (msg: Message) => `${msg.author}, provide a valid channel to set up starboard in.`,
-                        cancel: () => `Command has now been cancelled.`
+                        cancel: () => 'Command has now been cancelled.'
                     }
                 }
             ]
@@ -32,7 +32,7 @@ export default class StarboardSetChannel extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator or MANAGE_GUILD missing.'
         return null
@@ -40,6 +40,6 @@ export default class StarboardSetChannel extends Command {
 
     public exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
         this.client.settings.set(message.guild, 'starboard.starboardChannelID', channel.id)
-        return message.util!.send('New starboard channel has been set successfully.')
+        return message.channel.send('New starboard channel has been set successfully.')
     }
 }

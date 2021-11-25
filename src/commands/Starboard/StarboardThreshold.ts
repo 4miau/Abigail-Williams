@@ -27,16 +27,16 @@ export default class StarboardThreshold extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Administrator'
         return null
     }
 
     public exec(message: Message, {threshold}: {threshold: number}): Promise<Message> {
-        if (!threshold) return message.util!.send('You need to provide a number to set the new threshold.')
+        if (!threshold) return message.channel.send('You need to provide a number to set the new threshold.')
 
         this.client.settings.set(message.guild, 'starboard.threshold', threshold)
-        return message.util!.send('New starboard threshold set successfully!')
+        return message.channel.send('New starboard threshold set successfully!')
     }
 }

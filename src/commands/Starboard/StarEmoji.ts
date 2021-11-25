@@ -26,16 +26,16 @@ export default class StarEmoji extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Staff role, Manage Guild or Administrator missing.'
         return null
     }
 
     public exec(message: Message, {emoji}): Promise<Message> {
-        if (!emoji) return message.util!.send('You must provide an emoji to change the current guild\s set emoji.')
+        if (!emoji) return message.channel.send('You must provide an emoji to change the current guild\'s set emoji.')
 
         this.client.settings.set(message.guild, 'starboard.emoji', emoji)
-        return message.util!.send(`${emoji} has been set as the new starboard\'s reaction emoji.`)
+        return message.channel.send(`${emoji} has been set as the new starboard's reaction emoji.`)
     }
 }
