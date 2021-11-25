@@ -8,8 +8,8 @@ export default class ClearDB extends Command {
             category: 'Owner',
             description: {
                 content: 'Clears the entire database or the database for a server.',
-                usage: 'cleardb',
-                examples: ['cleardb'],
+                usage: 'cleardb <guild>',
+                examples: ['cleardb', 'cleardb bunny cartel'],
             },
             ownerOnly: true,
             ratelimit: 3,
@@ -28,10 +28,10 @@ export default class ClearDB extends Command {
             this.client.guilds.cache.forEach(async guild => {
                 await this.client.settings.clear(guild)
             })
-            return message.util!.send('Database cleared entirely.')
+            return message.channel.send('Database cleared entirely.')
         } else {
             await this.client.guilds.fetch(server.id).then(g => this.client.settings.clear(g))
-            return message.util!.send(`Cleared the database for the server.`)
+            return message.channel.send('Cleared the database for the server.')
         }        
     }
 }

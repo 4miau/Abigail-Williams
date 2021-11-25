@@ -34,13 +34,13 @@ export default class ClearDBKey extends Command {
                 await this.client.settings.delete(guild, key)
             })
             this.client.logger.log('INFO', 'Cleared key from all servers.')
-            return message.util!.send('Cleared key from all servers.')
+            return message.channel.send('Cleared key from all servers.')
         } else {
             await this.client.guilds.fetch(server.id).then(g => {
                 this.client.logger.log('INFO', `Cleared key from ${g.name}`)
                 this.client.settings.delete(g, key)
             })
-            return message.util!.send(`Cleared the key from database for the server.`)
+            return message.channel.send('Cleared the key from database for the server.')
         }        
     }
 }
