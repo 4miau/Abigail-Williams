@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo'
-import { MessageEmbed } from 'discord.js'
-import { Message } from 'discord.js'
+import { MessageEmbed, Message } from 'discord.js'
 import moment, { now } from 'moment'
 
 import { Colours } from '../../util/Colours'
@@ -25,7 +24,7 @@ export default class Mods extends Command {
             { key: 'modmail.support-role', defaultValue: ''},
             { key: 'modRole', defaultValue: ''}
         ])
-        
+
         const e = new MessageEmbed()
             .setAuthor(`${message.guild.name} | Staff Roles`, message.guild.iconURL())
             .setColor(Colours.Green)
@@ -40,6 +39,6 @@ export default class Mods extends Command {
                 `${message.guild.members.cache.filter(m => m.roles.cache.has(staffRoles[0]))}`: 'No users have the support role.' }`)
             .setFooter(moment(now()).utcOffset(1).format('YYYY/MM/DD hh:mm:ss a'))
 
-        return await message.util!.send(e)
+        return message.channel.send({ embeds: [e] })
     }
 }

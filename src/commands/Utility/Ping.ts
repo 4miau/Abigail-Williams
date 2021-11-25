@@ -7,21 +7,17 @@ export default class Ping extends Command {
             aliases: ['ping', 'hello'],
             category: 'Utility',
             description: {
-                    content: 'Pong.',
-                    usage: 'ping',
-                    examples: ['ping']
+                content: 'Pong.',
+                usage: 'ping',
+                examples: ['ping']
             },
             ratelimit: 3
         })
     }
 
     public async exec(message: Message): Promise<Message> {
-        const sent = await message.util!.send('Pong!')
+        const sent = await message.channel.send('Pong!')
         const timeDiff = <any>(sent.editedAt || sent.createdAt) - <any>(message.editedAt || message.createdAt)
-        return message.util!.send([
-            'Pong!',
-            `🔂 **RTT**: ${timeDiff} ms`,
-            `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`
-        ])
+        return message.channel.send({ content: `Pong!\n🔂 **RTT**: ${timeDiff} ms\n💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`})
     }
 }

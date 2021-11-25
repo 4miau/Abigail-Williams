@@ -44,9 +44,9 @@ export default class Avatar extends Command {
                 .setImage(user.displayAvatarURL({ format: 'png', size: size as AllowedImageSize, dynamic: true }))
                 .setFooter(`${user.tag}`)
                 
-            return message.util.send({ embeds: [e] })
+            return message.channel.send({ embeds: [e] })
         } catch {
-            return message.util.reply('There was an error retrieving this user, please try again!')
+            return message.channel.reply('There was an error retrieving this user, please try again!')
         }
     }
 }
