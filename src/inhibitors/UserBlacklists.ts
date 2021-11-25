@@ -1,5 +1,5 @@
-import { Inhibitor, Command } from "discord-akairo";
-import { Message } from "discord.js";
+import { Inhibitor } from 'discord-akairo'
+import { Message } from 'discord.js'
 
 export default class UserBlacklist extends Inhibitor {
     public constructor() {
@@ -9,7 +9,7 @@ export default class UserBlacklist extends Inhibitor {
         })
     }
 
-    async exec(message: Message): Promise<boolean> {
+    exec(message: Message): boolean {
         const blacklistedUsers: string[] = this.client.settings.get(message.guild, 'user-blacklist', [])
         if (!blacklistedUsers) return false
 

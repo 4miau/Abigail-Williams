@@ -1,5 +1,5 @@
-import { Inhibitor, Command } from "discord-akairo";
-import { Message } from "discord.js";
+import { Inhibitor, Command } from 'discord-akairo'
+import { Message } from 'discord.js'
 
 export default class GlobalBlacklist extends Inhibitor {
     public constructor() {
@@ -9,7 +9,7 @@ export default class GlobalBlacklist extends Inhibitor {
         })
     }
 
-    async exec(message: Message): Promise<boolean> {
+    exec(message: Message): boolean {
         const globalBlacklist: string[] = this.client.settings.get('global', 'user-blacklist', [])
         if (!globalBlacklist) return false
 

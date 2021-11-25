@@ -1,5 +1,5 @@
-import { Inhibitor } from "discord-akairo";
-import { Message } from "discord.js";
+import { Inhibitor } from 'discord-akairo'
+import { Message } from 'discord.js'
 
 export default class ChannelBlacklist extends Inhibitor {
     public constructor() {
@@ -9,7 +9,7 @@ export default class ChannelBlacklist extends Inhibitor {
         })
     }
 
-    async exec(message: Message): Promise<boolean> {
+    exec(message: Message): boolean {
         const blacklistedChannels: string[] = this.client.settings.get(message.guild, 'channel-blacklist', [])
         if (!blacklistedChannels) return false
 
