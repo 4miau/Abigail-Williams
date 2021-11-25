@@ -1,9 +1,8 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
-import { Repository } from 'typeorm'
 import ms from 'ms'
 
-import { Giveaways } from '../../models/Giveaways'
+import Giveaways from '../../models/Giveaways'
 import GiveawayManager from '../../structures/GiveawayManager'
 import { Colours } from '../../util/Colours'
 import moment from 'moment'
@@ -12,7 +11,7 @@ export default class Giveaway extends Command {
     public constructor() {
         super('giveaway', {
             aliases: ['giveaway', 'ga'],
-            category: 'General',
+            category: 'Configuration',
             description: {
                 content: 'Start a giveaway (winners must end with w). You must provide winners if you wish to specify the prize.',
                 usage: 'giveaway [time] <NoOfWinners>w <prize>',
@@ -56,41 +55,41 @@ export default class Giveaway extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
     }
 
     public async exec(message: Message, {time, winners, prize}: {time: number, winners: number, prize: string}): Promise<any> {
-        if (!time) return message.util!.send('You need to provide a time for the giveaway.')
+        if (!time) return message.channel.send('You need to provide a time for the giveaway.')
 
-        const giveawayRepo: Repository<Giveaways> = this.client.db.getRepository(Giveaways)
         const end: number = Date.now() + time
 
-        const msg: Message = await message.util!.send(new MessageEmbed()
+        const e = new MessageEmbed()
             .setAuthor(`Giveaway | ${prize}`)
             .setColor(Colours.Spring)
             .setDescription(`React with 🎉 to enter!
-            Giveaway is hosted by ${message.author}!
+                Giveaway is hosted by ${message.author}!
             `)
             .setFooter(`Ends at • ${moment(end).utcOffset(1).format('YYYY/M/DD HH:mm:ss')} ${winners > 1 ? ' | ' + winners + ' winners' : ''}`)
-        )
+
+        const msg: Message = await message.channel.send({ embeds: [e] })
 
         msg.react('🎉')
         message.delete()
 
-        giveawayRepo.insert({
-            'channel': message.channel.id,
-            'message': msg.id,
-            'reward': prize,
-            'winners': winners,
-            'end': end
+        Giveaways.create({
+            channel: message.channel.id,
+            message: msg.id,
+            reward: prize,
+            winners: winners,
+            end: end
         })
 
         this.client.logger.log('CAUTION', `${msg.id}`)
 
-        setTimeout(() => { GiveawayManager.end(giveawayRepo, msg)}, time)
+        setTimeout(() => { GiveawayManager.end(msg)}, time)
     }
 }
