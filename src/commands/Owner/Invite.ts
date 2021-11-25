@@ -17,6 +17,6 @@ export default class Invite extends Command {
     }
 
     public exec(message: Message): Promise<Message> {
-        return message.util!.send('https://discord.com/oauth2/authorize?client_id=600845569019346954&permissions=8&scope=bot')
+        return message.channel.send('https://discord.com/oauth2/authorize?client_id=600845569019346954&permissions=8&scope=bot')
     }
 }

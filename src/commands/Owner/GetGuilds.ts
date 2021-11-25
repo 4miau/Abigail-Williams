@@ -17,6 +17,6 @@ export default class GetGuilds extends Command {
     }
 
     public exec(message: Message): Promise<Message> {
-        return message.util!.send(`${this.client.guilds.cache.map(g => g.name + ' : ' + g.id + '\n').join('')}`)
+        return message.channel.send(`${this.client.guilds.cache.map(g => g.name + ' : ' + g.id + '\n').join('')}`)
     }
 }
