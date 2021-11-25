@@ -8,7 +8,7 @@ export default class SetModlog extends Command {
             category: 'Logging',
             description: {
                 content: 'Sets the channel to post modlogs in.',
-                usage: 'setmodlog [channel]',
+                usage: 'setmodlog <channel>',
                 examples: ['setmodlog #modlogs'],
             },
             channel: 'guild',
@@ -24,8 +24,8 @@ export default class SetModlog extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission(['VIEW_AUDIT_LOG', 'MANAGE_GUILD'], { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has(['VIEW_AUDIT_LOG', 'MANAGE_GUILD'], true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator (or VIEW_AUDIT_LOG & MANAGE_GUILD permissions) missing.'
         return null
@@ -34,10 +34,12 @@ export default class SetModlog extends Command {
     public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
         if (!channel) {
             await this.client.settings.delete(message.guild, 'logs.mod-logs')
-            return message.util!.send('I have removed the server\'s current modlog channel, if any.')
+            return message.channel.send('I have removed the server\'s current modlog channel, if any.')
         }
 
         this.client.settings.set(message.guild, 'logs.mod-logs', channel.id)
-        return message.util!.send(`${channel} has now been set for modlogs.`)
+        return message.channel.send(`I will now post modlogs in ${channel}.`)
     }
 }
+
+//Events to add: guildBanAdd, guildBanRemove, guildMemberRemove
