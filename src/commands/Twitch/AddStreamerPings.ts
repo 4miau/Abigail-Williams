@@ -28,48 +28,47 @@ export default class AddStreamerPing extends Command {
         })
     }
 
-
     //@ts-ignore
     userPermissions(message: Message) {
-        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('ADMINISTRATOR', true) || message.member.roles.cache.has(modRole)
 
-        if (!hasStaffRole) return 'Server Administrator'
+        if (!hasStaffRole) return 'Server administrator or staff role'
         return null
     }
 
     public async exec(message: Message, {streamer, role}: {streamer: string, role: Role}): Promise<Message> {
-        if (!streamer) return message.util!.send('Please provide a streamer to add a ping for.')
-        if (!role) return message.util!.send('Ehm... you need a valid role to provide as a ping.')
+        if (!streamer) return message.channel.send('Please provide a streamer to add a ping for.')
+        if (!role) return message.channel.send('Ehm... you need a valid role to provide as a ping.')
 
-        const twitchUsers: { 
+        const streamers : {
             name: string, 
             message: string, 
             pings: string[], 
-            posted: boolean }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', [])
+            posted: boolean
+        }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', {})
 
-        if (!twitchUsers || twitchUsers.length === 0) return message.util!.send('You need to add streamers onto the watchlist to assign role pings.')
+        if (streamers.arrayEmpty()) return message.channel.send('You need to add streamers onto the watchlist to assign role pings.')
 
         if (streamer === 'all') {
-            this.client.settings.set(message.guild, 'twitch.twitch-streamers', twitchUsers.map(s => {
-                if (s.pings.includes(role.id) || s.pings.includes(role.name)) return;
-                role !== message.guild.roles.everyone ? s.pings.push(role.id) : s.pings.push('@everyone')
-
+            this.client.settings.set(message.guild, 'twitch.twitch-streamers', streamers.map(s => {
+                if (s.pings.includes(role.toString())) return
+                s.pings.push(role.toString())
                 return s
             }))
 
-            return message.util!.send('Role has been successfully added to the mention list of all streamers it is not currently added for already.')
+            return message.channel.send('Role has been successfully added to the mention list of all streamers it is not currently added for already.')
         }
 
-        const serverPings = twitchUsers.findIndex(s => s.name === streamer)
+        const pingsIndex = streamers.findIndex(s => s.name === streamer)
 
-        if (serverPings === -1) return message.util!.send('This streamer is not on the watchlist.')
+        if (pingsIndex === -1) return message.channel.send('This streamer is not on the watchlist.')
 
-        if (twitchUsers[serverPings].pings.includes(role.id) || twitchUsers[serverPings].pings.includes(role.name))
-            return message.util!.send('This role is already on the mentions list.')
+        if (streamers[pingsIndex].pings.includes(role.toString())) return message.channel.send('This role is already on the mentions list.')
         else {
-            role !== message.guild.roles.everyone ? twitchUsers[serverPings].pings.push(role.id) : twitchUsers[serverPings].pings.push('@everyone')
-            this.client.settings.set(message.guild, 'twitch.twitch-streamers', twitchUsers)
-            return message.util!.send('Role has been successfully added to the mention list of this streamer!')
+            role !== message.guild.roles.everyone ? streamers[pingsIndex].pings.push(role.id) : streamers[pingsIndex].pings.push('@everyone')
+            this.client.settings.set(message.guild, 'twitch.twitch-streamers', streamers)
+            return message.channel.send('Role has been successfully added to the mention list of this streamer!')
         }
     }
 }

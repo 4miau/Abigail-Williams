@@ -24,16 +24,17 @@ export default class TwitchFeedChannel extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('ADMINISTRATOR', true) || message.member.roles.cache.has(modRole)
 
-        if (!hasStaffRole) return 'Server Administrator'
+        if (!hasStaffRole) return 'Server administrator or staff role'
         return null
     }
 
     public exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
-        if (!channel) return message.util!.send('Please provide a channel to subscribe to')
+        if (!channel) return message.channel.send('Please provide a channel to subscribe to')
 
         this.client.settings.set(message.guild, 'twitch.twitch-feedchannel', channel.id)
-        return message.util!.send(`#${channel.name} is the channel that I will now be announcing streams in!`)
+        return message.channel.send(`#${channel.name} is the channel that I will now be announcing streams in!`)
     }
 }

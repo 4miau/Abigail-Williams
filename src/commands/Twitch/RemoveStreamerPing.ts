@@ -29,43 +29,45 @@ export default class RemoveStreamerPing extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const hasStaffRole = message.member.hasPermission('ADMINISTRATOR', { checkAdmin: false, checkOwner: true})
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('ADMINISTRATOR', true) || message.member.roles.cache.has(modRole)
 
-        if (!hasStaffRole) return 'Server Administrator'
+        if (!hasStaffRole) return 'Server administrator or staff role'
         return null
     }
 
     public async exec(message: Message, {streamerName, role}: {streamerName: string, role: Role}): Promise<Message> {
-        if (!streamerName) return message.util!.send('Please provide a streamer to add a ping for.')
-        if (!role) return message.util!.send('Ehm... you need a valid role to provide as a ping.')
+        if (!streamerName) return message.channel.send('Please provide a streamer to add a ping for.')
+        if (!role) return message.channel.send('Ehm... you need a valid role to provide as a ping.')
 
-        let twitchUsers: { 
+        const streamers : {
             name: string, 
             message: string, 
             pings: string[], 
-            posted: boolean }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', [])
+            posted: boolean
+        }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', {})
         
-        if (!twitchUsers || twitchUsers.length === 0) return message.util!.send('You need to add streamers on the watchlist before you can remove them.')
+        if (streamers.arrayEmpty()) return message.channel.send('You need to add streamers on the watchlist before you can remove them.')
 
         if (streamerName === 'all') {
-            this.client.settings.set(message.guild, 'twitch.twitch-streamers', twitchUsers.map(s => {
-                if (!s.pings.includes(role.id) && !s.pings.includes(role.name)) return;
-                s.pings.filter(p => p !== role.id || p !== role.name)
+            this.client.settings.set(message.guild, 'twitch.twitch-streamers', streamers.map(s => {
+                if (!s.pings.includes(role.toString())) return
+                s.pings = s.pings.filter(p => p !== role.toString())
                 return s
             }))
 
-            return message.util!.send('Role has been removed from all streamer\'s role pings that contain this role.')
+            return message.channel.send('Role has been removed from all streamer\'s role pings that contain this role.')
         }
 
-        let streamer = twitchUsers.findIndex(s => s.name === streamerName)
+        let streamer = streamers.findIndex(s => s.name === streamerName)
 
-        if (streamer === -1) return message.util!.send('This member is not on the streamer list.')
+        if (streamer === -1) return message.channel.send('This member is not on the streamer list.')
 
-        if (twitchUsers[streamer].pings.includes(role.id) || twitchUsers[streamer].pings.includes(role.name)) {
-            twitchUsers[streamer].pings = twitchUsers[streamer].pings.filter(p => p !== role.id) || twitchUsers[streamer].pings.filter(p => p !== role.name)
-            this.client.settings.set(message.guild, 'twitch.twitch-streamer', twitchUsers)
+        if (streamers[streamer].pings.includes(role.toString())) {
+            streamers[streamer].pings = streamers[streamer].pings.filter(p => p !== role.toString())
+            this.client.settings.set(message.guild, 'twitch.twitch-streamers', streamers)
 
-            return message.util!.send('Role has been removed from the streamer\'s role pings')
-        } else return message.util!.send('That role isn\'t one of the role mentions')
+            return message.channel.send('Role has been removed from the streamer\'s role pings')
+        } else return message.channel.send('That role isn\'t one of the role mentions')
     }
 }
