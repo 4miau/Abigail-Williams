@@ -19,27 +19,23 @@ export default class Shuffle extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message): Promise<Message> {
-        const userVC = message.member.voice.channel
-        if (!userVC) return message.util!.send('You must be in the same VC to shuffle a queue.')
+    public async exec(message: Message): Promise<Message> {
+        const checkVC = this.client.music.checkVC(message.member)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
 
-        if (!this.client.manager.players.size) return message.util!.send('I am currently not in a vc, therefore I can not shuffle a non-existent queue.')
+        const queue = await this.client.music.guildQueue(message.guild, false)
 
-        const player = this.client.manager.players.first()
-
-        if (!player.queue.size) return message.util!.send('There is no queue so I can not shuffle a non-existent queue.')
-
-        player.queue.shuffle()
-        
-        return message.util!.send('Queue has been shuffled.')
+        if (!queue.songs.length) return message.channel.send('There are no songs in the queue, I can not shuffle a non-existent queue.')
+        else {
+            queue.shuffle()
+            return message.channel.send('Shuffled the queue.')
+        }
     }
 }

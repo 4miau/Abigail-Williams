@@ -26,7 +26,7 @@ export default class SetDJRole extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('MANAGE_GUILD', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
@@ -35,10 +35,10 @@ export default class SetDJRole extends Command {
     public exec(message: Message, {role}: {role: Role}): Promise<Message> {
         if (!role) {
             this.client.settings.delete(message.guild, 'djRole')
-            return message.util!.send('Removed the server\'s DJ role from my database, if any.')
+            return message.channel.send('Removed the server\'s DJ role from my database, if any.')
         }
 
         this.client.settings.set(message.guild, 'djRole', role.id)
-        return message.util!.send('New DJ role has been set for the server.')
+        return message.channel.send('New DJ role has been set for the server.')
     }
 }

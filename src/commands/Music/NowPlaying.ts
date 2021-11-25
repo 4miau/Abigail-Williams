@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { formatTime } from '../../util/Functions'
-
 export default class NowPlaying extends Command {
     public constructor() {
         super('nowplaying', {
@@ -21,30 +19,27 @@ export default class NowPlaying extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message): Promise<Message> {
-        const players = this.client.manager.players
-        if (!players.size) return message.util!.send('I am currently not in a VC.')
+    public async exec(message: Message): Promise<Message> {
+        if (!this.client.music.hasQueue(message.guild)) return message.channel.send('I have no queue so there are no songs playing.')
 
-        const player = players.first()
-        if (!player.queue.current) return message.util!.send('There are currently no songs in my queue.')
+        const queue = await this.client.music.guildQueue(message.guild)
+        const progressBar = queue.createProgressBar({ time: true })
 
-        const { title, author, duration, identifier } = player.queue.current
-        const embed = new MessageEmbed()
-            .setAuthor('Current song playing.', message.author.displayAvatarURL())
-            .setImage(`http://i3.ytimg.com/vi/${identifier}/maxresdefault.jpg`)
-            .setDescription(`
-            ${player.playing ? "▶️" : "⏸️"} **${title}** \`${formatTime(duration)}\` by ${author}
-            `)
+        const e = new MessageEmbed()
+            .setAuthor('Current track playing')
+            .setTitle(queue.nowPlaying.name)
+            .setImage(queue.nowPlaying.thumbnail)
+            .setURL(queue.nowPlaying.url)
+            .setDescription(progressBar.prettier)
+        
 
-        return message.util!.send(embed)
+        return message.channel.send({ embeds: [e] })
     }
 }

@@ -18,6 +18,7 @@ export default class Volume extends Command {
                 {
                     id: 'volume',
                     type: 'number',
+                    default: null
                 }
             ]
         })
@@ -26,27 +27,26 @@ export default class Volume extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message, {volume}: {volume: number}): Promise<Message> {
-        if (volume && isNaN(volume)) return message.util!.send('If you wish to provide a number, it needs to be a number...')
-        const players = this.client.manager.players.size
+    public async exec(message: Message, {volume}: {volume: number}): Promise<Message> {
+        if (volume && isNaN(volume)) return message.channel.send('Provide a number between 0 - 100 for the volume.')
 
-        if (!players) return message.util!.send('I am currently not in a voice channel.')
+        const checkVC = this.client.music.checkVC(message.member, true)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
 
-        const player = this.client.manager.players.first()
+        const queue = await this.client.music.guildQueue(message.guild)
 
-        if (!volume) return message.util!.send(`Current volume: ${player.volume}`)
-        else {
-            player.setVolume(volume)
-            return message.util!.send(`I have set my new volume to ${volume}`)
+        if (volume === null) return message.channel.send(`Current volume: ${queue.volume}`)
+        else if (volume > 0 && volume < 100) {
+            queue.setVolume(volume)
+            return message.channel.send(`I have set the volume to \`${volume}\``)
         }
+        else return message.channel.send('Provide a value between *0 - 100* for the volume.')
     }
 }

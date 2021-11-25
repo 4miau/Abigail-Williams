@@ -1,4 +1,5 @@
 import { Command } from 'discord-akairo'
+import { RepeatMode } from 'discord-music-player'
 import { Message } from 'discord.js'
 
 export default class Loop extends Command {
@@ -18,7 +19,7 @@ export default class Loop extends Command {
                     id: 'loopType',
                     type: (_: Message, str: string): null | string => {
                         if (str) {
-                            switch (str) {
+                            switch (str.toLowerCase()) {
                                 case 'queue':
                                 case 'q':
                                     return 'queue'
@@ -40,47 +41,29 @@ export default class Loop extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message, {loopType}: {loopType: string}): Promise<Message> {
-        const userVC = message.member.voice.channel
+    public async exec(message: Message, {loopType}: {loopType: string}): Promise<Message> {
+        const checkVC = this.client.music.checkVC(message.member)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
 
-        const players = this.client.manager.players.size
+        const queue = await this.client.music.guildQueue(message.guild)
 
-        if (!players) return message.util!.send('I am currently not in a voice channel.')
-
-        const player = this.client.manager.players.first()
-
-        if (!userVC || userVC.id !== player.voiceChannel) return message.util!.send('You must be in the same VC to play a song.')
-
-        if (player.queue.totalSize) {
+        if (queue.songs.length) {
             if (loopType === 'track') {
-                if (!player.trackRepeat) {
-                    player.setTrackRepeat(true)
-                    return message.util!.send('I will now continously loop the current playing track.')
-                } else {
-                    player.setTrackRepeat(false)
-                    return message.util!.send('I will now stop continously looping the current playing track.')
-                }
+                queue.repeatMode === RepeatMode.SONG ? queue.setRepeatMode(RepeatMode.DISABLED) : queue.setRepeatMode(RepeatMode.SONG)
+                return message.channel.send(queue.repeatMode === RepeatMode.SONG ? 'I will now loop the current playing track.' : 'I will stop looping the current track.')
             }
-            if (loopType === 'queue') {
-                if (!player.queueRepeat) {
-                    player.setQueueRepeat(true)
-                    return message.util!.send('I will now continously loop the queue.')
-                } else {
-                    player.setQueueRepeat(false)
-                    return message.util!.send('I will now stop continously looping the queue.')
-                }
+            else {
+                queue.repeatMode === RepeatMode.QUEUE ? queue.setRepeatMode(RepeatMode.DISABLED) : queue.setRepeatMode(RepeatMode.QUEUE)
+                return message.channel.send(queue.repeatMode === RepeatMode.QUEUE ? 'I will now loop the queue.' : 'I will stop looping the queue.')
             }
         }
-                
-        return message.util!.send('There are no songs in the queue to loop.')
+        else return message.channel.send('There are no songs in the queue to loop.')
     }
 }

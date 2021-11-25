@@ -19,30 +19,31 @@ export default class ClearQueue extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
-        if (!hasDJRole) return 'DJ Role'
+        if (!hasDJRole) return 'DJ Role required'
         return null
     }
 
     public async exec(message: Message): Promise<Message> {
-        const userVC = message.member.voice.channel
-        if (!userVC) return message.util!.send('You must be in the same VC to play a song.')
+        const checkVC = this.client.music.checkVC(message.member, true)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
 
-        const players = this.client.manager.players.size
-        if (!players) return message.util!.send('I am currently not in a voice channel.')
+        const queue = await this.client.music.guildQueue(message.guild)
 
-        const player = this.client.manager.players.first()
-        const queue = player.queue
-
-        if (queue) {
-            queue.clear()
-            return (await message.util!.send('The queue has been cleared successfully.')).delete({ 'timeout': 3000})
+        if (queue.songs.length > 0) {
+            queue.clearQueue()
+            return message.channel.send('The queue has successfully been cleared.')
+                .then(msg => {
+                    setTimeout(() => msg.delete(), 3000)
+                    return msg
+                })
         }
-
-        return (await message.util!.send('There is no queue, failed to clear the queue.')).delete({ 'timeout': 3000})
+        else return message.channel.send('There are no songs in the queue. Failed to clear the queue.')
+            .then(msg => {
+                setTimeout(() => msg.delete(), 3000)
+                return msg
+            })
     }
 }

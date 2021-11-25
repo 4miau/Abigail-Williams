@@ -9,7 +9,7 @@ export default class Seek extends Command {
             description: {
                 content: 'Seeks an input time in the current track. (Adds on time from the current position)',
                 usage: 'seek [time]',
-                examples: ['seek 1m', 'seek 30s'],
+                examples: ['seek 1m', 'seek 30s', 'seek 3000'],
             },
             channel: 'guild',
             ratelimit: 3,
@@ -26,30 +26,26 @@ export default class Seek extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message, {time}: {time: number}): Promise<Message> {
-        if (!time) return message.util!.send('No point of running the command if you aren\'t seeking to a new position in the song')
+    public async exec(message: Message, {time}: {time: number}): Promise<Message> {
+        if (!time) return message.channel.send('No point of running the command if you aren\'t seeking to a new position in the song.')
 
-        if (!this.client.manager.players.size) return message.util!.send('I am not in a vc so I can not seek a non-existent track.')
+        const checkVC = this.client.music.checkVC(message.member)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
 
-        const player = this.client.manager.players.first()
-
-        const userVC = message.member.voice.channel
-        if (!userVC || userVC.id !== player.voiceChannel) return message.util!.send('You must be in the same VC to seek the current track.')
+        const queue = await this.client.music.guildQueue(message.guild)
 
         try {
-            player.seek(player.position + time)
-            return message.util!.send('I have seeked to the new position of the song.')
+            const nextSong = await queue.seek(time)
+            return message.channel.send(nextSong instanceof Boolean ? 'Successfully seeked to new position of the song.' : 'Seeked to the next song.')
         } catch {
-            return message.util!.send('I can not seek to that point because either song ends at that point or you are trying to seek before the start of the song.')
+            return message.channel.send('Failed to seek, please try again.')
         }
     }
 }

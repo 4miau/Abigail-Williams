@@ -7,7 +7,7 @@ export default class Skip extends Command {
             aliases: ['skip'],
             category: 'Music',
             description: {
-                content: 'Skips to the next song in the queue. If you provide a position, it will skip that many songs instead (inclusive).',
+                content: 'Skips to the next song in the queue. If you provide a number, it will skip that many songs instead (inclusive).',
                 usage: 'skip <tracksToSkip>',
                 examples: ['skip', 'skip 5'],
             },
@@ -15,7 +15,7 @@ export default class Skip extends Command {
             ratelimit: 3,
             args: [
                 {
-                    id: 'track',
+                    id: 'trackPos',
                     type: 'number',
                     match: 'phrase',
                     default: 1
@@ -27,28 +27,24 @@ export default class Skip extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message, {track}: {track: number}): Promise<Message> {
-        const userVC = message.member.voice.channel
-        if (!userVC) return message.util!.send('You must be in the same VC to play a song.')
+    public async exec(message: Message, {trackPos}: {trackPos: number}): Promise<Message> {
+        const checkVC = this.client.music.checkVC(message.member)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
 
-        const players = this.client.manager.players.size
-        if (!players) return message.util!.send('I am currently not in a voice channel.')
+        const queue = await this.client.music.guildQueue(message.guild)
 
-        const player = this.client.manager.players.first()
-
-        if (player.queue.size) {
-            player.stop(track)
-            return message.util!.send(`I have skipped ${track > 1 ? track + ' tracks' : 'the current playing track'}`)
+        try {
+            queue.skip(trackPos - 1)
+            return message.channel.send('Successfully skipped song(s).')
+        } catch {
+            return message.channel.send('Unable to skip that many songs.')
         }
-        else return message.util!.send('I can not skip songs as there is nothing in my queue.')
     }
 }

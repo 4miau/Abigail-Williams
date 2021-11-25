@@ -1,7 +1,9 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed, Role } from 'discord.js'
-import { Track } from 'erela.js'
+import { Playlist, Song } from 'discord-music-player'
+
 import { Colours } from '../../util/Colours'
+import { getMsgResponse } from '../../util/functions/misc'
 
 export default class Search extends Command {
     public constructor() {
@@ -26,42 +28,19 @@ export default class Search extends Command {
     }
 
     public async exec(message: Message, {query}: {query: string}): Promise<Message> {
-        const userVC = message.member.voice.channel
+        const queue = await this.client.music.guildQueue(message.guild, true)
+        const songs = await this.client.music.searchSongs(query, queue)
 
-        const player = this.client.manager.players.size ? this.client.manager.players.first() : null
+        if (!songs) {
+            return message.channel.send('No results were found.')
+                .then(m => {
+                    setTimeout(() => m.delete(), 2000)
+                    return m
+                })
+        }
 
-        const songs = await this.client.manager.search(query, message.author.tag)
-        let tracks: Track[] 
-
-        if (songs.tracks.length === 0) return (await message.util!.send('No results were returned.')).delete({ 'timeout': 2000})
-        songs.tracks.length > 10 ? tracks = songs.tracks.slice(0, 10) : songs.tracks.slice(0, songs.tracks.length)
-
-        const embed = new MessageEmbed()
-            .setAuthor(`Track Results [${tracks.length}]`)
-            .setDescription(`${tracks.map((t: Track, i: number) => `[${i+1}] - ` + t.title).join('\n')}`)
-            .setColor(Colours.Mint)
-            .setFooter(`Requested by ${tracks[0].requester}`)
-
-        this.client.logger.log('INFO', `${songs.tracks.map(t => `${t.title}`).join(', ')}`)
-
-        const djRole: Role = message.guild.roles.resolve(this.client.settings.get(message.guild, 'djRole', ''))
-
-        if (djRole && !message.member.roles.cache.has(djRole.id)) return message.util!.send(embed)
-
-        if (userVC && player) {
-            message.util!.send('Please enter a number indicating which song you would like to add to the queue.', embed)
-
-            try {
-                const userResponse = Number((await message.channel.awaitMessages((msg: Message) => msg.author.id === message.author.id, { 'max': 1, 'time': 30000 })).first().content)
-                const track = tracks[userResponse - 1]
-    
-                player.queue.add(track)
-            } 
-            catch { 
-                message.util!.message.delete({ 'timeout': 2000})
-                return await message.channel.send('Please provide a number to add to the queue. Please try again.')
-                    .then(msg => msg.delete({ 'timeout': 2000 }))
-            }
-        } else return message.util!.send(embed)
+        if (songs instanceof Song) return this.client.music.selectSong(message, songs, queue)
+        else if (songs instanceof Array) return this.client.music.selectSongFromArr(message, songs, queue)
+        else return message.channel.send({ embeds: [await this.client.music.enqueue(songs, queue, message.author)] })
     }
 }

@@ -19,28 +19,24 @@ export default class Disconnect extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message): Promise<Message> {
-        const usersVC = message.member.voice.channel
-        if (!usersVC) return message.util!.send('You must be in a VC for me to disconnect.')
-
-        if (this.client.manager.players.size) {
-            const player = this.client.manager.players.first()
-
-            if (player.voiceChannel === usersVC.id) {
-                player.destroy()
-                return message.util!.send('I have disconnected from the voice channel.')
+    public async exec(message: Message): Promise<Message> {
+        const checkVC = this.client.music.checkVC(message.member)
+        if (typeof checkVC === 'string') return message.channel.send(checkVC)
+        else {
+            try {
+                await this.client.music.guildQueue(message.guild).then(queue => queue.connection.leave())
+                await this.client.music.guildQueue(message.guild).then(queue => queue.destroyed ? null : queue.destroy())
+                return message.channel.send('I have disconnected from the voice channel.')
+            } catch {
+                this.client.logger.log('ERROR', 'Failed to destroy queue as it does not exist.')
             }
         }
-
-        return message.util!.send('I am not currently in a voice channel.')
     }
 }
