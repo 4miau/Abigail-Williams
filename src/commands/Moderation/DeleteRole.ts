@@ -11,7 +11,6 @@ export default class DeleteRole extends Command {
                 usage: 'deleterole [rolename]',
                 examples: ['deleterole members'],
             },
-            userPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,
             args: [
                 {
@@ -22,17 +21,23 @@ export default class DeleteRole extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_ROLES', true) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     public async exec(message: Message, {role}: {role: Role}): Promise<Message> {
-        if (!role) return message.util!.send('Please provide a valid role.')
+        if (!role) return message.channel.send('Please provide a valid role.')
 
         try {
-            await message.guild.roles.fetch(role.id)
-                .then(r => r.delete())
-            return message.util!.send(`Role has been deleted successfully.`)
-        } catch (err) {
-            return message.util!.send('Failed to delete the role, please make sure my role is above the role you are trying to remove.')
+            await message.guild.roles.fetch(role.id).then(r => r.delete())
+            return message.channel.send('Role has been deleted successfully.')
+        } catch {
+            return message.channel.send('Failed to delete the role, please make sure my role is above the role you are trying to remove.')
         }
     }
 }
-
-//TODO: Check if role is manageable, then you can leave out the try-catch

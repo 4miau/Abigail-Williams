@@ -2,9 +2,9 @@ import { Command, Argument } from 'discord-akairo'
 import { GuildMember, Message } from 'discord.js'
 import ms from 'ms'
 
-import { Case } from '../../models/Case'
+import Case from '../../models/Case'
 import { maxMuteTime, minMuteTime } from '../../util/Constants'
-import ModUtil from '../../util/ModUtil'
+import ModUtil from '../../util/structures/ModUtil'
 
 export default class Mute extends Command {
     public constructor() {
@@ -16,7 +16,6 @@ export default class Mute extends Command {
                 usage: 'muteremake [member] <time> <reason>',
                 examples: ['muteremake @user 3d Failed to follow rules', 'muteremake @user Failed to follower rules', 'muteremake @user', 'muteremake @user 3h'],
             },
-            ownerOnly: true,
             channel: 'guild',
             ratelimit: 3
         })
@@ -61,41 +60,51 @@ export default class Mute extends Command {
         return { member, days, reason }
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('KICK_MEMBERS', true) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     public async exec(message: Message, {member, time, reason}: {member: GuildMember, time: number, reason: string}): Promise<Message> {
         const totalCases: number = this.client.settings.get(message.guild, 'totalCases', 0) + 1
         const muteRole = message.guild.roles.resolve(this.client.settings.get(message.guild, 'muteRole', ''))
 
-        if (!muteRole || !muteRole.editable) return message.util!.send('You need to set a mute role first. And if you have, my role needs to be above it.')
-        else if (!member) return message.util!.send('You need to provide a member to mute.')
-        else if (member.user.id === message.author.id) return message.util!.send('You can\'t mute yourself silly!')
-        else if (member.roles.highest.position > message.guild.me.roles.highest.position) return message.util!.send('I do not have permission to be able to mute this user.')
-        else if (member.roles.cache.some(r => r === muteRole)) return message.util!.send('This member is already muted!')
+        if (!muteRole || !muteRole.editable) return message.channel.send('You need to set a mute role first. And if you have, my role needs to be above it.')
+        else if (!member) return message.channel.send('You need to provide a member to mute.')
+        else if (member.user.id === message.author.id) return message.channel.send('You can\'t mute yourself silly!')
+        else if (member.roles.highest.position > message.guild.me.roles.highest.position) return message.channel.send('I do not have permission to be able to mute this user.')
+        else if (member.roles.cache.some(r => r === muteRole)) return message.channel.send('This member is already muted!')
 
-        await member.roles.add(muteRole, `Muted by ${message.author.tag} | Case ${totalCases}`)
+        const newCase = new Case({
+            id: await Case.countDocuments() + 1,
+            guildID: message.guild.id,
+            messageID: message.id,
+            caseID: totalCases,
 
-        const newCase = new Case()
+            action: ModUtil.CONSTANTS.ACTIONS.MUTE,
+            actionComplete: false,
+            actionDuration: time ? new Date(Date.now() + time) : void 0,
+            reason: reason,
 
-        newCase.guildID = message.guild.id
-        newCase.messageID = message.id
-        newCase.caseID = totalCases
-
-        newCase.action = ModUtil.CONSTANTS.ACTIONS.MUTE
-        newCase.actionComplete = false
-        time ? newCase.actionDuration = new Date(Date.now() + time) : void 0
-        newCase.reason = reason
+            targetID: member.user.id,
+            targetTag: member.user.tag,
+            modID: message.author.id,
+            modTag: message.author.tag
+        })
         
-        newCase.targetID = member.user.id
-        newCase.targetTag = member.user.tag
-        newCase.modID = message.author.id
-        newCase.modTag = message.author.tag
-
         await this.client.muteManager.addMute(newCase)
         this.client.settings.set(message.guild, 'totalCases', totalCases)
+
+        await member.roles.add(muteRole, `Muted by ${message.author.tag} | Case ${totalCases}`)
 
         const prefix = this.client.settings.get(message.guild, 'prefix', 'a.')
         if (!reason) message.channel.send(`You have not set a reason, use \`${prefix}reason ${totalCases} [reason]\` to set a reason for this case.`)
 
-        message.delete({ timeout: 3000 })
-        await message.util!.send(`Muted ${member}. Reason: ${reason}`)
+        setTimeout(() => { message.delete() }, 3000)
+        await message.channel.send(`Muted ${member}. Reason: ${reason}`)
     }
 }

@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo'
-import { Message } from 'discord.js'
+import { ColorResolvable, Message } from 'discord.js'
 
 export default class CreateRole extends Command {
     public constructor() {
@@ -11,7 +11,6 @@ export default class CreateRole extends Command {
                 usage: 'createrole [rolename] <colour> <mentionable(true/false)> <hoist(true/false)>',
                 examples: ['createrole members eeaaee false true'],
             },
-            userPermissions: ['MANAGE_ROLES'],
             ratelimit: 3,
             args: [
                 {
@@ -36,22 +35,29 @@ export default class CreateRole extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('MANAGE_ROLES', true) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     public async exec(message: Message, {rolename, colour, mentionable, hoist}: {rolename: string, colour: string, mentionable: boolean, hoist: boolean}): Promise<Message> {
-        if (!rolename) return message.util!.send('You must provide a rolename at least for the new role.')
+        if (!rolename) return message.channel.send('You must provide a rolename at least for the new role.')
         const hexRegex: RegExp = /[0-9A-Fa-f]{6}/g
 
         try {
             await message.guild.roles.create({
-                'data': {
-                    'name': rolename,
-                    'color': (colour && hexRegex.test(colour)) ? colour : void 0,
-                    'mentionable': mentionable ? mentionable : false,
-                    'hoist': hoist ? hoist : false
-                }
+                'name': rolename,
+                'color': (colour && hexRegex.test(colour)) ? colour as ColorResolvable : void 0,
+                'mentionable': mentionable ? mentionable : false,
+                'hoist': hoist ? hoist : false
             })
-            return message.util!.send('Created the new role successfully.')
+            return message.channel.send('Created the new role successfully.')
         } catch (err) {
-            return message.util!.send('I\'m unable to create the new role, please check my permissions.')
+            return message.channel.send('I\'m unable to create the new role, please check my permissions.')
         }
     }
 }
