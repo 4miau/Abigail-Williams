@@ -1,50 +1,91 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
+import mongoose from 'mongoose'
 
-@Entity('cases')
-export class Case {
-    @PrimaryGeneratedColumn()
-    id!: number
-
-    @Column({ type: 'varchar', length: 22 })
-    guildID!: string
-
-    @Column({ type: 'varchar', length: 22, nullable: true })
-    messageID!: string
-
-    @Index()
-    @Column()
-    caseID!: number
-
-    @Column({ nullable: true })
-    refID!: number
-
-    @Column({ type: 'varchar', length: 22 })
-    targetID!: string
-
-    @Column({ type: 'text' })
-    targetTag!: string
-
-    @Column({ type: 'int2' })
-    action!: number
-
-    @Column({ type: 'varchar', nullable: true })
-    modID!: string
-
-    @Column({ type: 'text', nullable: true })
-    modTag!: string
-
-    @Column({ type: 'varchar' })
-    reason!: string
-
-    @Column({ type: 'text', nullable: true })
-    actionDuration!: Date
-
-    @Index()
-    @Column({ default: true })
-    actionComplete!: boolean
-
-    @Column({ type: 'text', default: () => 'DATETIME(\'now\')' })
-    createdAt!: Date
+export interface ICase extends mongoose.Document {
+    id: number,
+    guildID: string,
+    messageID: string,
+    logMessageID: string,
+    caseID: number,
+    refID: number,
+    targetID: string,
+    targetTag: string,
+    action: number,
+    modID: string,
+    modTag: string,
+    reason: string,
+    actionDuration: Date,
+    actionComplete: boolean,
+    createdAt: Date
 }
+
+const Schema = mongoose.Schema
+const caseSchema = new Schema({
+    id: {
+        type: Number,
+        unique: true,
+        required: true
+    },
+    guildID: {
+        type: String,
+        required: true,
+    },
+    messageID: {
+        type: String,
+        required: false,
+    },
+    logMessageID: {
+        type: String,
+        required: false
+    },
+    caseID: {
+        type: Number,
+        required: true,
+    },
+    refID: {
+        type: Number,
+        required: false
+    },
+    targetID: {
+        type: String,
+        required: true
+    },
+    targetTag: {
+        type: String,
+        required: true
+    },
+    action: {
+        type: Number,
+        required: true
+    },
+    modID: {
+        type: String,
+        required: false
+    },
+    modTag: {
+        type: String,
+        required: false
+    },
+    reason: {
+        type: String,
+        required: true
+    },
+    actionDuration: {
+        type: Number,
+        required: false,
+    },
+    actionComplete: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+}, { timestamps: true })
+
+const Case = mongoose.model<ICase>('case', caseSchema)
+
+export default Case
 
 //Thanks iCrawl

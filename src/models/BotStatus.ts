@@ -1,19 +1,38 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import mongoose from 'mongoose'
 
-@Entity('botstatus')
-export class BotStatus {
-    @PrimaryColumn({ type: 'int2'})
-    id!: number
-
-    @Column({type: 'text', default: 10})
-    activityType!: string
-
-    @Column({type: 'text', default: 16})
-    type!: string
-
-    @Column({type: 'text', length: 32})
-    status!: string
-
-    @Column({type: 'text', length: 40})
-    url!: string
+export interface IStatus extends mongoose.Document {
+    id: number,
+    presenceType: string,
+    presenceMode: string,
+    presenceMessage: string,
+    url: string
 }
+
+const Schema = mongoose.Schema
+const statusSchema = new Schema({
+    id: {
+        type: Number,
+        unique: true,
+        required: true
+    },
+    presenceType: {
+        type: String,
+        required: false
+    },
+    presenceMode: {
+        type: String,
+        required: false
+    },
+    presenceMessage: {
+        type: String,
+        required: false
+    },
+    url: {
+        type: String,
+        required: false
+    },
+}, { collection: 'botstatus'})
+
+const botStatus = mongoose.model<IStatus>('botstatus', statusSchema)
+
+export default botStatus

@@ -1,10 +1,30 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import mongoose from 'mongoose'
 
-@Entity('memberdata')
-export class MemberData {
-    @PrimaryColumn({ unique: true, length: 22 })
-    memberID!: string
-
-    @Column({ type: 'integer', nullable: true, default: () => '0' })
-    activeWarns!: number
+export interface IMemberData extends mongoose.Document {
+    memberID: string,
+    memberTag: string,
+    activeWarns: number
 }
+
+const Schema = mongoose.Schema
+const memberDataSchema = new Schema({
+    memberID: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    memberTag: {
+        type: String,
+        required: true,
+        default: 'invalid#0000'
+    },
+    activeWarns: {
+        type: Number,
+        required: false,
+        default: 0
+    }
+}, { collection: 'memberdata' })
+
+const MemberData = mongoose.model<IMemberData>('memberdata', memberDataSchema)
+
+export default MemberData

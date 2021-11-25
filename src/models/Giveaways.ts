@@ -1,22 +1,43 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import mongoose from 'mongoose'
 
-@Entity('giveaways')
-export class Giveaways {
-    @PrimaryGeneratedColumn()
-    id!: number
-
-    @Column({ 'type': 'varchar', length: 22})
-    channel!: string
-    
-    @Column({ 'type': 'varchar', length: 22})
-    message!: string
-
-    @Column({ type: 'varchar', nullable: true})
-    reward!: string
-
-    @Column({ 'type': 'integer' })
-    winners!: number
-
-    @Column({ 'type': 'integer' })
-    end!: number
+export interface IGiveaway extends mongoose.Document {
+    id: number,
+    channel: string,
+    message: string,
+    reward: string,
+    winners: number,
+    end: number
 }
+
+const Schema = mongoose.Schema
+const giveawaySchema = new Schema({
+    id: {
+        type: Number,
+        unique: true,
+        required: true
+    },
+    channel: {
+        type: String,
+        required: true
+    },
+    message: {
+        type: String,
+        required: true
+    },
+    reward: {
+        type: String,
+        required: false
+    },
+    winners: {
+        type: Number,
+        required: true
+    },
+    end: {
+        type: Number,
+        required: true
+    }
+}, { collection: 'giveaways' })
+
+const Giveaways = mongoose.model<IGiveaway>('giveaways', giveawaySchema)
+
+export default Giveaways

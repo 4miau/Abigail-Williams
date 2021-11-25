@@ -1,26 +1,49 @@
-import { Entity, PrimaryColumn, Column, Index } from "typeorm";
+import mongoose from 'mongoose'
 
-@Entity('stars')
-export class Stars {
-    @PrimaryColumn({ 'type': 'varchar', 'length': 22})
-    message!: string
-
-    @Index()
-    @Column({ 'type': 'varchar', 'length': 22})
-    guild!: string
-    
-    @Column({ 'type': 'varchar', 'length': 22})
-    channel!: string
-
-    @Column({ 'type': 'varchar', 'length': 22})
-    author!: string
-
-    @Column({ 'type': 'varchar', nullable: true, 'length': 22})
-    starboardMessage!: string
-
-    @Column({ 'type': 'int', default: 1})
-    starCount!: number
-
-    @Column({ 'type': 'simple-array', array: true})
-    starredBy!: string[]
+export interface IStar extends mongoose.Document {
+    message: string,
+    guild: string,
+    channel: string,
+    author: string,
+    starboardMessage: string,
+    starCount: number,
+    starredBy: Array<string>
 }
+
+const Schema = mongoose.Schema
+const starsSchema = new Schema({
+    message: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    guild: {
+        type: String,
+        required: true
+    },
+    channel: {
+        type: String,
+        required: true
+    },
+    author: {
+        type: String,
+        required: true
+    },
+    starboardMessage: {
+        type: String,
+        required: false
+    },
+    starCount: {
+        type: Number,
+        required: true,
+        default: 1
+    },
+    starredBy: {
+        type: Array,
+        required: true
+    }
+})
+
+const Stars = mongoose.model<IStar>('stars', starsSchema)
+
+export default Stars
