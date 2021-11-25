@@ -1,5 +1,4 @@
 import { Command } from 'discord-akairo'
-import { Message } from 'discord.js'
 
 export default class Shutdown extends Command {
     public constructor() {
@@ -16,8 +15,8 @@ export default class Shutdown extends Command {
         })
     }
 
-    public exec(message: Message) {
+    public exec() {
+        this.client.logger.log('INFO', 'Bot shutdown successfully.')
         this.client.destroy()
-        console.log('Bot shutdown successfully.')
     }
 }
