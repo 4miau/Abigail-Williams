@@ -27,34 +27,26 @@ export default class Banlist extends Command {
 
     //@ts-ignore
     userPermissions(message: Message) {
-        const modRole: string = this.client.settings.get(message.guild, 'modRole', '')
-        const hasStaffRole = message.member.hasPermission('VIEW_AUDIT_LOG', { checkAdmin: true, checkOwner: true}) || message.member.roles.cache.has(modRole)
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has('VIEW_AUDIT_LOG', true) || message.member.roles.cache.has(modRole)
 
         if (!hasStaffRole) return 'Moderator'
         return null
     }
 
     public async exec(message: Message, {page}: {page: number}): Promise<Message> {
-        const banList = await message.guild.fetchBans()
-            .then(bCol => bCol.map(b => b))
+        const banList = await message.guild.bans.fetch().then(bans => bans.map(b => b))
 
-        const perPage = 10
-        const maxPages = Math.ceil(banList.length / perPage)
-
-        page = banList.length ? page : 1
-
-        const end = page * perPage
-        const start = end - perPage
-
-        const bans = banList.slice(start, end)
+        const bans = banList.paginate(page, 10)
+        const start = (!isNaN(page) ? page - 1 : 0) * bans[1] 
 
         const e = new MessageEmbed()
             .setAuthor(`${message.guild.name} | Bans`, message.guild.iconURL())
-            .setFooter(`Page ${page > maxPages ? maxPages : page} of ${maxPages}`)
+            .setFooter(`Page ${page > bans[1] ? bans[1] : page} of ${bans[1]}`)
         
-        if (!bans.length) e.setDescription(`No bans in ${page > 1 ? `page ${page}` : `this server.`}`)
-        else e.setDescription(bans.map((b, i) => `${start + (++i)} - User: ${b.user.tag} (${b.user.id})\nReason: ${b.reason ? b.reason : 'No reason specified'}`).join('\n\n'))
+        if (!bans.length) e.setDescription('No bans in' + (page > 1 ? `page ${page}` : 'this server.'))
+        else e.setDescription(bans[0].map((b, i) => `${start + (++i)} - User: ${b.user.tag} (${b.user.id})\nReason: ${b.reason ? b.reason : 'No reason specified'}`).join('\n\n'))
 
-        return await message.util!.send(e)
+        return await message.util.send({ embeds: [e] })
     }
 }
