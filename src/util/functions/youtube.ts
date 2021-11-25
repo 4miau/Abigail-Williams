@@ -2,10 +2,6 @@ import axios from 'axios'
 
 import { envs } from '../../client/Components'
 
-export async function _GetYTToken() {
-    return 'pizza'
-}
-
 export async function _GetCreator(search: string): Promise<any> {
     const results = await axios.get(`https://www.googleapis.com/youtube/v3/channels?forUsername=${search}&maxResults=10&key=${envs.youtubeAPIKey}`)
         .then(res => res.data)
