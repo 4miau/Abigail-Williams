@@ -46,7 +46,7 @@ export default class Avatar extends Command {
                 
             return message.channel.send({ embeds: [e] })
         } catch {
-            return message.channel.reply('There was an error retrieving this user, please try again!')
+            return message.reply('There was an error retrieving this user, please try again!')
         }
     }
 }
