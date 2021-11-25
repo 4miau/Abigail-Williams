@@ -32,4 +32,5 @@ src/client
 #Testing
 src/helper
 src/commands/Owner/Debug.ts
+src/commands/Fun/Blackjack.ts
 tests
