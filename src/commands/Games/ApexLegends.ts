@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import { Colours } from '../../util/Colours'
 import { legendHeader } from '../../util/Constants'
-import { ConvertRank, _GetApexPlayer } from '../../util/Functions'
+import { emojifyRank, _GetApexUID, _GetApexUser } from '../../util/functions/apexlegends'
 
 export default class ApexLegends extends Command {
     public constructor() {
@@ -12,53 +12,91 @@ export default class ApexLegends extends Command {
             description: {
                 content: 'Gets stats on Apex Legends player',
                 usage: 'apex [platform] [name]',
-                examples: ['apex origin miau'],
-                flags: ['psn', 'xbox', 'origin', 'pc']
+                examples: ['apex pc miau'],
+                flags: ['psn', 'xbox', 'pc'],
             },
             ratelimit: 3,
             args: [
                 {
                     id: 'platform',
                     type: (_: Message, str: string): null | string => {
-                        if (str === 'ps4' || str === 'xbox' || str === 'pc' || str === 'origin') return str
+                        str = str.toLowerCase()
+                        if (str === 'psn' || str === 'xbox' || str === 'pc') return str
                         return null
                     },
-                    match: 'phrase'
+                    match: 'phrase',
                 },
                 {
                     id: 'name',
                     type: 'string',
-                    match: 'rest'
-                }
-            ]
+                    match: 'rest',
+                },
+            ],
         })
     }
 
-    public async exec(message: Message, {platform, name}: {platform: string, name: string}): Promise<Message> {
-        if (!platform) return message.util!.send('You need a platform to search for (psn, xbox, pc).')
-        if (!name) return message.util!.send('You need to provide a name to search for.')
+    public async exec(message: Message,{platform, name}: {platform: string; name: string}): Promise<Message> {
+        if (!platform) return message.channel.send('You need a platform to search for (psn, xbox, pc)')
+        if (!name) return message.channel.send('You need to provide a name to search for.')
 
-        const player = await _GetApexPlayer(platform, name) ? await _GetApexPlayer(platform, name) : null
-        
+        const uid = (await _GetApexUID(platform, name)) || null
+        if (!uid) return message.channel.send('Error retrieving user data, please try again.')
 
-        if (!player) return message.util!.send('Unable to find this user.')
+        const playerData = (await _GetApexUser(platform, uid)) || null
 
-        return message.util!.send(new MessageEmbed()
-            .setAuthor(`Stats for: ${player.platformInfo.platformUserId} playing ${player.metadata.activeLegendName}`, `${player.platformInfo.avatarUrl}`)
+        this.client.logger.log('INFO', `${playerData.mozambiquehere_internal}`)
+
+        try {
+            const e = this.buildApexEmbed(playerData)
+            return message.channel.send({ embeds: [e] })
+        } catch (err) {
+            this.client.logger.log('ERROR', err.stack || err)
+            return message.channel.send('Unable to retrieve user stats, please report this with my `feedback` command.')
+        }
+    }
+
+    private buildApexEmbed(playerData: any) {
+        const rank = playerData.global.rank.rankName + ' ' + playerData.global.rank.rankDiv
+
+        return new MessageEmbed()
+            .setAuthor(
+                `Stats for ${playerData.global.name} playing ${playerData.legends.selected.LegendName}`,
+                `${playerData.global.avatar.startsWith('https') ? playerData.global.avatar : 'https://i.imgur.com/d0A4Emp.png'}`
+            )
+            .setDescription(`User is currently ${playerData.realtime.isOnline === 1? '**Online**' : '**Offline**'}`)
             .setColor(Colours.Crimson)
-            .addField('Account & Total Stats', `
-            Level: ${player.segments[0].stats.level.value ? player.segments[0].stats.level.value + '/ 500' : 'Unable to get level' } 
-            Total Kills: ${player.segments[0].stats.kills ? player.segments[0].stats.kills.value : '0 kills this season'}
-            `, true)
-            .addField('Score', `${player.segments[0].stats.rankScore.value + ' RP'}`, true)
-            .addField('Rank', `${player.segments[0].stats.rankScore.metadata ? 
-                ConvertRank(player.segments[0].stats.rankScore.metadata.rankName) + ' ' + player.segments[0].stats.rankScore.metadata.rankName 
-                : 
-                'No rank'}`, false)
-            .setImage(legendHeader[player.metadata.activeLegendName])
-            .setFooter('Incorrect information? Contact miau#0004')
-        )
-
-        //console.log(await _GetApexPlayer(platform, name))
+            .addField(
+                '**Account**',
+                `**Level:** ${playerData.global.level + ' / 500' || 'Unable to fetch'}\n` +
+                `**Total Kills:** ${playerData.total.kills?.value || 'Unable to fetch'}`,
+                true
+            )
+            .addField(
+                '**Ranked**',
+                `**Rank**: ${emojifyRank(rank) + ' ' + rank}\n` +
+                `**Score**: ${playerData.global.rank.rankScore}`,
+                true
+            )
+            .addField('\u200B', '**Currently equipped trackers**')
+            .addFields([
+                {
+                    name: `${playerData.legends.selected?.data[0]?.name || 'No data' }`,
+                    value: `${playerData.legends.selected?.data[0]?.value || '-'}`,
+                    inline: true,
+                },
+                {
+                    name: `${playerData.legends.selected?.data[1]?.name ||'No data'}`,
+                    value: `${playerData.legends.selected?.data[1]?.value || '-'}`,
+                    inline: true,
+                },
+                {
+                    name: `${playerData.legends.selected?.data[2]?.name || 'No data'}`,
+                    value: `${playerData.legends.selected?.data[2]?.value || '-'}`,
+                    inline: true,
+                },
+            ])
+            .setImage(legendHeader[playerData.legends.selected.LegendName])
+            .setThumbnail(playerData.legends.selected.ImgAssets.icon)
+            .setFooter('Incorrect information? Contact `miau#0004`')
     }
 }
