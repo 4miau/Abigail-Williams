@@ -1,5 +1,5 @@
 import { Argument, Command } from 'discord-akairo'
-import { GuildMember, Message, User } from 'discord.js'
+import { GuildMember, Message, TextChannel } from 'discord.js'
 
 import { flags, ONE } from '../../util/Constants'
 
@@ -15,8 +15,6 @@ export default class Prune extends Command {
                     flags: ['-text', '-emojis', '-bots', '-images', '-embeds', '-mentions', '-links', '-invites', '-left']
             },
             channel: 'guild',
-            userPermissions: ['MANAGE_MESSAGES', 'VIEW_AUDIT_LOG'],
-            clientPermissions: ['MANAGE_MESSAGES'],
             ratelimit: 3,
             args: [
                 {
@@ -32,11 +30,20 @@ export default class Prune extends Command {
         })
     }
 
+    //@ts-ignore
+    userPermissions(message: Message) {
+        const modRole = this.client.settings.get(message.guild, 'modRole', '')
+        const hasStaffRole = message.member.permissions.has(['VIEW_AUDIT_LOG', 'MANAGE_MESSAGES'], true) || message.member.roles.cache.has(modRole)
+
+        if (!hasStaffRole) return 'Moderator'
+        return null
+    }
+
     private parseFlag(message: Message, flag: any): number {
         if (!flag) return 12
         if (message.guild.members.resolve(flag) || flag instanceof GuildMember) return 10
 
-        flag.startsWith('-') ? flag = flag.substring(1) : void 0
+        flag = flag.startsWith('-') ? flag.substring(1) : flag
         if (flag.startsWith('"') && flag.endsWith('"')) return 11
         try {
             const matchingFlag = Object.entries(flags).find(e => e[0] === flag)[1]
@@ -47,102 +54,106 @@ export default class Prune extends Command {
     }
 
     public async exec(message: Message, {messages, args}: {messages: number, args: string}): Promise<Message> {
-        if (!messages) return message.util!.send('You must have a number of messages to delete!') 
-        if (messages < 0) return message.util!.send('Please input a number greater than 0')
+        if (!messages || messages < 0) return message.channel.send('You must have a valid number of messages to delete!') 
 
-        messages >= 100 ? messages = 100 : messages = messages + ONE
+        messages = (messages >= 100) ? 100 : messages + ONE
 
         let argCaller: number = 0
-        let realMessages: number = 0
+        let totalMsgs: number = 0
 
-        argCaller = this.parseFlag(message, args as string)
+        argCaller = this.parseFlag(message, args)
         
         const argsFunc = {
             1 : async () => { //Text flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection =>  {
-                        return message.channel.messages.channel.bulkDelete(
-                            msgCollection.filter(m => m.attachments.size === 0)) || 
-                            msgCollection.filter(m => m.embeds.length === 0
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs =>  {
+                        return (message.channel as TextChannel).bulkDelete(
+                            msgs.filter(m => m.attachments.size === 0)) || 
+                            msgs.filter(m => m.embeds.length === 0
                         )
-                }).then(col => realMessages = col.size - 1) //Gets the number of deleted messages
+                }).then(col => totalMsgs = col.size) //Gets the number of deleted messages
             },
             2 : async () => { //Bots flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.author.bot)))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.author.bot)))
+                    .then(col => totalMsgs = col.size)
             },
             3 : async () => { //Images flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.attachments.size > 0)))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.attachments.size > 0)))
+                    .then(col => totalMsgs = col.size)
             },
             4 : async () => { //Embeds flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.embeds.length > 0)))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.embeds.length > 0)))
+                    .then(col => totalMsgs = col.size)
             },
             5 : async () => { //Mentions flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.mentions.members.size > 0)))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.mentions.members.size > 0)))
+                    .then(col => totalMsgs = col.size)
             },
             6 : async () => { //Links flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.content.includes('https://'))))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.content.includes('https://'))))
+                    .then(col => totalMsgs = col.size)
             },
             7 : async () => { //Invites flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(
-                        msgCollection.filter(m => m.content.includes('discord.gg')) ||
-                        msgCollection.filter(m => m.content.includes('.gg/'))
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(
+                        msgs.filter(m => m.content.includes('discord.gg')) ||
+                        msgs.filter(m => m.content.includes('.gg/'))
                     ))
-                    .then(col => realMessages = col.size)
+                    .then(col => totalMsgs = col.size)
             },
             8 : async () => { //Left (member left server) flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => !message.guild.members.resolve(m.author.id))))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => !message.guild.members.resolve(m.author.id))))
+                    .then(col => totalMsgs = col.size)
             },
             9 : async () => { // Member flag (Not bot)
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => !m.author.bot)))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => !m.author.bot)))
+                    .then(col => totalMsgs = col.size)
             },
             10 : async () => { //GuildMember flag (specific guildmember)
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(async msgCollection => {
-                        const userResolved: GuildMember = typeof args === 'object' ? args : message.guild.members.resolve(args)
-                        //message.guild.members.resolve(args) 
-                        //const userResolved: GuildMember = args.startsWith('<') ? message.guild.members.resolve(args.substring(3, args.length - 1)) : message.guild.members.resolve(args)
-                        return await message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.author.id === userResolved.id))
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(async msgs => {
+                        const gm: GuildMember = typeof args === 'object' ? args : message.guild.members.resolve(args)
+                        return (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.author.id === gm.id))
                     })
-                    .then(col => realMessages = col.size - 1)
+                    .then(col => totalMsgs = col.size)
             },
             11 : async () => { //Words flag
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(msgCollection => message.channel.messages.channel.bulkDelete(msgCollection.filter(m => m.content.includes(args.toString().substring(1, args.toString().length-1)))))
-                    .then(col => realMessages = col.size)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(msgs => (message.channel as TextChannel).bulkDelete(msgs.filter(m => m.content.includes(args.toString().substring(1, args.toString().length-1)))))
+                    .then(col => totalMsgs = col.size)
             },
             12 : async () => { //No args
-                await message.channel.messages.fetch({ 'limit': messages })
-                    .then(() => message.channel.messages.channel.bulkDelete(messages))
-                    .then(() => realMessages = messages - 1)
+                return message.channel.messages.fetch({ 'limit': messages })
+                    .then(() => (message.channel as TextChannel).bulkDelete(messages))
+                    .then(() => totalMsgs = messages - 1)
             }
         }
 
-        ;(argCaller === 0 ? async () => { //INVALID flag, not member or word(s)
-            message.delete({ timeout: 5000 })
-            return await (await message.util!.send('Please provide a valid flag')).delete({ timeout: 5000 })
-
-        } : async () => { //ELSE IS A VALID FLAG
+        if (!argCaller) {
+            setTimeout(() => { message.delete() }, 5000)
+            return message.channel.send('Please provide a valid flag.')
+                .then(msg => {
+                    setTimeout(() => { msg.delete() }, 5000)
+                    return msg
+                })
+        }
+        else {
             await argsFunc[argCaller].call()
-            return await (await message.util!.send(
-                `${realMessages ? (realMessages) + `${realMessages > 1 ? ' messages have successfully been deleted.' : ' message has been deleted.'}` : 'No messages have been deleted.'}
-            `)).delete({ timeout: 5000})
-            
-        })()
+            return (message.channel.send(
+                totalMsgs ? totalMsgs + `${totalMsgs > 1 ? ' messages have successfully been deleted.' : ' messages have been deleted'}` : 'No messages have been deleted'
+            ))
+            .then(msg => {
+                setTimeout(() => { msg.delete() }, 5000)
+                return msg
+            })
+        }
     }
 }
 
