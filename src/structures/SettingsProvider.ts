@@ -1,134 +1,132 @@
 import { Provider } from 'discord-akairo'
 import { Guild } from 'discord.js'
-import { Repository, InsertResult, DeleteResult } from 'typeorm'
-import * as _ from 'dot-prop'
 
-import { Settings } from '../models/Settings'
+import Settings from '../models/Settings'
 
 export default class SettingsProvider extends Provider {
-    protected repo: Repository<any>
+    public model: typeof Settings
 
-    public constructor(repository: Repository<any>) {
+    public constructor(model: typeof Settings) {
         super()
-        this.repo = repository
+        this.model = model
     }
 
     public async init() {
-        const settings = await this.repo.find()
-
-        for (const setting of settings) this.items.set(setting.guild, JSON.parse(setting.settings))
+        try {
+            const guilds =  await this.model.find()
+        
+            for (const i in guilds) {
+                const guild = guilds[i]
+                this.items.set(guild.id, guild.settings)
+            }
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     public get<T>(guild: string | Guild, key: string, defaultValue: any): T | any {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
-        const data = this.items.get(id)
 
         if (this.items.has(id)) {
-            return _.get(data, key, defaultValue)
+            const value = this.items.get(id)[key]
+            return !value ? defaultValue : value
         }
 
         return defaultValue
     }
 
-    public getArr<T>(guild: string | Guild, props: {key: string, defaultValue: any}[]): T | any {
+    public getArr<T>(guild: string | Guild, props: { key: string, defaultValue: any}[]): T | any {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
-        const data = this.items.get(id)
 
         let propsArr = []
 
-        for(const prop of props) {
+        for (const prop of props) {
             if (this.items.has(id)) {
-                propsArr.push(_.get(data, prop.key, prop.defaultValue))
-            }  
-        } 
+                const value = this.items.get(id)[prop.key]
+                propsArr.push(value || prop.defaultValue)
+            }
+        }
 
         if (propsArr) return propsArr
 
         return props
     }
 
-    public getRaw(guild: string | Guild): string {
-        const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
-
-        return this.items.get(id)
-    }
-
-    public set(guild: string | Guild, key: string, value: any): Promise<InsertResult> {
+    public async set(guild: string | Guild, key: string, value: any) {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
         const data = this.items.get(id) || {}
 
-        _.set(data, key, value)
-
+        data[key] = value
         this.items.set(id, data)
 
-        return this.repo
-            .createQueryBuilder()
-            .insert()
-            .into(Settings)
-            .values({
-                'guild': id,
-                'settings': JSON.stringify(data)
-            })
-            .onConflict('("guild") DO UPDATE SET "settings" = :settings')
-            .setParameter('settings', JSON.stringify(data))
-            .execute()
+        const doc = await this.getDocument(id)
+        doc.settings[key] = value
+        return doc.updateOne(doc)
     }
 
-    public setArr(guild: string | Guild, props: {key: string, value: any}[]): Promise<InsertResult> {
+    public async setArr(guild: string | Guild, props: { key: string, value: any }[]) {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
         const data = this.items.get(id) || {}
 
-        for(const prop of props) {
-            _.set(data, prop.key, prop.value)
+        const doc = await this.getDocument(id)
+
+        for (const prop of props) {
+            data[prop.key] = prop.value
+            this.items.set(id, data)
+            doc.settings[prop.key] = prop.value
         }
 
-        this.items.set(id, data)
-
-        return this.repo
-            .createQueryBuilder()
-            .insert()
-            .into(Settings)
-            .values({
-                'guild': id,
-                'settings': JSON.stringify(data)
-            })
-            .onConflict('("guild") DO UPDATE SET "settings" = :settings')
-            .setParameter('settings', JSON.stringify(data))
-            .execute()
-
+        return doc.updateOne(doc)
     }
 
-    public delete(guild: string | Guild, key: string): Promise<DeleteResult> {
+    public async delete(guild: string | Guild, key: string) {
+        const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
+        const data = this.items.get(id) || {}
+        delete data[key]
+
+        const doc = await this.getDocument(id)
+        delete doc.settings[key]
+        return doc.updateOne(doc)
+    }
+
+    public async deleteArr(guild: string | Guild, keys: string[]) {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
         const data = this.items.get(id) || {}
 
-        _.delete(data, key)
+        const doc = await this.getDocument(id)
 
-        return this.repo
-        .createQueryBuilder()
-        .insert()
-        .into(Settings)
-        .values({
-            'guild': id,
-            'settings': JSON.stringify(data)
-        })
-        .onConflict('("guild") DO UPDATE SET "settings" = :settings')
-        .setParameter('settings', JSON.stringify(data))
-        .execute()
+        for (const key of keys) {
+            delete data[key]
+            delete doc.settings[key]
+        }
+
+        return doc.updateOne(doc)
     }
 
-    public clear(guild: string | Guild): Promise<DeleteResult> {
+    public async clear(guild: string | Guild) {
         const id = (this.constructor as typeof SettingsProvider).getGuildID(guild)
-
         this.items.delete(id)
-        return this.repo.delete(id)
+
+        const doc = await this.getDocument(id)
+        if (doc) await doc.remove()
     }
 
+    public async getDocument(id: string) {
+        const obj = await this.model.findOne({ id })
+
+        if (!obj) {
+            const newDoc = await new this.model({ id, settings: {}}).save()
+            return newDoc
+        }
+
+        return obj
+    }
+    
     public static getGuildID(guild: string | Guild): string {
         if (guild instanceof Guild) return guild.id
         if (guild === 'global' || guild === null) return '0'
         if (typeof guild === 'string' && /^\d+$/.test(guild)) return guild
 
-        throw new TypeError(`Guild instance is undefined. The valid instances would be: guildID, 'global' or null`)
+        throw new TypeError('Guild instance is undefined. The valid instances would be: guildID, \'global\' or null')
     }
 }

@@ -1,21 +1,20 @@
-import { LessThan, Repository } from 'typeorm'
 import ms from 'ms'
 
-import BotClient from '../client/BotClient'
-import { Case } from '../models/Case'
+import Abby from '../client/Abby'
+import Case, { ICase } from '../models/Case'
 
 export default class MuteManager {
-    protected client: BotClient
-    protected repo: Repository<any>
+    protected client: Abby
+    protected model: typeof Case
     protected queuedSchedules = new Map<number, any>()
     protected interval!: NodeJS.Timeout
 
     protected rate: number
 
 
-    public constructor(client: BotClient, repository: Repository<any>, { rate = ms('5m') } = {}) {
+    public constructor(client: Abby, model: typeof Case, { rate = ms('5m') } = {}) {
         this.client = client
-        this.repo = repository
+        this.model = model
         this.rate = rate
     }
 
@@ -25,8 +24,7 @@ export default class MuteManager {
     }
 
     private async _check() {
-        const caseRepo = this.client.db.getRepository(Case)
-        const mutes = await caseRepo.find({ actionDuration: LessThan(new Date(Date.now() + this.rate)), actionComplete: false })
+        const mutes = await Case.find({ actionDuration: { $lt : (new Date(Date.now() + this.rate)) }, actionComplete: false })
         const now = new Date()
 
         for (const mute of mutes) {
@@ -37,38 +35,18 @@ export default class MuteManager {
         }
     }
 
-    public async addMute(mute: Case, rescheduling = false) {
+    public async addMute(mute: ICase, rescheduling = false) {
         this.client.logger.log('INFO', `[MUTE] Muted ${mute.targetTag} in ${this.client.guilds.resolve(mute.guildID).name}`)
 
         if (rescheduling) this.client.logger.log('INFO', `[MUTE] Rescheduled mute on ${mute.targetTag} in ${this.client.guilds.resolve(mute.guildID).name}`)
         if (!rescheduling) {
-            const caseRepo = this.client.db.getRepository(Case)
-
-            const newMute = new Case()
-    
-            newMute.guildID = mute.guildID
-            newMute.caseID = mute.caseID
-            mute.messageID ? newMute.messageID = mute.messageID : void 0
-    
-            newMute.action = mute.action
-            newMute.actionDuration = mute.actionDuration
-            newMute.actionComplete = mute.actionComplete
-            newMute.reason = mute.reason
-    
-            newMute.targetID = mute.targetID
-            newMute.targetTag = mute.targetTag
-            newMute.modID = mute.modID
-            newMute.modTag = mute.modTag
-    
-            mute = await caseRepo.save(newMute)
+            await mute.updateOne(mute)
         }
         if (mute.actionDuration && mute.actionDuration.getTime() < (Date.now() + this.rate)) this.queueMute(mute)
     }
 
-    public async cancelMute(mute: Case) {
-        this.client.logger.log('INFO', `[MUTE] Unmuted ${mute.targetTag} in ${this.client.guilds.resolve(mute.guildID).name}`)
-
-        const caseRepo = this.client.db.getRepository(Case)
+    public async cancelMute(mute: ICase) {
+        this.client.logger.log('INFO', `[UNMUTE] Unmuted ${mute.targetTag} in ${this.client.guilds.resolve(mute.guildID).name}`)
 
         const guild = await this.client.guilds.fetch(mute.guildID)
         const muteRole = this.client.settings.get(guild, 'muteRole', '')
@@ -81,7 +59,7 @@ export default class MuteManager {
         catch { return 'This user is not muted or I am unable to remove the role from this user.'}
 
         mute.actionComplete = true
-        await caseRepo.save(mute)
+        await mute.save()
 
         const schedule = this.queuedSchedules.get(mute.id)
 
@@ -89,22 +67,19 @@ export default class MuteManager {
         return this.queuedSchedules.delete(mute.id)
     }
 
-    public async deleteMute(mute: Case) {
-        const caseRepo = this.client.db.getRepository(Case)
+    public async deleteMute(mute: ICase) {
         const schedule = this.queuedSchedules.get(mute.id)
         if (schedule) clearTimeout(schedule)
         this.queuedSchedules.delete(mute.id)
-        
-        return await caseRepo.delete(mute)
+
+        return mute.delete()
     }
 
-    public queueMute(mute: Case) {
-        this.queuedSchedules.set(mute.id, setTimeout(() => { 
-            this.cancelMute(mute)
-        }, mute.actionDuration.getTime() - Date.now()))
+    public queueMute(mute: ICase) {
+        this.queuedSchedules.set(mute.id, setTimeout(() => { this.cancelMute(mute)}, mute.actionDuration.getTime() - Date.now()))
     }
 
-    public rescheduleMute(mute: Case) {
+    public rescheduleMute(mute: ICase) {
         this.client.logger.log('INFO', 'Rescheduling mute...')
         const schedule = this.queuedSchedules.get(mute.id)
         if (schedule) clearTimeout(schedule)

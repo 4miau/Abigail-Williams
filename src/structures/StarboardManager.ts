@@ -1,8 +1,8 @@
 import {  Collection, Guild, GuildMember, Message, MessageReaction, TextChannel, User } from 'discord.js'
 import path from 'path'
 
-import type Client from '../client/BotClient'
-import { Stars } from '../models/Stars'
+import type Client from '../client/Abby'
+import Stars from '../models/Stars'
 import { Colours } from '../util/Colours'
 import { extensions } from '../util/Constants'
 import Queue from './QueueManager'
@@ -42,28 +42,27 @@ export default class Starboard {
         const UserBlacklist: string[] = this.client.settings.get(message.guild, 'starboard.user-blacklist', [])
         const ChannelBlacklist: string[] = this.client.settings.get(message.guild, 'starboard.channel-blacklist', [])
 
-        if (UserBlacklist.includes(starredBy.id)) return `You have been blacklisted from using the starboard.`
-        if (ChannelBlacklist.includes(message.channel.id)) return `This channel has been blacklisted from the starboard`
+        if (UserBlacklist.includes(starredBy.id)) return 'You have been blacklisted from using the starboard.'
+        if (ChannelBlacklist.includes(message.channel.id)) return 'This channel has been blacklisted from the starboard'
 
         if (!this.channel) {
             const prefix: string = this.client.settings.get(this.guild, 'prefix', 'a.')
-            return `There isn\'t a starboard channel configured, you can set one by using the \`${prefix}starboardsetchannel\` command.`
+            return `There isn't a starboard channel configured, you can set one by using the \`${prefix}starboardsetchannel\` command.`
         }
 
-        if (message.author.id === starredBy.id) return `You can\'t star your own messages.`
+        if (message.author.id === starredBy.id) return 'You can\'t star your own messages.'
 
         return this.queue(message, () => this.addStar(message, starredBy))
     }
 
     private async addStar(message: Message, starredBy: User) {
         //ADDING STAR TO DB
-        const starRepo = this.client.db.getRepository(Stars)
-        const star = await starRepo.findOne({ where: { message: message.id }})
+        const star = await Stars.findOne({ where: { message: message.id }})
 
         if (!star) {
-            const starboardMessage = this.threshold === 1 ? await this.channel.send({ embed: this.buildStarboardEmbed(message)}) : null
+            const starboardMessage = this.threshold === 1 ? await this.channel.send({ embeds: [this.buildStarboardEmbed(message)] }) : null
 
-            starRepo.save({
+            await Stars.create({
                 message: message.id,
                 author: message.author.id,
                 channel: message.channel.id,
@@ -85,12 +84,13 @@ export default class Starboard {
             const e = this.buildStarboardEmbed(message, newStarredBy.length)
 
             starboardMessage = star.starboardMessage ? 
-                await this.channel.messages.fetch(star.starboardMessage).then(msg => msg.edit(e)).catch(() => this.channel.send(e))
+                await this.channel.messages.fetch(star.starboardMessage)
+                    .then(msg => msg.edit({ embeds: [e] })).catch(() => this.channel.send({ embeds: [e] }))
                 :
-                await this.channel.send(e)
+                await this.channel.send({ embeds: [e] })
         }
 
-        await starRepo.update(star, {
+        await star.update({
             starCount: newStarredBy.length,
             starredBy: newStarredBy,
             starboardMessage: starboardMessage ? starboardMessage.id : null
@@ -104,8 +104,8 @@ export default class Starboard {
         const UserBlacklist: string[] = this.client.settings.get(message.guild, 'starboard.user-blacklist', [])
         const ChannelBlacklist: string[] = this.client.settings.get(message.guild, 'starboard.channel-blacklist', [])
 
-        if (UserBlacklist.includes(unstarredBy.id)) return `You have been blacklisted from using the starboard.`
-        if (ChannelBlacklist.includes(message.channel.id)) return `This channel has been blacklisted from the starboard`
+        if (UserBlacklist.includes(unstarredBy.id)) return 'You have been blacklisted from using the starboard.'
+        if (ChannelBlacklist.includes(message.channel.id)) return 'This channel has been blacklisted from the starboard'
 
         if (!this.channel) return undefined
 
@@ -114,8 +114,7 @@ export default class Starboard {
 
     private async removeStar(message: Message, unstarredBy: User) {
         //REMOVING STAR FROM DB
-        const starRepo = this.client.db.getRepository(Stars)
-        const star = await starRepo.findOne({ where: { message: message.id } })
+        const star = await Stars.findOne({ where: { message: message.id } })
 
         if (!star || !star.starredBy.includes(unstarredBy.id)) return undefined
 
@@ -133,16 +132,17 @@ export default class Starboard {
             if (newStarredBy.length >= this.threshold) {
                 const e = this.buildStarboardEmbed(message, newStarredBy.length)
                 starboardMessage = star.starboardMessage ?
-                await this.channel.messages.fetch(star.starboardMessage).then(msg => msg.edit(e)).catch(() => this.channel.send(e))
+                await this.channel.messages.fetch(star.starboardMessage)
+                    .then(msg => msg.edit({ embeds: [e] })).catch(() => this.channel.send({ embeds: [e] }))
                 :
-                await this.channel.send(e)
+                await this.channel.send({ embeds: [e] })
             }
             else {
                 const msg = await this.channel.messages.fetch(star.starboardMessage).catch(null)
                 if (msg) await msg.delete()
             }
 
-            await starRepo.update(star, {
+            await star.update({
                 starCount: newStarredBy.length,
                 starredBy: newStarredBy,
                 starboardMessage: starboardMessage ? starboardMessage.id : null
@@ -161,8 +161,7 @@ export default class Starboard {
 
     private async deleteStar(message: Message) {
         //DELETE STAR ENTITY FROM DB
-        const starRepo = this.client.db.getRepository(Stars)
-        const star = await starRepo.findOne({ where: { message: message.id} })
+        const star = await Stars.findOne({ where: { message: message.id} })
 
         if (!star) return undefined
 
@@ -170,14 +169,14 @@ export default class Starboard {
 
         if (starboardMessage) await starboardMessage.delete()
 
-        await starRepo.delete(star)
+        star.delete()
+
         return undefined
     }
 
     public async fixStar(message: Message) {
         //FIX STAR IN DB
-        const starRepo = this.client.db.getRepository(Stars)
-        const star = await starRepo.findOne({ where: { message: message.id} })
+        const star = await Stars.findOne({ where: { message: message.id} })
 
         const UserBlacklist = this.client.settings.get(message.guild, 'starboard.user-blacklist', [])
 
@@ -214,14 +213,14 @@ export default class Starboard {
             let starboardMessage: Message
             if (starredBy.length >= this.threshold) {
                 const e = this.buildStarboardEmbed(message, starredBy.length)
-                starboardMessage = await this.channel.send(e)
+                starboardMessage = await this.channel.send({ embeds: [e] })
             }
             else if (star.starboardMessage) {
                 const msg = await this.channel.messages.fetch(star.starboardMessage).catch(null)
                 if (msg) await msg.delete()
             }
 
-            starRepo.create({
+            Stars.create({
                 starredBy: starredBy,
                 message: message.id,
                 author: message.author.id,
@@ -248,16 +247,16 @@ export default class Starboard {
         if (newStarredBy.length >= this.threshold) {
             const e = this.buildStarboardEmbed(message, newStarredBy.length)
             starboardMessage = star.starboardMessage ?
-            await this.channel.messages.fetch(star.starboardMessage).then(msg => msg.edit(e)).catch(() => this.channel.send(e))
+            await this.channel.messages.fetch(star.starboardMessage).then(msg => msg.edit({ embeds: [e] })).catch(() => this.channel.send({ embeds: [e] }))
             :
-            await this.channel.send(e)
+            await this.channel.send({ embeds: [e] })
         }
         else {
             const msg = await this.channel.messages.fetch(star.starboardMessage).catch(null)
             if (msg) await msg.delete()
         }
 
-        await starRepo.update(star, {
+        await star.update({
             starCount: newStarredBy.length,
             starredBy: newStarredBy,
             starboardMessage: starboardMessage ? starboardMessage.id : null,
@@ -267,16 +266,15 @@ export default class Starboard {
     }
 
     public destroy() {
-        const starRepo = this.client.db.getRepository(Stars)
-        return starRepo.delete({ guild: this.guild.id })
+        return Stars.deleteOne({ guild: this.guild.id })
     }
 
     public buildStarboardEmbed(message: Message, starCount = 1) {
         const star = Starboard.getStarEmoji(starCount)
-        const e = this.client.AbbyUtil.embed()
+        const e = this.client.util.embed()
             .setColor(Colours.Supernova)
-            .addField('Author', message.author, true)
-            .addField('Channel', message.channel, true)
+            .addField('Author', message.author.tag, true)
+            .addField('Channel', (message.channel as TextChannel).name, true)
             .setThumbnail(message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
             .setFooter(`${star} ${starCount} | ${message.id}`)
 
@@ -292,32 +290,32 @@ export default class Starboard {
     }
 
     public static getStarEmoji(count: number) {
-		if (count < 5) return '⭐';
-		if (count < 10) return '🌟';
-		if (count < 15) return '✨';
-		if (count < 20) return '💫';
-		if (count < 30) return '🎇';
-		if (count < 40) return '🎆';
-		if (count < 50) return '☄️';
-		if (count < 75) return '🌠';
-		if (count < 100) return '🌌';
-		if (count < 150) return '🌌•⭐';
-		if (count < 200) return '🌌•🌟';
-		if (count < 300) return '🌌•✨';
-		if (count < 400) return '🌌•💫';
-		if (count < 650) return '🌌•🎇';
-		if (count < 900) return '🌌•🎆';
-		if (count < 1400) return '🌌•☄️';
-		if (count < 2400) return '🌌•🌠';
-		return '🌌•🌌';
+		if (count < 5) return '⭐'
+		if (count < 10) return '🌟'
+		if (count < 15) return '✨'
+		if (count < 20) return '💫'
+		if (count < 30) return '🎇'
+		if (count < 40) return '🎆'
+		if (count < 50) return '☄️'
+		if (count < 75) return '🌠'
+		if (count < 100) return '🌌'
+		if (count < 150) return '🌌•⭐'
+		if (count < 200) return '🌌•🌟'
+		if (count < 300) return '🌌•✨'
+		if (count < 400) return '🌌•💫'
+		if (count < 650) return '🌌•🎇'
+		if (count < 900) return '🌌•🎆'
+		if (count < 1400) return '🌌•☄️'
+		if (count < 2400) return '🌌•🌠'
+		return '🌌•🌌'
 	}
 
-    public static emojiFromID(client, id) {
+    public static emojiFromID(client: Client, id: string) {
 		if (/^\d+$/.test(id)) {
-			return client.emojis.get(id);
+			return client.emojis.cache.get(id)
 		}
 
-		return id;
+		return id
 	}
 
     public static getAttachment(message: Message) {
@@ -341,6 +339,6 @@ export default class Starboard {
 		if (typeof x === 'string') return x === y.name
 		if (typeof y === 'string') return x.name === y
 
-		return x.identifier === y.identifier;
+		return x.identifier === y.identifier
 	}
 }

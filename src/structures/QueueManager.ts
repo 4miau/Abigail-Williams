@@ -1,11 +1,11 @@
-import BotClient from "../client/BotClient"
+import AbbyClient from '../client/Abby'
 
 export default class Queue {
     protected _queue: any[]
     protected _running: boolean
-    protected client: BotClient
+    protected client: AbbyClient
 
-    constructor(client: BotClient) {
+    constructor(client: AbbyClient) {
         this._queue = []
         this._running = false
         this.client = client
@@ -24,7 +24,7 @@ export default class Queue {
 
         if (!promise) this._running = false
         else {
-            typeof promise === 'function' ? promise().then(() => this._run()).catch((err: any) => { this.client.logger.log('ERROR', err) }) : void 0
+            promise?.isFunc() ? promise().then(() => this._run()).catch((err: any) => { this.client.logger.log('ERROR', err) }) : void 0
         }
     }
 }
