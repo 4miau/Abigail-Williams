@@ -40,7 +40,6 @@ Also please read the note towards the bottom in case you are wondering whether y
 #### There are many, many features that will also be implemented, are work in progress or have been implemented such as: starboard, reminders, images, game data (e.g. Apex Legends, League of Legends), economy, minigames, etc. This will take a long time to make but is very well a nice project!
 
 # Requirements
----
 
 These are some simple requirements you will need in order to host the bot, however I will not provide a guide as to how to do so.
 
