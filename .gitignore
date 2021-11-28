@@ -15,8 +15,6 @@ src/typings
 
 # Packages
 node_modules
-yarn.lock
-Lavalink.jar
 
 # Progress
 git-notes.md
@@ -25,7 +23,6 @@ plans
 # Sensitive
 .env
 abby.config.js
-application.yml
 src/Bot.ts
 src/client
 
