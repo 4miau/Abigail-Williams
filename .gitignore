@@ -1,10 +1,7 @@
 # Configs
-.eslintignore
-.eslintrc.json
 .prettierignore
 .vscode
 jest.config.js
-tsconfig.json
 
 # Dist
 dist
