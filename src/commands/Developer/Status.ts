@@ -12,8 +12,8 @@ export default class Status extends Command {
             category: 'Developer',
             description: {
                     content: 'Sets my status',
-                    usage: 'status [status]',
-                    examples: ['status dnd']
+                    usage: 'status [status] <message>',
+                    examples: ['status dnd', 'status dnd Watching Miau\'s VODs']
             },
             ownerOnly: true,
             ratelimit: 3,
