@@ -30,6 +30,7 @@ src/client
 src/helper
 src/commands/Images/Danbooru.ts
 src/commands/Owner/Debug.ts
+src/commands/Owner/PM2.ts
 src/commands/Fun/Blackjack.ts
 src/structures/ProfileManagerRevamp.ts
 src/commands/Music/Queue.ts
