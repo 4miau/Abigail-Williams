@@ -3,7 +3,7 @@ import { Message } from 'discord.js'
 
 export default class GetGuilds extends Command {
     public constructor() {
-        super('getGuild', {
+        super('getguilds', {
             aliases: ['getguilds', 'guilds', 'servers'],
             category: 'Owner',
             description: {
