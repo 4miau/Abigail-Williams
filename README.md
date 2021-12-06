@@ -121,7 +121,7 @@ Solely authored and maintained by miau.
 
 ### Note
 
-##### I shall permit this bot's code to be used to study & learn from. However, to host the bot, you will have to figure out how to recreate certain files, host the bot and make a database yourself. You can not just directly dump this repository in order to make your bot, you will need to have decent understanding with discord-akairo (read the docs) & node.js.
+##### I shall permit this bot's code to be used to study & learn from. However, to host the bot, you will have to figure out how to recreate certain files, host the bot and make a database yourself as I will not directly support self-hosting. You can not just directly dump this repository in order to make your bot, you will need to have decent understanding with discord-akairo (read the docs) & node.js.
 
 ##### I would like to give credit to iCrawl as the case system is influenced by him (specifically Case.ts, MuteManager.ts, Cases.ts & ModUtil.ts). I was thinking for quite a long while as to how to approach this system for the most efficient way to get, display & store moderation cases/logs. He's quite the genius.
 
