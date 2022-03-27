@@ -6,9 +6,10 @@ jest.config.js
 # Dist
 dist
 
-#Misc
+# Misc
 archive
-src/typings
+#src/typings
+templates
 
 # Packages
 node_modules
@@ -23,7 +24,7 @@ abby.config.js
 src/Bot.ts
 src/client
 
-#Testing
+# Testing
 src/helper
 src/commands/Images/Danbooru.ts
 src/commands/Owner/Debug.ts
@@ -31,5 +32,6 @@ src/commands/Owner/PM2.ts
 src/commands/Fun/Blackjack.ts
 src/structures/ProfileManagerRevamp.ts
 src/commands/Music/Queue.ts
+src/slash_commands
 src/structures/ThreadManagerRevamp.ts
 tests
