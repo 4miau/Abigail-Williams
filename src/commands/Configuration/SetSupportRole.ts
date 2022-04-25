@@ -32,7 +32,7 @@ export default class SetSupportRole extends Command {
     }
 
     public exec(message: Message, {role}: {role: Role}): Promise<Message> {
-        const currRole: Role = message.guild.roles.resolve(this.client.settings.get(message.guild, 'modmail.support-role', ''))
+        const currRole: Role = message.guild.roles.resolve(this.client.settings.get(message.guild, 'support-role', ''))
 
         if (!role) {
             if (currRole) return message.channel.send(`The server's current support role is: ${currRole.name}`)
@@ -40,7 +40,7 @@ export default class SetSupportRole extends Command {
         }
 
         if (role) {
-            this.client.settings.set(message.guild, 'modmail.support-role', role.id)
+            this.client.settings.set(message.guild, 'support-role', role.id)
             return message.channel.send('New support role has been set.')
         }
 

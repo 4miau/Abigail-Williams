@@ -2,7 +2,6 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed, Role } from 'discord.js'
 
 import { Colours } from '../../util/Colours'
-import { manageAutorole } from '../../util/functions/guild'
 
 export default class SetAutorole extends Command {
     public constructor() {
@@ -44,9 +43,10 @@ export default class SetAutorole extends Command {
     }
 
     public async exec(message: Message, {type, role}: {type: string, role: Role}): Promise<Message> {
-        if (!type) {
-            const autoRoles: { humans: string[], bots: string[], all: string[] }  = this.client.settings.get(message.guild, 'autoRoles', {})
+        const autoRoleService = this.client.serviceHandler.modules.get('manageautorole')
 
+        if (!type) {
+            const autoRoles: { humans: string[], bots: string[], all: string[] }  = this.client.settings.get(message.guild, 'auto-roles', {})
             if (autoRoles.isObjectEmpty()) return message.channel.send('This server has no autoroles.')
 
             const e = new MessageEmbed()
@@ -68,7 +68,6 @@ export default class SetAutorole extends Command {
                     `${(autoRoles.all && autoRoles.all.length > 0) ? (autoRoles.all).join(', ') : 'No autoroles for both.'}`, 
                     false
                 )
-                .setFooter('Powered by the cutie miau.')
             
             return message.channel.send({ embeds: [e] }) 
         }
@@ -81,7 +80,7 @@ export default class SetAutorole extends Command {
         const filter = (msg: Message) => msg.author.id === message.author.id
         const target = (await message.channel.awaitMessages({ filter: filter, max: 1, time: 30000 })).first().content.toLowerCase() as AutoroleTags
 
-        if (!target.caseCompare('humans', 'bots', 'all')) return message.channel.send('You need to provide a valid target type.')
-        return manageAutorole(message, role, target, type === 'add' ? true : false)
+        if (!target.caseCompare('human', 'humans', 'bot', 'bots', 'all')) return message.channel.send('You need to provide a valid target type.')
+        return autoRoleService.exec(message, role, target, type === 'add' ? true : false)
     }
 }

@@ -33,11 +33,11 @@ export default class SetCountChannel extends Command {
 
     public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
         if (!channel) {
-            this.client.settings.delete(message.guild, 'count')
+            this.client.settings.delete(message.guild, 'count-channel')
             return message.channel.send('I have removed the server\'s current count channel, if any was set.')
         }
 
-        this.client.settings.set(message.guild, 'count.count-channel', channel.id)
+        this.client.settings.set(message.guild, 'count-channel', channel.id)
         await channel.send('I will now keep track of counting in this channel!').then(m => m.pin())
         return message.channel.send(`New count channel has been set to ${channel}`)
     }

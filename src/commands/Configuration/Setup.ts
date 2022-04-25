@@ -53,7 +53,7 @@ export default class Setup extends Command {
     }
 
     public async exec(message: Message): Promise<Message> {
-        const serverSetup: boolean = this.client.settings.get(message.guild, 'modmail.modmail-hasSetup', false)
+        const serverSetup: boolean = this.client.settings.get(message.guild, 'modmail-completed', false)
 
         const e = new MessageEmbed()
             .setAuthor('Modmail Setup Complete', message.guild.icon)
@@ -78,10 +78,10 @@ export default class Setup extends Command {
             modmailChannel.send({ embeds: [e] })
 
             this.client.settings.setArr(message.guild, [
-                {'key': 'modmail.support-role', 'value': supportRole.id},
-                {'key': 'modmail.modmail-channel', 'value': modmailChannel.id},
-                {'key': 'modmail.modmail-category', 'value': modmailCategory.id},
-                {'key': 'modmail.modmail-hasSetup', 'value': true}
+                {'key': 'support-role', 'value': supportRole.id},
+                {'key': 'modmail-channel', 'value': modmailChannel.id},
+                {'key': 'modmail-category', 'value': modmailCategory.id},
+                {'key': 'modmail-completed', 'value': true}
             ])
 
             setTimeout(() => { message.delete() }, 5000)
@@ -89,23 +89,23 @@ export default class Setup extends Command {
         }
         else {
             const modmailArr: string[] = this.client.settings.getArr(message.guild, [
-                {'key': 'modmail.support-role', 'defaultValue': ''}, //modmailArr[0] - ROLE
-                {'key': 'modmail.modmail-category', 'defaultValue': ''}, //modmailArr[1] - CATEGORY
-                {'key': 'modmail.modmail-channel', 'defaultValue': ''} //modmailArr[2] - CHANNEL
+                {'key': 'support-role', 'defaultValue': ''}, //modmailArr[0] - ROLE
+                {'key': 'modmail-category', 'defaultValue': ''}, //modmailArr[1] - CATEGORY
+                {'key': 'modmail-channel', 'defaultValue': ''} //modmailArr[2] - CHANNEL
             ])
 
             if (!message.guild.roles.resolve(modmailArr[0])) {
                 const newSupportRole: Role = await this.createSupportRole(message.guild)
-                this.client.settings.set(message.guild, 'modmail.support-role', newSupportRole.id)
+                this.client.settings.set(message.guild, 'support-role', newSupportRole.id)
             }
             if (!message.guild.channels.resolve(modmailArr[1])) {
                 const newModmailCategory: CategoryChannel = await this.createModmailCategory(message.guild)
-                this.client.settings.set(message.guild, 'modmail.modmail-category', newModmailCategory.id)
+                this.client.settings.set(message.guild, 'modmail-category', newModmailCategory.id)
             }
             if (!message.guild.channels.resolve(modmailArr[2])) {
-                const currentCategory: CategoryChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'modmail.modmail-category', '')) as CategoryChannel
+                const currentCategory: CategoryChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'modmail-category', '')) as CategoryChannel
                 const newTextChannel: TextChannel = await this.createModmailChannel(message.guild, currentCategory)
-                this.client.settings.set(message.guild, 'modmail.modmail-channel', newTextChannel.id)
+                this.client.settings.set(message.guild, 'modmail-channel', newTextChannel.id)
                 newTextChannel.send({ embeds: [e] })
             }
 

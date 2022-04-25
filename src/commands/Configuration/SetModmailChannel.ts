@@ -34,13 +34,13 @@ export default class SetModmailChannel extends Command {
     public async exec(message: Message, {channel}: {channel: TextChannel}): Promise<Message> {
         if (!channel) return message.channel.send('You must provide a valid channel to set modmail-logs in. (needs to be in a category or one will be made)')
 
-        this.client.settings.set(message.guild, 'modmail.modmail-channel', channel.id)
+        this.client.settings.set(message.guild, 'modmail-channel', channel.id)
 
         if (channel.parent.type !== 'GUILD_CATEGORY') {
             await message.guild.channels.create('Modmail logs', { type: 'GUILD_CATEGORY', topic: 'Modmail logs' })
                 .then(cat => {
                     channel.setParent(cat, {'lockPermissions': true})
-                    this.client.settings.set(message.guild, 'modmail.modmail-category', cat.id)
+                    this.client.settings.set(message.guild, 'modmail-category', cat.id)
                     message.channel.send('New category and modmail')
                 })
                 .catch(() => message.channel.send('I do not have valid permissions to be able to be able to create the new category/channel.'))
