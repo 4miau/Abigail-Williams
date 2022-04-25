@@ -34,11 +34,11 @@ export default class SetUnverifiedRole extends Command {
 
     public exec(message: Message, {role}: {role: Role}): Promise<Message> {
         if (role) {
-            this.client.settings.set(message.guild, 'verification.unverified-role', role.id)
+            this.client.settings.set(message.guild, 'unverified-role', role.id)
             return message.channel.send(`Successfully set ${role.name} as the new unverified role.`)
         }
         else {
-            this.client.settings.delete(message.guild, 'verification.unverified-role')
+            this.client.settings.delete(message.guild, 'unverified-role')
             return message.channel.send('I have successfully removed the guild\'s unverified role.')
         }
     }

@@ -33,13 +33,13 @@ export default class SetVerificationChannel extends Command {
 
     public exec(message: Message, {channel}: { channel: TextChannel}): Promise<Message> {
         if (channel) {
-            this.client.settings.set(message.guild, 'verification.verification-channel', channel.id)
-            this.client.settings.set(message.guild, 'verification.enabled', true)
+            this.client.settings.set(message.guild, 'verify-channel', channel.id)
+            this.client.settings.set(message.guild, 'verify-enabled', true)
             return message.channel.send(`Successfully set ${channel} as the new verification channel.`)
         }
         else {
-            this.client.settings.delete(message.guild, 'verification.verification-channel')
-            this.client.settings.set(message.guild, 'verification.enabled', false)
+            this.client.settings.delete(message.guild, 'verify-channel')
+            this.client.settings.set(message.guild, 'verify-enabled', false)
             return message.channel.send('I have successfully removed the guild\'s verification channel.')
         }
     }
