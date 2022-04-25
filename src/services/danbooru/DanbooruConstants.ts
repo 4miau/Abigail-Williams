@@ -1,0 +1,1 @@
+export const danbooruUri = 'https://danbooru.donmai.us'
