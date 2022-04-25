@@ -26,15 +26,15 @@ export default class ResetCount extends Command {
     }
 
     public async exec(message: Message): Promise<Message> {
-        const countChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'count.count-channel', ''))
+        const countChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'count-channel', ''))
 
         const prefix = this.client.settings.get(message.guild, 'prefix', 'a.')
         if (!countChannel) return message.channel.send(`You do not have counting set up on this server, set a channel with ${prefix}setchannel first.`)
 
         this.client.settings.setArr(message.guild, [
-            { key: 'count.current-count', value: 0 },
-            { key: 'count.current-sender', value: '' },
-            { key: 'count.start-over', value: true }
+            { key: 'current-count', value: 0 },
+            { key: 'count-sender', value: '' },
+            { key: 'reset-count', value: true }
         ])
 
         await (countChannel as TextChannel).send('The counter has been reset to 0 via command, please start over from 1.')

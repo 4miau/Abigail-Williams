@@ -26,7 +26,7 @@ export default class AntiSpamWhitelist extends Command {
     public exec(message: Message, {channels}: {channels: TextChannel[]}): Promise<Message> {
         if (!channels) return message.util.send('You must provide text channels (excluding threads) to add to the whitelist.')
         
-        let spamWhitelist: string[] = this.client.settings.get(message.guild, 'automod.antispam-whitelist', [])
+        let spamWhitelist: string[] = this.client.settings.get(message.guild, 'auto-mod.antispam-whitelist', [])
 
         if (spamWhitelist.arrayEmpty()) {
             channels.forEach(async c => {
@@ -34,7 +34,7 @@ export default class AntiSpamWhitelist extends Command {
                 const added = await message.channel.send(`Added ${c.name} to the anti-spam whitelist.`)
                 setTimeout(() => added.delete(), 3000)
             })
-            this.client.settings.set(message.guild, 'automod.antispam-whitelist', spamWhitelist)
+            this.client.settings.set(message.guild, 'auto-mod.antispam-whitelist', spamWhitelist)
             return message.util.send(`Successfully added ${channels.length} channels to the anti-spam whitelist.`)
         } else {
             let additions = 0
@@ -54,7 +54,7 @@ export default class AntiSpamWhitelist extends Command {
                     setTimeout(() => added.delete(), 3000)
                 }
             })
-            this.client.settings.set(message.guild, 'automod.antispam-whitelist', spamWhitelist)
+            this.client.settings.set(message.guild, 'auto-mod.antispam-whitelist', spamWhitelist)
             return message.util.send(`Successfully added ${additions} channels and subtracted ${subtractions} channels from the anti-spam whitelist.`)
         }
     }

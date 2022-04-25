@@ -36,11 +36,11 @@ export default class AntiSpam extends Command {
         if (threshold === null) return message.util.send('You need to provide a valid number to set the autospam. Use 0 to disable autospam.')
 
         if (threshold === 0) {
-            this.client.settings.set(message.guild, 'automod.antispam', 0)
+            this.client.settings.set(message.guild, 'auto-mod.antispam', 0)
             return message.util.send('Antispam has been successfully disabled in this guild.')
         }
         else {
-            this.client.settings.set(message.guild, 'automod.antispam', threshold)
+            this.client.settings.set(message.guild, 'auto-mod.antispam', threshold)
             return message.util.send(`The anti-spam threshold for this guild has been set to \`${threshold}\``)
         }
     }
