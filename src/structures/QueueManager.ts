@@ -1,11 +1,11 @@
-import AbbyClient from '../client/Abby'
+import { AkairoClient as Abby } from 'discord-akairo'
 
 export default class Queue {
     protected _queue: any[]
     protected _running: boolean
-    protected client: AbbyClient
+    protected client: Abby
 
-    constructor(client: AbbyClient) {
+    constructor(client: Abby) {
         this._queue = []
         this._running = false
         this.client = client

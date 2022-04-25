@@ -39,9 +39,10 @@ export default class MuteManager {
         this.client.logger.log('INFO', `[MUTE] Muted ${mute.targetTag} in ${this.client.guilds.resolve(mute.guildID).name}`)
 
         if (rescheduling) this.client.logger.log('INFO', `[MUTE] Rescheduled mute on ${mute.targetTag} in ${this.client.guilds.resolve(mute.guildID).name}`)
-        if (!rescheduling) {
+        else {
             await mute.updateOne(mute)
         }
+
         if (mute.actionDuration && mute.actionDuration.getTime() < (Date.now() + this.rate)) this.queueMute(mute)
     }
 

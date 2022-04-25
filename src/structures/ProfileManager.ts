@@ -2,7 +2,7 @@ import { User, GuildMember, MessageEmbed } from 'discord.js'
 import ms from 'ms'
 
 import type Client from '../client/Abby'
-import Profile from '../models/Profile'
+import Profiles from '../models/Profile'
 import { Colours } from '../util/Colours'
 
 export default class ProfileManager {
@@ -19,7 +19,7 @@ export default class ProfileManager {
 
     //PROFILE MANAGEMENT
     public async createProfile(userID: string, guildID: string) {
-        await new Profile({
+        await new Profiles({
             userID: userID,
             xp: 0,
             level: 0,
@@ -33,7 +33,7 @@ export default class ProfileManager {
     }
 
     public async updateProfile(userID: string, guildID: string) {
-        const user = await Profile.findOne({ userID: userID })
+        const user = await Profiles.findOne({ userID: userID })
 
         if (!user) return this.createProfile(userID, guildID ? guildID : void 0)
 
@@ -44,7 +44,7 @@ export default class ProfileManager {
     }
 
     public async levelUp(member: User | GuildMember, global: boolean) {
-        const user = await Profile.findOne({ userID: member.id })
+        const user = await Profiles.findOne({ userID: member.id })
         if (!user) return
 
         if (global) {
@@ -88,28 +88,28 @@ export default class ProfileManager {
     public getNeededXP(level: number): number { return Number((level * 2.4 * 100).toFixed(0)) }
 
     public async getCoins(userID: string): Promise<number> {
-        const user = await Profile.findOne({ userID: userID })
+        const user = await Profiles.findOne({ userID: userID })
         if (!user) return
 
         return user.coins
     }
 
     public async getPoints(userID: string, guildID: string): Promise<number> {
-        const user = await Profile.findOne({ userID: userID })
+        const user = await Profiles.findOne({ userID: userID })
         if (!user || !user.guildstats.some(gs => gs.guild === guildID)) return
 
         return user.guildstats.find(gs => gs.guild === guildID).points
     }
 
     public async getLevel(userID: string): Promise<number[]> {
-        const user = await Profile.findOne({ userID: userID })
+        const user = await Profiles.findOne({ userID: userID })
         if (!user) return
 
         return [user.xp, user.level]
     }
 
     public async getGuildLevel(userID: string, guildID: string): Promise<number[]> {
-        const user = await Profile.findOne({ userID: userID })
+        const user = await Profiles.findOne({ userID: userID })
         if (!user || !user.guildstats.some(gs => gs.guild === guildID)) return
 
         const guildstats = user.guildstats.find(gs => gs.guild === guildID)
@@ -119,7 +119,7 @@ export default class ProfileManager {
 
     //ADD
     public async addCoins(member: User | GuildMember, amount: number) {
-        const user = await Profile.findOne({ userID: member.id })
+        const user = await Profiles.findOne({ userID: member.id })
 
         if (!user) return
 
@@ -137,7 +137,7 @@ export default class ProfileManager {
     }
 
     public async addXP(member: User | GuildMember, amount: number) {
-        const user = await Profile.findOne({ userID: member.id })
+        const user = await Profiles.findOne({ userID: member.id })
 
         if (!user) return
 
@@ -160,7 +160,7 @@ export default class ProfileManager {
     }
 
     public async addRateLimit(member: GuildMember, type: string) {
-        const user = await Profile.findOne({ userID: member.user.id })
+        const user = await Profiles.findOne({ userID: member.user.id })
         if (!user) return
 
         const guildIndex = user.guildstats.findIndex(gs => gs.guild === member.guild.id)
@@ -178,7 +178,7 @@ export default class ProfileManager {
     }
 
     public async addRoleReward(member: GuildMember, embed: MessageEmbed, statIndex: number): Promise<MessageEmbed> {
-        const user = await Profile.findOne({ userID: member.user.id })
+        const user = await Profiles.findOne({ userID: member.user.id })
         const guildRoleRewards: { role: string, level: number }[] = this.client.settings.get((member as GuildMember).guild, 'level-roles', [{}])
         const stackRewards: boolean = this.client.settings.get((member as GuildMember).guild, 'stack-role', false)
 
@@ -213,7 +213,7 @@ export default class ProfileManager {
 
     //REMOVE
     public async removeCoins(member: User | GuildMember, amount: number) {
-        const user = await Profile.findOne({ userID: member.id })
+        const user = await Profiles.findOne({ userID: member.id })
 
         if (!user) return
 
@@ -230,7 +230,7 @@ export default class ProfileManager {
     }
 
     public async removeXP(member: User | GuildMember, amount: number) {
-        const user = await Profile.findOne({ userID: member.id })
+        const user = await Profiles.findOne({ userID: member.id })
         if (!user) return
 
         if (member instanceof GuildMember) {

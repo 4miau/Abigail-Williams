@@ -1,19 +1,19 @@
+import { AkairoClient as Abby } from 'discord-akairo'
 import {  Collection, Guild, GuildMember, Message, MessageReaction, TextChannel, User } from 'discord.js'
 import path from 'path'
 
-import type Client from '../client/Abby'
 import Stars from '../models/Stars'
 import { Colours } from '../util/Colours'
 import { extensions } from '../util/Constants'
 import Queue from './QueueManager'
 
 export default class Starboard {
-    protected client: Client
+    protected client: Abby
     protected guild: Guild
     protected queues: Collection<string, any> = new Collection<string, any>()
     public reactionsRemoved = new Set<string>()
 
-    public constructor(client: Client, guild: Guild) {
+    public constructor(client: Abby, guild: Guild) {
         this.client = client
         this.guild = guild
     }
@@ -310,7 +310,7 @@ export default class Starboard {
 		return '🌌•🌌'
 	}
 
-    public static emojiFromID(client: Client, id: string) {
+    public static emojiFromID(client: Abby, id: string) {
 		if (/^\d+$/.test(id)) {
 			return client.emojis.cache.get(id)
 		}
