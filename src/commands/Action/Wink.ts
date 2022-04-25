@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Wink extends Command {
     public constructor() {
         super('wink', {
@@ -23,20 +21,17 @@ export default class Wink extends Command {
         })
     }
 
-    public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {        
-        const winkGif = await _GetAnimeSFW('wink')
+    public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const winkGif = await animeService.exec('wink')
 
         const e = new MessageEmbed()
             .setColor('RANDOM')
             .setImage(winkGif.url)
         
-        if (!member || member.user.id === message.author.id) {
-            e.setDescription(`**${message.author.tag}** winked!`)
-            return message.util.send({ embeds: [e] })
-        }
-        else {
-            e.setDescription(`**${message.author.tag}** winks at **${member.user.tag}!**`)
-            return message.util.send({ embeds: [e] })
-        }
+        if (!member || member.user.id === message.author.id) e.setDescription(`**${message.author.tag}** winked!`)
+        else e.setDescription(`**${message.author.tag}** winks at **${member.user.tag}!**`)
+
+        return message.channel.send({ embeds: [e] })
     }
 }

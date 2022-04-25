@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Smug extends Command {
     public constructor() {
         super('smug', {
@@ -17,14 +15,15 @@ export default class Smug extends Command {
         })
     }
 
-    public async exec(message: Message): Promise<Message> {        
-        const smug = await _GetAnimeSFW('smug')
+    public async exec(message: Message): Promise<Message> {
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const smug = await animeService.exec('smug')
 
         const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** pulls a smug face`)
             .setColor('RANDOM')
             .setImage(smug.url)
         
-        return message.util.send({ embeds: [e] })
+        return message.channel.send({ embeds: [e] })
     }
 }

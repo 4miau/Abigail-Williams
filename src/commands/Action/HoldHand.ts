@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class HoldHand extends Command {
     public constructor() {
         super('holdhand', {
@@ -24,16 +22,17 @@ export default class HoldHand extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util.send('Provide a member to hold hands with... that\'s lewd!')
-        if (member.user.id === message.author.id) return message.util.send('Holding hands with yourself... are you that lonely?')
+        if (!member) return message.channel.send('Provide a member to hold hands with... that\'s lewd!')
+        if (member.user.id === message.author.id) return message.channel.send('Holding hands with yourself... are you that lonely?')
         
-        const handHoldGif = await _GetAnimeSFW('handhold')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const handHoldGif = await animeService.exec('handhold')
 
         const e = new MessageEmbed()
-            .setDescription(`**${message.author.tag}** is... holding hands with **${member.user.tag}!** WOAH!!`)
+            .setDescription(`**${message.author.tag}** is...holding hands with **${member.user.tag}!** :flushed:`)
             .setColor('RANDOM')
             .setImage(handHoldGif.url)
 
-        return message.util.send({ embeds: [e] })
+        return message.channel.send({ embeds: [e] })
     }
 }

@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Bully extends Command {
     public constructor() {
         super('bully', {
@@ -24,16 +22,17 @@ export default class Bully extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util.send('Provide a member to bully!')
-        if (member.user.id === message.author.id) return message.util.send('You can\'t bully yourself... that\'s just weird.')
+        if (!member) return message.channel.send('Provide a member to bully!')
+        if (member.user.id === message.author.id) return message.channel.send('You can\'t bully yourself... that\'s just weird.')
         
-        const bullyGif = await _GetAnimeSFW('bully')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const bullyGif = await animeService.exec('bully')
 
         const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** is bullying **${member.user.tag}!**`)
             .setColor('RANDOM')
             .setImage(bullyGif.url)
 
-        return message.util.send({ embeds: [e] })
+        return message.channel.send({ embeds: [e] })
     }
 }

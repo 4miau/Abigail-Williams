@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Nom extends Command {
     public constructor() {
         super('nom', {
@@ -24,21 +22,18 @@ export default class Nom extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (member && member.user.id === message.author.id) return message.util.send('You really shouldn\'t nom yourself...')
+        if (member && member.user.id === message.author.id) return message.channel.send('You really shouldn\'t nom yourself...')
         
-        const nomGif = await _GetAnimeSFW('nom')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const nomGif = await animeService.exec('nom')
 
         const e = new MessageEmbed()
             .setColor('RANDOM')
             .setImage(nomGif.url)
 
-        if (!member) {
-            e.setDescription(`**${message.author.tag}** is nomming!`)
-            return message.util.send({ embeds: [e] })
-        }
-        else {
-            e.setDescription(`**${message.author.tag}** is nomming **${member.user.tag}!**`)
-            return message.util.send({ embeds: [e] })
-        }
+        if (!member) e.setDescription(`**${message.author.tag}** is nomming!`)
+        else e.setDescription(`**${message.author.tag}** is nomming **${member.user.tag}!**`)
+
+        return message.channel.send({ embeds: [e] })
     }
 }

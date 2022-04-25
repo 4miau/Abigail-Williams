@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Cringe extends Command {
     public constructor() {
         super('cringe', {
@@ -24,23 +22,17 @@ export default class Cringe extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        const cringeGif = await _GetAnimeSFW('cringe')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const cringeGif = await animeService.exec('cringe')
         
         const e = new MessageEmbed()
             .setColor('RANDOM')
             .setImage(cringeGif.url)
 
-        if (!member) {
-            e.setDescription(`**${message.author.tag}** is cringing, oh man.`)
-            return message.util.send({ embeds: [e] })
-        }
-        else if (member.user.id === message.author.id) {
-            e.setDescription(`**${message.author.tag}** is cringing at themselves, oh dear.`)
-            return message.util.send({ embeds: [e] })
-        }
-        else {
-            e.setDescription(`**${message.author.tag}** is cringing because of **${member.user.tag}**.`)
-            return message.util.send({ embeds: [e] })
-        }
+        if (!member) e.setDescription(`**${message.author.tag}** is cringing, oh man.`)
+        else if (member.user.id === message.author.id) e.setDescription(`**${message.author.tag}** is cringing at themselves, oh dear.`)
+        else e.setDescription(`**${message.author.tag}** is cringing because of **${member.user.tag}**.`)
+
+        return message.channel.send({ embeds: [e] })
     }
 }

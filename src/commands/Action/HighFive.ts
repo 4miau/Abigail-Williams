@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class HighFive extends Command {
     public constructor() {
         super('highfive', {
@@ -24,16 +22,17 @@ export default class HighFive extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        if (!member) return message.util.send('Provide a member to highfive!')
-        if (member.user.id === message.author.id) return message.util.send('Highfiving yourself... are you really that lonely?')
+        if (!member) return message.channel.send('Provide a member to highfive!')
+        if (member.user.id === message.author.id) return message.channel.send('Highfiving yourself... are you really that lonely?')
         
-        const highFiveGif = await _GetAnimeSFW('highfive')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const highFiveGif = await animeService.exec('highfive')
 
         const e = new MessageEmbed()
             .setDescription(`**${message.author.tag}** has highfived **${member.user.tag}!**`)
             .setColor('RANDOM')
             .setImage(highFiveGif.url)
 
-        return message.util.send({ embeds: [e] })
+        return message.channel.send({ embeds: [e] })
     }
 }

@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Blush extends Command {
     public constructor() {
         super('blush', {
@@ -24,7 +22,8 @@ export default class Blush extends Command {
     }
 
     public async exec(message: Message, {member}: {member: GuildMember}): Promise<Message> {
-        const blushGif = await _GetAnimeSFW('blush')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')      
+        const blushGif = await animeService.exec('blush')
 
         const e = new MessageEmbed()
             .setColor('RANDOM')
@@ -32,11 +31,11 @@ export default class Blush extends Command {
 
         if (!member || member.user.id === message.author.id) {
             e.setDescription(`**${message.author.tag}** is blushing!`)
-            return message.util.send({ embeds: [e] })
+            return message.channel.send({ embeds: [e] })
         }
         else {
             e.setDescription(`**${message.author.tag}** is blushing because of **${member.user.tag}**!`)
-            return message.util.send({ embeds: [e] })
+            return message.channel.send({ embeds: [e] })
         }
     }
 }
