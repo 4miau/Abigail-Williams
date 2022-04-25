@@ -8,8 +8,8 @@ export default class StreamerPings extends Command {
             category: 'Twitch',
             description: {
                 content: 'Lists all pings for a streamer on the watchlist.',
-                usage: 'streamerpings [streamer-name]',
-                examples: ['streamerpings notmiauu'],
+                usage: 'streamerpings [streamerName]',
+                examples: ['streamerpings 4miau'],
             },
             channel: 'guild',
             ratelimit: 3,
@@ -25,12 +25,7 @@ export default class StreamerPings extends Command {
     public exec(message: Message, {streamerName}: {streamerName: string}): Promise<Message> {
         if (!streamerName) return message.channel.send('You must provide a streamer to get the role pings of.')
 
-        const streamers : {
-            name: string, 
-            message: string, 
-            pings: string[], 
-            posted: boolean
-        }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', {})
+        const streamers: Streamer[] = this.client.settings.get(message.guild, 'streamers', [])
 
         if (!streamers.arrayEmpty()) {
             const roles: string[] = streamers.find(s => s.name === streamerName).pings.map(p => {
@@ -38,8 +33,8 @@ export default class StreamerPings extends Command {
                 return `"${message.guild.roles.resolve(p).name}"`
             })
 
-            if (roles.arrayEmpty()) return message.channel.send(roles.join(', '))
-            return message.channel.send('This streamer has no role pings.')
+            if (!roles.arrayEmpty()) return message.channel.send(roles.join(', '))
+            else return message.channel.send('This streamer has no role pings.')
         }
         
         return message.channel.send('You have no streamers on the list, add some streamers to populate the list.')

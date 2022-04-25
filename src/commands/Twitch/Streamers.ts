@@ -17,18 +17,13 @@ export default class Streamers extends Command {
     }
 
     public exec(message: Message): Promise<Message> {
-        const streamers : {
-            name: string, 
-            message: string, 
-            pings: string[], 
-            posted: boolean
-        }[] = this.client.settings.get(message.guild, 'twitch.twitch-streamers', {})
+        const streamers: Streamer[] = this.client.settings.get(message.guild, 'streamers', [])
 
         if (!streamers.arrayEmpty()) {
-            let nameList: string[] = []
-            for (const streamer of streamers) nameList.push(streamer.name)
+            const streamerList: { name: string, id: string }[] = [] 
+            for (const streamer of streamers) streamerList.push({ name: streamer.name, id: streamer.id })
 
-            return message.channel.send(nameList.join('\n'))
+            return message.channel.send(streamerList.map(s => `${s.name} (${s.id})`).join('\n'))
         }
 
         return message.channel.send('You have no streamers on the list, add some streamers to populate the list.')

@@ -1,7 +1,6 @@
 import { Listener } from 'discord-akairo'
 import { Collection, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js'
 
-import { createDelMsgFile } from '../../../util/functions/fileaccess'
 import { Colours } from '../../../util/Colours'
 
 export default class BulkDeletedMessages extends Listener {
@@ -19,7 +18,8 @@ export default class BulkDeletedMessages extends Listener {
         if (deletedMessages.every(m => m.author.bot)) return
         if (deletedMessages.size <= 3) return
 
-        createDelMsgFile(this.client, deletedMessages)
+        const delMsgFileService = this.client.serviceHandler.modules.get('createdelmsgfile')
+        delMsgFileService.exec(deletedMessages)
 
         const message = deletedMessages.first()
 

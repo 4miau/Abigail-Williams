@@ -2,8 +2,6 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import moment, { now } from 'moment'
 
-import { _GetBooruImages } from '../../util/functions/danbooru'
-
 export default class Danbooru extends Command {
     public constructor() {
         super('danbooru', {
@@ -35,7 +33,9 @@ export default class Danbooru extends Command {
     public async exec(message: Message, {tag, amount}: {tag: string, amount: number}): Promise<Message> {
         if (!tag) return message.channel.send('Must provide a tag.')
 
-        const genImage = await _GetBooruImages(tag, amount ? amount : void 0)
+        const booruImageService = this.client.serviceHandler.modules.get('getbooruimages')
+
+        const genImage = await booruImageService.exec(tag, amount ? amount : void 0)
         if (!genImage) return message.channel.send('Unable to find any images using this tag, please try again.')
 
         const e = new MessageEmbed()

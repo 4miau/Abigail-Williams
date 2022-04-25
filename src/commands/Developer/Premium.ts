@@ -1,5 +1,6 @@
 import { Argument, Command } from 'discord-akairo'
-import { GuildMember, Message, MessageEmbed, User } from 'discord.js'
+import { Message, MessageEmbed, User } from 'discord.js'
+import Abby from '../../client/Abby'
 
 import { Colours } from '../../util/Colours'
 
@@ -46,19 +47,25 @@ export default class Premium extends Command {
             user = this.client.users.resolve(user)
             if (!user) return message.channel.send('Unable to resolve this user.')
         } 
-        if (user && user.bot) return message.channel.send('You can not manage premium subscription of bots.')
+        if (user && user.bot) return message.channel.send('You can not manage premium subscription for bots.')
 
         const premiumUsers: string[] = this.client.settings.get('global', 'premium-users', [])
+        const setPremiumGuilds = this.client.serviceHandler.modules.get('setpremiumguilds')
 
-        if (type === 'add') {
+
+        if (type.caseCompare('add')) {
             if (premiumUsers.includes(user.id)) return message.channel.send('This user already has premium.')
             premiumUsers.push(user.id)
             this.client.settings.set('global', 'premium-users', premiumUsers)
+            setPremiumGuilds.exec(this.client as Abby)
+
             return message.channel.send('User has been given premium.')
         }
-        else if (type === 'remove') {
+        else if (type.caseCompare('remove')) {
             if (!premiumUsers.includes(user.id)) return message.channel.send('This user does not have premium.')
             this.client.settings.set('global', 'premium-users', premiumUsers.filter(id => id !== (user as User).id))
+            setPremiumGuilds.exec(this.client as Abby)
+            
             return message.channel.send('User has been stripped off of premium.')
         }
         else {
@@ -66,10 +73,10 @@ export default class Premium extends Command {
 
             const premiumList: User[] = []
 
-            premiumUsers.forEach(async pu => {
+            for (const pu of premiumUsers.values()) {
                 const user = this.client.users.resolve(pu)
                 premiumList.push(user)
-            })
+            }
 
             const e = new MessageEmbed()
                 .setAuthor('Premium Users')

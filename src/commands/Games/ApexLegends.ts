@@ -2,7 +2,6 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import { Colours } from '../../util/Colours'
 import { legendHeader } from '../../util/Constants'
-import { emojifyRank, _GetApexUID, _GetApexUser } from '../../util/functions/apexlegends'
 
 export default class ApexLegends extends Command {
     public constructor() {
@@ -39,10 +38,12 @@ export default class ApexLegends extends Command {
         if (!platform) return message.channel.send('You need a platform to search for (psn, xbox, pc)')
         if (!name) return message.channel.send('You need to provide a name to search for.')
 
-        const uid = (await _GetApexUID(platform, name)) || null
+        const apexServices = this.client.serviceHandler.modules.getArr('getapexuid', 'getapexuser')
+
+        const uid = await apexServices[0].exec(platform, name) || null
         if (!uid) return message.channel.send('Error retrieving user data, please try again.')
 
-        const playerData = (await _GetApexUser(platform, uid)) || null
+        const playerData = await apexServices[1].exec(platform, uid) || null
 
         this.client.logger.log('INFO', `${playerData.mozambiquehere_internal}`)
 
@@ -56,12 +57,13 @@ export default class ApexLegends extends Command {
     }
 
     private buildApexEmbed(playerData: any) {
+        const rankService = this.client.serviceHandler.modules.get('emojifyrank')
         const rank = playerData.global.rank.rankName + ' ' + playerData.global.rank.rankDiv
 
         return new MessageEmbed()
             .setAuthor(
                 `Stats for ${playerData.global.name} playing ${playerData.legends.selected.LegendName}`,
-                `${playerData.global.avatar.startsWith('https') ? playerData.global.avatar : 'https://i.imgur.com/d0A4Emp.png'}`
+                `${playerData.global.avatar.toLowerCase().startsWith('https') ? playerData.global.avatar : 'https://i.imgur.com/d0A4Emp.png'}`
             )
             .setDescription(`User is currently ${playerData.realtime.isOnline === 1? '**Online**' : '**Offline**'}`)
             .setColor(Colours.Crimson)
@@ -73,7 +75,7 @@ export default class ApexLegends extends Command {
             )
             .addField(
                 '**Ranked**',
-                `**Rank**: ${emojifyRank(rank) + ' ' + rank}\n` +
+                `**Rank**: ${rankService.exec(rank) + ' ' + rank}\n` +
                 `**Score**: ${playerData.global.rank.rankScore}`,
                 true
             )

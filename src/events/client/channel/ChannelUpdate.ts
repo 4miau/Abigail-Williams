@@ -34,13 +34,13 @@ export default class ChannelUpdate extends Listener {
         }
     }
 
-    private async nameChangeEmbed(embed, oldChannel, newChannel) {
+    private async nameChangeEmbed(embed: MessageEmbed, oldChannel: GuildChannel, newChannel: GuildChannel) {
         embed.addField('Old channel name:', oldChannel.name)
         embed.addField('New channel name:', newChannel.name)
         return embed
     }
 
-    private async permChangeEmbed(embed, oldChannel, newChannel) {
+    private async permChangeEmbed(embed: MessageEmbed, oldChannel: GuildChannel, newChannel: GuildChannel) {
         const guild = newChannel.guild
         const oldPerms = oldChannel.permissionOverwrites.cache.map(({ id, type, allow, deny }) => { return { id, type, allow, deny }})
         const newPerms = newChannel.permissionOverwrites.cache.map(({ id, type, allow, deny }) => { return { id, type, allow, deny }})

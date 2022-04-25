@@ -33,13 +33,13 @@ export default class GuildUpdate extends Listener {
         }   
     }
 
-    private nameChangeEmbed(embed, oldGuild, newGuild) {
+    private nameChangeEmbed(embed: MessageEmbed, oldGuild: Guild, newGuild: Guild) {
         embed.addField('Old guild name:', oldGuild.name)
         embed.addField('New guild name:', newGuild.name)
         return embed
     }
 
-    private iconChangeEmbed(embed, oldGuild, newGuild) {
+    private iconChangeEmbed(embed: MessageEmbed, oldGuild: Guild, newGuild: Guild) {
         embed.addField('New Guild Icon', 'The icon for this guild has been changed.')
         embed.setImage(newGuild.iconURL({ dynamic: true, format: 'png' }))
         return embed

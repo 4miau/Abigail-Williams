@@ -2,9 +2,8 @@ import { Listener } from 'discord-akairo'
 import { GuildMember, MessageEmbed, TextChannel } from 'discord.js'
 import moment from 'moment'
 
-import Profile from '../../../models/Profile'
+import Profiles from '../../../models/Profile'
 import { Colours } from '../../../util/Colours'
-import { createWelcomeMessage } from '../../../util/functions/guild'
 
 export default class GuildMemberAdd extends Listener {
     public constructor() {
@@ -22,7 +21,10 @@ export default class GuildMemberAdd extends Listener {
         const joinMessageChannel = guild.channels.resolve(this.client.settings.get(guild, 'join-leave.channel', '')) as TextChannel
         const joinMessage: string = this.client.settings.get(guild, 'join-leave.joinMessage', '')
 
-        if (joinMessageChannel && joinMessage) await joinMessageChannel.send(createWelcomeMessage(member, joinMessage))
+        if (joinMessageChannel && joinMessage) {
+            const welcomeMessageService = this.client.serviceHandler.modules.get('createwelcomemessage')
+            await joinMessageChannel.send(welcomeMessageService.exec(member, joinMessage))
+        }
 
         //Guild Join Logs
         const guildLogs = guild.channels.resolve(this.client.settings.get(guild, 'logs.guild-logs', ''))  as TextChannel
@@ -39,14 +41,14 @@ export default class GuildMemberAdd extends Listener {
         }
 
         //Create Profile
-        const hasProfile = await Profile.findOne({ userID: member.user.id }) ? true : false
-        const guildIndex = await Profile.findOne({ userID: member.user.id })?.then(p => p?.guildstats.findIndex(i => i.guild === member.guild.id) || 0)
+        const hasProfile = await Profiles.findOne({ userID: member.user.id }) ? true : false
+        const guildIndex = await Profiles.findOne({ userID: member.user.id })?.then(p => p?.guildstats.findIndex(i => i.guild === member.guild.id) || 0)
 
         if (!hasProfile) this.client.profileManager.createProfile(member.user.id, guild.id)
         else if (hasProfile && !guildIndex) this.client.profileManager.updateProfile(member.user.id, guild.id)
         
         //AutoRole
-        const autoRoles: { human: string[], bots: string[], all: string[] }  = this.client.settings.get(member.guild, 'autoRoles', {})
+        const autoRoles: { human: string[], bots: string[], all: string[] }  = this.client.settings.get(member.guild, 'auto-roles', {})
         if (!autoRoles.isObjectEmpty()) {
             if (autoRoles.human && autoRoles.human.length > 0 && !member.user.bot) await member.roles.add(autoRoles.human)
             if (autoRoles.bots && autoRoles.bots.length > 0 && member.user.bot) await member.roles.add(autoRoles.bots)

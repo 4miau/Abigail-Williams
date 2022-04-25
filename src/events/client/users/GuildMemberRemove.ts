@@ -3,7 +3,6 @@ import { GuildMember, MessageEmbed, TextChannel } from 'discord.js'
 import moment from 'moment'
 
 import { Colours } from '../../../util/Colours'
-import { createWelcomeMessage } from '../../../util/functions/guild'
 
 export default class GuildMemberRemove extends Listener {
     public constructor() {
@@ -21,7 +20,10 @@ export default class GuildMemberRemove extends Listener {
         const joinMessageChannel = guild.channels.resolve(this.client.settings.get(guild, 'join-leave.channel', '')) as TextChannel
         const leaveMessage: string = this.client.settings.get(guild, 'join-leave.leaveMessage', '')
 
-        if (joinMessageChannel && leaveMessage) joinMessageChannel.send(createWelcomeMessage(member, leaveMessage))
+        if (joinMessageChannel && leaveMessage) {
+            const welcomeMessageService = this.client.serviceHandler.modules.get('createwelcomemessage')
+            joinMessageChannel.send(welcomeMessageService.exec(member, leaveMessage))
+        }
 
         //Guild Leave Logs
         const guildLogs = guild.channels.resolve(this.client.settings.get(guild, 'logs-guild-logs', '')) as TextChannel

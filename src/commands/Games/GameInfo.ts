@@ -2,7 +2,6 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
 import { Colours } from '../../util/Colours'
-import { _GetGame, _GetGameInfo } from '../../util/functions/games'
 
 export default class GameInfo extends Command {
     public constructor() {
@@ -19,7 +18,7 @@ export default class GameInfo extends Command {
             cooldown: 6e4,
             args: [
                 {
-                    id: 'game',
+                    id: 'query',
                     type: 'string',
                     match: 'rest'
                 }
@@ -27,49 +26,51 @@ export default class GameInfo extends Command {
         })
     }
 
-    public async exec(message: Message, {game}: {game: string}): Promise<Message> {
-        if (!game) return message.util.send('You need to provide a game for me to query.')
+    public async exec(message: Message, {query}: {query: string}): Promise<Message> {
+        if (!query) return message.channel.send('You need to provide a game for me to query.')
 
-        const games: any[] = await _GetGame(game)
+        const gameServices = this.client.serviceHandler.modules.getArr('getgame', 'getgameinfo')
+        const miscServices = this.client.serviceHandler.modules.get('getinput')
+
+        const games: any[] = await gameServices[0].exec(query)
 
         if (games.length === 1) {
-            const game = await _GetGameInfo(games[0].id)
+            const game = await gameServices[1].exec(games[0].id)
+            return message.channel.send({ embeds: [this.gameEmbed(message, game)] }).finally(() => message ? message.delete() : void 0)
+        }
+        else if (games.length > 1) {
+            try {           
+                const choice = Number(await miscServices.exec(
+                    `${games.map((g: any, i: number) => `*[${i + 1}]* \`${g.name}\``).join('\n')}` + 
+                    `\n\nPlease select between \`1 - ${games.length}\` on the game of your choice.`,
+                    message.channel,
+                    message.author.id,
+                    true
+                ))
+                //!req: string, chnl: TextChannel, userID: string = null, del: boolean = false
 
-            return message.util.send({ embeds: [this.gameEmbed(message, game)] }).finally(() => message.delete())
-        } else if (games.length > 1) {
-            const gameChoice = await message.channel.send(
-                `${games.map((g: any, i: number) => `*[${i + 1}]* \`${g.name}\``).join('\n')}\n\nPlease select between \`1 - ${games.length}\` on the game of your choice.`
-            )
+                const game = await gameServices[1].exec(games[choice - 1].id)
 
-            try {
-                const filter = (msg: Message) => msg.author.id === message.author.id
-                const responseMsg = (await message.channel.awaitMessages({ filter: filter, max: 1, time: 3e4 })).first()
-                const choice = Number(responseMsg.content)
-                const game = await _GetGameInfo(games[choice - 1].id)
-
-                return gameChoice.edit({ content: 'Game found', embeds: [this.gameEmbed(message, game)] })
-                    .finally(() => {
-                        message.delete()
-                        responseMsg.delete()
-                    })
+                return message.channel.send({ embeds: [this.gameEmbed(message, game)]})
+                    .finally(() => { message.delete().catch(void 0) })
             } catch (err) {
                 console.log(err)
-                return message.util.send('You did not pick a valid option within the time limit, please try again.')
+                return message.channel.send('You did not pick a valid option within the time limit, please try again.')
             }
         }
-        else return message.util.send('Unfortunately no results were found, please try making another query.')
+        else return message.channel.send('No results found.')
     }
 
     private gameEmbed(msg: Message, game: any) {
         return new MessageEmbed()
-            .setAuthor(`${game.name} | Rating: ${game.rating_top }/ 5`)
+            .setAuthor(`${game.name} | Rating: ${game.rating_top }/5`)
             .setDescription(game.description_raw.length > 500 ? game.description_raw.substring(0, 500).appendNoSpace('...') : game.description_raw)
             .setColor(Colours.SlateGray)
             .addFields([
                 { name: 'Link to official game website', value: game.website || 'Game does not have a site'},
-                { name: 'Released', value: !game.tba, inline: true },
-                { name: 'Release Date', value: game.released || 'Unknown', inline: true },
-                { name: 'Metacritic', value: game.metacritic || 'Metacritic unlisted', inline: true },
+                { name: 'Released', value: String(!game.tba), inline: true },
+                { name: 'Release Date', value: String(game.released) || 'Unknown', inline: true },
+                { name: 'Metacritic', value: String(game.metacritic) || 'Unlisted', inline: true },
                 { name: 'Developers', value: game.developers.map((d: any) => `\`${d.name}\``).join(', ') || 'No developers listed' },
                 { name: 'Publishers', value: game.publishers.map((p: any) => `\`${p.name}\``).join(', ') || 'No publishers listed' },
                 { name: 'Genres', value: game.genres.map((g: any) => `\`${g.name}\``).join(', ') || 'Unlisted' },

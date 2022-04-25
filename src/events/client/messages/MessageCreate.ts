@@ -1,10 +1,9 @@
 import { Listener } from 'discord-akairo'
-import { Message, MessageEmbed } from 'discord.js'
+import { Guild, GuildMember, Message, MessageEmbed, Role } from 'discord.js'
 
-import Profile from '../../../models/Profile'
+import Profiles from '../../../models/Profile'
 import { inviteDetection } from '../../../util/Constants'
-import { appendDMFile } from '../../../util/functions/fileaccess'
-import { messageHandler, unitTesting } from '../../../handlers'
+import { messageHandler, unitTesting } from '../../../handlers/JestHandler'
 
 export default class MessageCreate extends Listener {
     public constructor() {
@@ -20,44 +19,41 @@ export default class MessageCreate extends Listener {
         
         if (message.author.id === this.client.ownerID && message.content === `<@!${this.client.user.id}> <3`) message.channel.send('<3')
 
-        if (!message.guild) {
+        if (!message.inGuild()) {
             const messages = this.client.dmCache.get(message.author.id) || []
             messages.push(message)
             this.client.dmCache.set(message.author.id, messages)
 
             if (!message.author.bot && !this.client.isOwner(message.author.id)) {
                 this.client.logger.log('INFO', `[DM] ${message.author.tag} (${message.author.id}): ${message.content}`)
-                appendDMFile(this.client, message)
+                const dmFileService = this.client.serviceHandler.modules.get('appenddmfile')
+                dmFileService.exec(message)
             }
         }
         else {
             if (message.author.bot) return
             const guild = message.guild
 
-            if (message.type === 'CHANNEL_PINNED_MESSAGE') message.delete()
+            if (message.type === 'CHANNEL_PINNED_MESSAGE') message.delete().catch(() => void 0)
 
-            const countChannel = message.guild.channels.resolve(this.client.settings.get(guild, 'count.count-channel', ''))
+            const countChannel = message.guild.channels.resolve(this.client.settings.get(guild, 'count-channel', ''))
             if (countChannel && message.channel === countChannel && message.author !== this.client.user) this.counterManager(message)
 
-            if (message.content.includes(guild.roles.everyone.name)) this.autoModManagement(message, 'ANTIEVERYONE')
-            if (message.mentions.users) {
-                const maxMentions: number = this.client.settings.get(guild, 'auto-mod.maxMentions', 0)
-                if (maxMentions) this.autoModManagement(message, 'MAXMENTIONS')
-            }
-            if (message.content.includes('\n')) this.autoModManagement(message, 'MAXLINES')
-            if (inviteDetection.some(word => message.content.toLowerCase().includes(word))) this.autoModManagement(message, 'ANTIINVITE')
+            //AUTOMOD CONDITIONS
+            if (message.content.includes(guild.roles.everyone.name)) this.automodManager(message, 'ANTIEVERYONE')
 
-            if (this.client.userMap.has(message.author.id)) {
-                this.autoModManagement(message, 'ANTISPAM')
-            }
+            if (message.mentions.users) this.automodManager(message, 'MAXMENTIONS')
+
+            if (message.content.includes('\n')) this.automodManager(message, 'MAXLINES')
+
+            if (inviteDetection.some(inv => message.content.toLowerCase().includes(inv))) this.automodManager(message, 'ANTIINVITE')
+
+            if (this.client.userMap.has(message.author.id)) this.automodManager(message, 'ANTISPAM')
             else {
                 let fn = setTimeout(() => { this.client.userMap.delete(message.author.id)}, 5000)
-                this.client.userMap.set(message.author.id, {
-                    messageCount: 1,
-                    lastMessage: message,
-                    timer: fn
-                })
+                this.client.userMap.set(message.author.id, { messageCount: 1, lastMessage: message, timer: fn })
             }
+            //
 
             /*
             const hasProfile = await Profile.findOne({ userID: message.author.id }) ? true : false 
@@ -69,7 +65,7 @@ export default class MessageCreate extends Listener {
     }
 
     private async XPManagement(message: Message) {
-        const guildIndex = await Profile.findOne({ userID: message.author.id })?.then(p => p?.guildstats.findIndex(i => i.guild === message.guild.id) || 0)
+        const guildIndex = await Profiles.findOne({ userID: message.author.id })?.then(p => p?.guildstats.findIndex(i => i.guild === message.guild.id) || 0)
 
         if (!guildIndex) this.client.queue.add(this.client.profileManager.updateProfile(message.author.id, message.guild.id))
 
@@ -88,17 +84,17 @@ export default class MessageCreate extends Listener {
     }
     
     private counterManager(message: Message) {
-        const nextCount: number = this.client.settings.get(message.guild, 'count.current-count', 0) + 1
-        const lastSender: string = this.client.settings.get(message.guild, 'count.current-sender', '')
-        const startOver: boolean = this.client.settings.get(message.guild, 'count.start-over', null)
+        const nextCount: number = this.client.settings.get(message.guild, 'current-count', 0) + 1
+        const lastSender: string = this.client.settings.get(message.guild, 'count-sender', '')
+        const startOver: boolean = this.client.settings.get(message.guild, 'reset-count', null)
 
         if ((message.content !== nextCount.toString() || message.author.id === lastSender) && !startOver) {
              message.react('❌')
 
             this.client.settings.setArr(message.guild, [
-                { key: 'count.current-count', value: 0 },
-                { key: 'count.current-sender', value: '' },
-                { key: 'count.start-over', value: true }
+                { key: 'current-count', value: 0 },
+                { key: 'count-sender', value: '' },
+                { key: 'reset-count', value: true }
             ])
 
             message.channel.send(`**${message.author.tag}** has ruined the count at **${nextCount - 1}!** You will have to start again.`)
@@ -107,83 +103,114 @@ export default class MessageCreate extends Listener {
             message.react('✅')
 
             this.client.settings.setArr(message.guild, [
-                { key: 'count.current-count', value: nextCount },
-                { key: 'count.current-sender', value: message.author.id },
-                { key: 'count.start-over', value: false }
+                { key: 'current-count', value: nextCount },
+                { key: 'count-sender', value: message.author.id },
+                { key: 'reset-count', value: false }
             ])
         }
         else void 0
     }
 
-    private autoModManagement(message: Message, type: AutomodTags) {
+    private automodManager(message: Message, type: AutomodTags) {
         const guild = message.guild
         const member = message.member
 
-        const modRole = guild.roles.resolve(this.client.settings.get(guild, 'modRole', ''))
-        const adminRoles = guild.roles.cache.map(rArr => rArr).filter(r => r.permissions.has('ADMINISTRATOR') || r.permissions.has('MANAGE_GUILD'))
+        const adminRoles = this.getModRoles(guild)
+        const hasAdminRole = this.hasAdminRole(member, adminRoles)
+    
+        const warnCommand = this.client.commandHandler.findCommand('warn')
+        const addWarn = (reason: string) => { this.client.queue.add(warnCommand.exec(message, { member: member, reason: reason })) }
 
+        if (hasAdminRole) return
+    
+        switch (type) {
+            case 'ANTIEVERYONE': {
+                const antiEveryone: boolean = this.client.settings.get(guild, 'auto-mod.antiEveryone', false)
+
+                return ((member.user.id !== guild.ownerId) && antiEveryone) ? addWarn('Automod (Antieveryone)') : void 0
+            }
+            case 'MAXMENTIONS': {
+                const maxMentions: number = this.client.settings.get(guild, 'auto-mod.maxMentions', 0)
+
+                return (message.mentions.users.size > maxMentions && maxMentions) ? addWarn('Automod (Maxmentions)') : void 0
+            }
+            case 'MAXLINES': {
+                const maxLines: number = this.client.settings.get(guild, 'auto-mod.maxLines', 0)
+
+                return (message.content.split(/\r\n|\r|\n/).length > maxLines && maxLines) ? addWarn('Automod (Maxlines)') : void 0
+            }
+            case 'ANTIINVITE': {
+                const antiInvite: boolean = this.client.settings.get(guild, 'auto-mod.antiInvite', false)
+
+                return (member.user.id !== guild.ownerId && antiInvite) ? addWarn('Automod (AntiInvite)') : void 0
+            }
+            case 'ANTISPAM': {
+                const spamThreshold: number = this.client.settings.get(guild, 'auto-mod.antiSpam', 0)
+
+                return (spamThreshold) ? this.spamHandler(message) : void 0
+            }
+            default: { break }
+        }
+    }
+
+    /*
+        AUTOMOD UTIL FUNCTIONS
+    */
+
+    private getModRoles(guild: Guild) {
+        const modRole = guild.roles.resolve(this.client.settings.get(guild, 'modRole', ''))
+        const adminRoles = guild.roles.cache.map(roleArr => roleArr).filter(r => r.permissions.has('ADMINISTRATOR') || r.permissions.has('MANAGE_GUILD'))
         modRole ? adminRoles.push(modRole) : void 0
 
-        const hasAdminRole = member.roles.cache.some(r => adminRoles.some(role => role === r))
+        return adminRoles
+    }
 
-        if (type === 'ANTIEVERYONE') {
-            if ((message.author.id !== this.client.ownerID.toString()) && !hasAdminRole) 
-                return this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antieveryone)' }))
+    private hasAdminRole(member: GuildMember, roles: Role[]) { return member.roles.cache.some(r => roles.some(role => role === r)) }
+
+    private spamHandler(message: Message) {
+        const guild = message.guild
+        const authorId = message.author.id
+
+        const warnCommand = this.client.commandHandler.findCommand('warn')
+        const addWarn = (reason: string) => { this.client.queue.add(warnCommand.exec(message, { member: message.member, reason: reason })) }
+
+        const limit: number = this.client.settings.get(guild, 'auto-mod.antispam', 0)
+        const whitelist: string[] = this.client.settings.get(guild, 'auto-mod.antispam-whitelist', [])
+
+        if (!limit || whitelist.includes(message.channelId)) return
+
+        const TIME = 5000
+        const MAXDIFF = 2000
+
+        const userData = this.client.userMap.get(authorId)
+        const { lastMessage, timer } = userData
+        const diff = message.createdTimestamp - lastMessage.createdTimestamp
+
+        const resetTimer = () => {
+            clearTimeout(timer)
+            userData.messageCount = 1
+            userData.lastMessage = message
+            userData.timer = setTimeout(() => { this.client.userMap.delete(authorId) }, TIME)
         }
-        else if (type === 'MAXMENTIONS') {
-            const maxMentions: number = this.client.settings.get(guild, 'auto-mod.maxMentions', 0)
 
-            if (message.mentions.users.size > maxMentions && !hasAdminRole)
-                return this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Maxmentions)'}))
+        if (diff > MAXDIFF) {
+            resetTimer()
+            this.client.userMap.set(authorId, userData)
         }
-        else if (type === 'MAXLINES') {
-            const maxLines: number = this.client.settings.get(guild, 'auto-mod.maxLines', 0)
+        else {
+            let messageCount: number = userData.messageCount
+            messageCount++
 
-            if (message.content.split(/\r\n|\r|\n/).length > maxLines && maxLines !== 0 && !hasAdminRole)
-                return this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Maxlines)' }))
-        }
-        else if (type === 'ANTIINVITE') {
-            if (message.author.id !== guild.ownerId && !hasAdminRole)
-                return this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antiinvite)' }))
-        }
-        else if (type === 'ANTISPAM') {
-            const spamLimit = this.client.settings.get(message.guild, 'automod.antispam', 0)
-            const spamWhitelist: string[] = this.client.settings.get(message.guild, 'automod.antispam-whitelist', [])
-
-            if (!spamLimit || spamWhitelist.includes(message.channel.id)) return
-
-            const TIME = 5000
-            const MAXDIFF = 2000
-
-            const userData = this.client.userMap.get(message.author.id)
-            const { lastMessage, timer } = userData
-            const diff = message.createdTimestamp - lastMessage.createdTimestamp
-
-            const resetTimer = () => {
-                clearTimeout(timer)
-                userData.messageCount = 1
-                userData.lastMessage = message
-                userData.timer = setTimeout(() => { this.client.userMap.delete(message.author.id) }, TIME)
-            }
-
-            if (diff > MAXDIFF) {
+            if (messageCount >= limit) {
                 resetTimer()
-                this.client.logger.log('CAUTION', 'Timeout has been cleared.')
-                this.client.userMap.set(message.author.id, userData)
+                addWarn('Automod (Antispam)')
             }
             else {
-                let messageCount: number = userData.messageCount
-                messageCount++
-    
-                if (messageCount >= spamLimit) {
-                    resetTimer()
-                    return this.client.queue.add(this.client.commandHandler.findCommand('warn').exec(message, { member: message.member, reason: 'Automod (Antispam)' }))
-                }
-                else {
-                    userData.messageCount = messageCount
-                    this.client.userMap.set(message.author.id, userData)
-                }
+                userData.messageCount = messageCount
+                this.client.userMap.set(authorId, userData)
             }
         }
     }
 }
+
+//TODO: Convert methods into services

@@ -1,8 +1,6 @@
 import { Argument, Command } from 'discord-akairo'
 import { Message, MessageEmbed, GuildMember, AllowedImageSize } from 'discord.js'
 
-import { getUserData } from '../../util/functions/guildasync'
-
 export default class Avatar extends Command {
     public constructor() {
         super('avatar', {
@@ -36,6 +34,8 @@ export default class Avatar extends Command {
     }
 
     public async exec(message: Message, {member, size}: { member: GuildMember | string, size: number }): Promise<Message> {
+        const getAvatar = this.client.serviceHandler.modules.get('getavatar')
+
         const e = new MessageEmbed()
             .setColor('RANDOM')
 
@@ -43,7 +43,7 @@ export default class Avatar extends Command {
         else if (member instanceof GuildMember) return message.channel.send({ embeds: [this.guildMemberEmbed(member, size) ] })
         else if (!isNaN(Number(member))) {
             try {
-                const user = await getUserData(member as string)
+                const user = await getAvatar.exec(member)
                 if (!user) throw new Error('Failed to get user data or avatar.')
                 
                 e

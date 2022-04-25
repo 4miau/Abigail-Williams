@@ -2,7 +2,6 @@ import { Argument, Command } from 'discord-akairo'
 import { Message, TextChannel } from 'discord.js'
 
 import Case from '../../models/Case'
-import { editLogMessage } from '../../util/functions/guild'
 
 export default class Reason extends Command {
     public constructor() {
@@ -43,14 +42,12 @@ export default class Reason extends Command {
         if (!caseID || !reason) return message.channel.send('Provide a caseID & reason to change the reason of a case.')
 
         const queriedCase = await Case.findOne({ caseID: caseID, guildID: message.guild.id })
-
         if (!queriedCase) return message.channel.send('Could not find this case, provide a valid case.')
 
         queriedCase.reason = reason
         await queriedCase.updateOne(queriedCase)
 
         const logChannel = message.guild.channels.resolve(this.client.settings.get(message.guild, 'logs.mod-logs', '')) as TextChannel
-
         if (!logChannel) return message.channel.send('This server has no modlog channel so I can not find the modlog.')
 
         const logMessage = await logChannel.messages.fetch()
@@ -58,7 +55,8 @@ export default class Reason extends Command {
             .catch(void 0)
 
         if (!logMessage) return
-
-        logMessage.edit({ embeds: [editLogMessage(logMessage, queriedCase, reason)] })
+        
+        const logMessageService = this.client.serviceHandler.modules.get('editlogreason')
+        logMessage.edit({ embeds: [logMessageService.exec(logMessage, queriedCase, reason)] })
     }
 }
