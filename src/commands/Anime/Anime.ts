@@ -1,10 +1,9 @@
 import { Command } from 'discord-akairo'
-import { Message, MessageEmbed, CollectorFilter } from 'discord.js'
+import { Message, MessageEmbed } from 'discord.js'
 import moment from 'moment'
 
 import { Colours } from '../../util/Colours'
 import { MALLogo } from '../../util/Constants'
-import { _MALQuery } from '../../util/functions/myanimelist'
 
 export default class Anime extends Command {
     public constructor() {
@@ -38,8 +37,7 @@ export default class Anime extends Command {
 
     public async exec(message: Message, { query, media }: {query: string, media: string}): Promise<Message> {
         query = query?.replaceAll(media, '')?.trimEnd()
-
-        if (!query) return message.channel.send('You need to provide a query to make a search. Please try again.')        
+        if (!query) return message.channel.send('You need to provide a query to make a search. Please try again.')
 
         const mediaConversion = {
             '-m': 'movie',
@@ -51,36 +49,38 @@ export default class Anime extends Command {
 
         media = mediaConversion[media]
 
-        const res = await _MALQuery('anime', query, media || null)
+        const malquery = this.client.serviceHandler.modules.get('malquery')
+        const res = await malquery.exec('anime', query, media || null)
 
-        if (res.length === 1 || res[0].node.title.caseCompare(query?.trim())) {
+        if (res.length === 1 || res[0].node.title.caseCompare(query.trim())) {
             const found = res[0].node
 
-            return message.channel.send({ embeds: [this.animeEmbed(message, found)] }).finally(() => message.delete())
+            return message.channel.send({ embeds: [this.animeEmbed(message, found)] }).finally(() => message.delete().catch(void 0))
         }
         else if (res.length > 1) {
-            const response = await message.channel.send(
-                `${res.map((a: any, i: number) => `*[${i + 1}]* \`${a.node.title}\``).join('\n')}\n\n` + `Please select between \`1 - ${res.length}\` of which anime to choose.`
-            )
+            const inputService = this.client.serviceHandler.modules.get('getinput')
 
             try {
-                const filter = (msg: Message) => msg.author.id === message.author.id
-                const responseMsg = (await message.channel.awaitMessages({ filter: filter, max: 1, time: 3e4 })).first()
-                const choice = Number(responseMsg.content)
-                const found = res[choice - 1].node
+                const response = Number(await inputService.exec(
+                    `${res.map((a: any, i: number) => `*[${i + 1}]* \`${a.node.title}\``).join('\n')}\n\n` +
+                    `Please select between \`1 - ${res.length}\` of which anime to choose.`,
+                    message.channel,
+                    message.author.id,
+                    true
+                ))
 
-                return response.edit( { content: 'Anime found', embeds: [this.animeEmbed(message, found)] })
-                    .finally(() => {
-                        message.delete()
-                        responseMsg.delete()
-                    })
-            }
-            catch (err) {
-                console.log(err)
-                return message.channel.send('You did not pick a valid option within the time limit, please try again.')
+                if (!response || isNaN(response)) throw new Error('You did not pick a valid option within the time limit, try again.')
+
+                this.client.logger.log('ERROR', 'Reached here somehow')
+
+                const found = res[response - 1].node
+
+                return message.channel.send({ embeds: [this.animeEmbed(message, found)] }).finally(() => message.delete().catch(void 0))
+            } catch (err) {
+                return message.channel.send(err?.message || err)
             }
         }
-        else return message.channel.send('Unfortunately no results were found, please try making another query.')
+        else return message.channel.send('Unfortunately no results were found or an error occurred, please try again.')
     }
 
     private animeEmbed(msg: Message, anime: any) {

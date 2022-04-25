@@ -19,12 +19,13 @@ export default class AnimeQuote extends Command {
     }
 
     public async exec(message: Message): Promise<Message> {
-        const animeQuote = await axios.get('https://animechan.vercel.app/api/random', { 'method': 'GET' }).then(res => res.data)
+        const quoteService = this.client.serviceHandler.modules.get('getanimequote')
+        const quoteData: { anime: string, character: string, quote: string} = await quoteService.exec()
 
         const e = new MessageEmbed()
-            .setDescription(`**Anime Quote | ${animeQuote.anime}**\n${animeQuote.quote}`)
+            .setDescription(`**Anime Quote | ${quoteData.anime}**\n${quoteData.quote}`)
             .setColor(Colours.IndianRed)
-            .setFooter('Character: ' + animeQuote.character)
+            .setFooter(`Character: ${quoteData.character}`)
 
         return message.channel.send({ embeds: [e] })
     }

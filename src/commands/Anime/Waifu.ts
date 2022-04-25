@@ -1,8 +1,6 @@
 import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 
-import { _GetAnimeSFW } from '../../util/functions/anime'
-
 export default class Waifu extends Command {
     public constructor() {
         super('waifu', {
@@ -18,7 +16,8 @@ export default class Waifu extends Command {
     }
 
     public async exec(message: Message): Promise<Message> {
-        const waifu = await _GetAnimeSFW('waifu')
+        const animeService = this.client.serviceHandler.modules.get('getanimesfw')
+        const waifu = await animeService.exec('waifu')
 
         const e = new MessageEmbed()
             .setDescription('Here\'s a random image of a waifu!')
