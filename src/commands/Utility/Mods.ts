@@ -21,7 +21,7 @@ export default class Mods extends Command {
 
     public async exec(message: Message): Promise<Message> {
         const staffRoles = this.client.settings.getArr(message.guild, [
-            { key: 'modmail.support-role', defaultValue: ''},
+            { key: 'support-role', defaultValue: ''},
             { key: 'modRole', defaultValue: ''}
         ])
 

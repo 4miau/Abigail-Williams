@@ -43,9 +43,9 @@ export default class ThreadManager {
         const guild = this.client.guilds.resolve(thread.guildID)
         const prefix: string = this.client.settings.get(guild, 'prefix', 'a.')
         const data: string[] = [
-            this.client.settings.get(guild, 'modmail.support-role', ''), 
-            this.client.settings.get(guild, 'modmail.modmail-channel', ''), 
-            this.client.settings.get(guild, 'modmail.modmail-category', '')
+            this.client.settings.get(guild, 'support-role', ''), 
+            this.client.settings.get(guild, 'modmail-channel', ''), 
+            this.client.settings.get(guild, 'modmail-category', '')
         ]
 
         if (!data[1] || !data[2]) {
@@ -111,11 +111,11 @@ export default class ThreadManager {
 
     public async end(thread: IThread) {
         thread.threadClosed = true
-        this.client.settings.set(thread.guildID, 'modmail.existingThreads', (this.client.settings.get(thread.guildID, 'modmail.open-threads', 1) - 1))
+        this.client.settings.set(thread.guildID, 'existing-threads', (this.client.settings.get(thread.guildID, 'open-threads', 1) - 1))
         await thread.updateOne(thread)
 
         const threadChannel = this.client.channels.resolve(thread.channelID) as TextChannel
-        const logChannel = this.client.channels.resolve(this.client.settings.get(thread.guildID, 'modmail.modmail-channel', '')) as TextChannel
+        const logChannel = this.client.channels.resolve(this.client.settings.get(thread.guildID, 'modmail-channel', '')) as TextChannel
 
         if (threadChannel) {
             await threadChannel.delete()

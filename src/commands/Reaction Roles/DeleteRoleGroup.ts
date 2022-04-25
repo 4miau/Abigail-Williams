@@ -26,13 +26,15 @@ export default class DeleteRoleGroup extends Command {
     public exec(message: Message, {name}: {name: string}): Promise<Message> {
         if (!name) return message.channel.send('You need to provide a name to search for.')
 
-        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'reaction.role-groups', [])
+        name = name.replace(' ', '-')
+
+        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'role-groups', [])
 
         if (roleGroups.arrayEmpty() || !roleGroups.some(rg => rg.groupName.caseCompare(name))) return message.channel.send('Unable to find a group with this name.')
         else {
             roleGroups.length === 1 ? 
-                this.client.settings.delete(message.guild, 'reaction.role-groups') : 
-                this.client.settings.set(message.guild, 'reaction.role-groups', roleGroups.filter(rg => !rg.groupName.caseCompare(name)))
+                this.client.settings.delete(message.guild, 'role-groups') : 
+                this.client.settings.set(message.guild, 'role-groups', roleGroups.filter(rg => !rg.groupName.caseCompare(name)))
             return message.channel.send('Role group deleted successfully.')
         }
     }

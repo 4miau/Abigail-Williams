@@ -25,7 +25,8 @@ export default class RoleGroups extends Command {
     }
 
     public exec(message: Message, {group}: {group: string}): Promise<Message> {
-        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'reaction.role-groups', [])
+        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'role-groups', [])
+        group = group ? group.replace(' ', '-') : group
         if (group && !roleGroups.find(rg => rg.groupName.caseCompare(group))) group = null
 
         const e = new MessageEmbed()

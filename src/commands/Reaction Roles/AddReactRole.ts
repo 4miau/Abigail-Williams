@@ -32,7 +32,9 @@ export default class AddReactRole extends Command {
         if (!groupName) return message.channel.send('You must provide a react role group name.')
         if (!role) return message.channel.send('You must provide a valid role to add.')
 
-        const reactGroups: RoleGroup[] = this.client.settings.get(message.guild, 'reaction.role-groups', [])
+        groupName = groupName.replace(' ', '-')
+
+        const reactGroups: RoleGroup[] = this.client.settings.get(message.guild, 'role-groups', [])
 
         if (reactGroups.some(rg => rg.groupName.caseCompare(groupName))) {
             const groupIndex = reactGroups.findIndex(rg => rg.groupName.caseCompare(groupName))
@@ -41,7 +43,7 @@ export default class AddReactRole extends Command {
             if (reactGroups[groupIndex].roles.some(r => r === role.id)) return message.channel.send('This react role is already inside this group.')
             
             reactGroups[groupIndex].roles.push(role.id)
-            this.client.settings.set(message.guild, 'reaction.role-groups', reactGroups)
+            this.client.settings.set(message.guild, 'role-groups', reactGroups)
             return message.channel.send('Successfully added a new react role to this group.')
         }
         else return message.channel.send('Unable to find react role group.')

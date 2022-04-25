@@ -3,7 +3,6 @@ import { Message, MessageEmbed } from 'discord.js'
 import moment from 'moment'
 
 import { isReactOption } from '../../typings/Types'
-import { manageReactRole } from '../../util/functions/reactrole'
 
 export default class ManageRoleGroup extends Command {
     public constructor() {
@@ -38,7 +37,8 @@ export default class ManageRoleGroup extends Command {
     }
 
     public exec(message: Message, {groupName, option, value}): Promise<Message> {
-        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'reaction.role-groups', [])
+        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'role-groups', [])
+        groupName = groupName.replace(' ', '-')
 
         if (roleGroups.arrayEmpty()) return message.channel.send('You should create a role group before considering managing a role group.')
         else if (!groupName) {
@@ -66,7 +66,8 @@ export default class ManageRoleGroup extends Command {
             if (!option || !isReactOption(option.toLocaleUpperCase())) return message.channel.send('You did not provide a valid option.')
             else if (!value) return message.channel.send('You must provide a value for this option.')
             else {
-                const result = manageReactRole(option.toLocaleUpperCase(), value.toLocaleLowerCase(), groupName, message)
+                const manageReactRole = this.client.serviceHandler.modules.get('managereactrole')
+                const result = manageReactRole.exec(option.toLocaleUpperCase(), value.toLocaleLowerCase(), groupName, message)
                 return message.channel.send(result.includes('Error') ? `**Error occurred:**\n${result.replace('Error: ', '')}` : result)
             }
         }

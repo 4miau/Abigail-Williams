@@ -26,10 +26,10 @@ export default class RemoveIgnoreRole extends Command {
     public async exec(message: Message, {role}: {role: Role}): Promise<Message> {
         if (!role) return message.channel.send('You need to provide a role.')
 
-        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'reaction.role-groups', [])
+        const roleGroups: RoleGroup[] = this.client.settings.get(message.guild, 'role-groups', [])
         if (roleGroups.arrayEmpty()) return message.channel.send('There are no reaction role groups, consider making a reaction role group first.')
 
-        const group = await this.automateAwaitMessage('Enter the name of the role group', message)
+        const group = await this.automateAwaitMessage('Enter the name of the role group', message).then(g => g.replace(' ',  '-'))
 
         if (!group || !roleGroups.find(rg => rg.groupName.caseCompare(group))) return message.channel.send('Failed finding this group, please try again.')
         else {
@@ -39,7 +39,7 @@ export default class RemoveIgnoreRole extends Command {
             else if (!roleGroups[groupIndex].ignoreRoles.find(r => r === role.id)) return message.channel.send('Unable to find this role in the group.')
             else {
                 roleGroups[groupIndex].ignoreRoles = roleGroups[groupIndex].ignoreRoles.filter(r => r !== role.id)
-                this.client.settings.set(message.guild, 'reaction.role-groups', roleGroups)
+                this.client.settings.set(message.guild, 'role-groups', roleGroups)
                 return message.channel.send('Successfully removed this ignore role from the group.')
             }
         }
