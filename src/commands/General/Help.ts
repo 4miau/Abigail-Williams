@@ -31,7 +31,7 @@ export default class Help extends Command {
             }
 
             const command: Command = this.client.commandHandler.findCommand(type)
-            if (!command) return message.channel.send('Unable to find the command, please try again.')
+            if (!command) return message.channel.send('Unable to find the command.')
             
             const e = new MessageEmbed()
                 .setAuthor(`Help | ${command}`, this.client.user.displayAvatarURL())
@@ -109,8 +109,9 @@ export default class Help extends Command {
 
 /*
             [ 'General', 'Images', 'Action', 'Anime', 'Fun', 'Games' ],
-            [ 'Levelling', 'Economy', 'Music' ],
-            [ 'Utility', 'Twitch', 'Twitter', 'Starboard' ],
+            [ 'Music' ],
+            [ 'Utility', 'Twitch', 'Starboard' ],
+            [ 'Reaction Roles' ],
             [ 'Modmail', 'Moderation', 'Logging', 'Configuration', 'Automation' ],
             [ 'Owner', 'Developer' ]
 */
