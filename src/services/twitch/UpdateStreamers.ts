@@ -17,7 +17,7 @@ export default class UpdateStreamers extends Service {
                 client_id: envs.twitchClientID,
                 client_secret: envs.twitchClientSecret,
                 grant_type: 'client_credentials'
-            } as any
+            }
         }
 
         this.setConfig(obj)
