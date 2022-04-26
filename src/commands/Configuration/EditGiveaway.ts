@@ -1,7 +1,7 @@
 import { Argument, Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
-import Giveaways from '../../models/Giveaways'
+import Giveaways from '../../models/Giveaway'
 import GiveawayManager from '../../structures/GiveawayManager'
 
 export default class EditGiveaway extends Command {

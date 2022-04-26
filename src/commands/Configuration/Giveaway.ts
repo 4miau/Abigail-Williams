@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message, MessageEmbed } from 'discord.js'
 import ms from 'ms'
 
-import Giveaways from '../../models/Giveaways'
+import Giveaways from '../../models/Giveaway'
 import GiveawayManager from '../../structures/GiveawayManager'
 import { Colours } from '../../util/Colours'
 import moment from 'moment'
@@ -65,7 +65,7 @@ export default class Giveaway extends Command {
     public async exec(message: Message, {time, winners, prize}: {time: number, winners: number, prize: string}): Promise<any> {
         if (!time) return message.channel.send('You need to provide a time for the giveaway.')
 
-        const end: number = Date.now() + time
+        const end = Date.now() + time
 
         const e = new MessageEmbed()
             .setAuthor(`Giveaway | ${prize}`)

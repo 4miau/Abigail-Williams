@@ -2,7 +2,7 @@ import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
 import GiveawayManager from '../../structures/GiveawayManager'
-import Giveaways from '../../models/Giveaways'
+import Giveaways from '../../models/Giveaway'
 
 export default class EndGiveaway extends Command {
     public constructor() {
