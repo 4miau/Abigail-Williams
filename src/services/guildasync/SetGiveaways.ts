@@ -1,6 +1,6 @@
 import { TextChannel } from 'discord.js'
 
-import Giveaways, { IGiveaway } from '../../models/Giveaways'
+import Giveaways, { IGiveaway } from '../../models/Giveaway'
 import Service from '../../modules/Service'
 import GiveawayManager from '../../structures/GiveawayManager'
 

@@ -1,6 +1,6 @@
 import { Message } from 'discord.js'
 
-import { IThread } from '../../models/Threads'
+import { IThread } from '../../models/Thread'
 import Service from '../../modules/Service'
 
 export default class UpdateThreadData extends Service {

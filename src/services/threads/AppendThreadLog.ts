@@ -3,7 +3,7 @@ import fs from 'fs'
 import moment from 'moment'
 import { join } from 'path'
 
-import { IThread } from '../../models/Threads'
+import { IThread } from '../../models/Thread'
 import Service from '../../modules/Service'
 import { threadDir } from './ThreadConstants'
 

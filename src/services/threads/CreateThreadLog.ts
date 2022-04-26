@@ -2,7 +2,7 @@ import fs from 'fs'
 import { join } from 'path'
 
 import Service from '../../modules/Service'
-import { IThread } from '../../models/Threads'
+import { IThread } from '../../models/Thread'
 import { threadDir } from './ThreadConstants'
 
 export default class CreateThreadLog extends Service {
