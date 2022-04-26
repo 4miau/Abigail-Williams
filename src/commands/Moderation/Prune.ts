@@ -150,7 +150,7 @@ export default class Prune extends Command {
                 totalMsgs ? totalMsgs + `${totalMsgs > 1 ? ' messages have successfully been deleted.' : ' messages have been deleted'}` : 'No messages have been deleted'
             ))
             .then(msg => {
-                setTimeout(() => { msg.delete() }, 5000)
+                setTimeout(() => { msg?.delete() }, 5000)
                 return msg
             })
         }
