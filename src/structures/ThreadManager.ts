@@ -5,7 +5,7 @@ import { join } from 'path'
 import fs from 'fs'
 import ms from 'ms'
 
-import Thread, { IThread } from '../models/Threads'
+import Thread, { IThread } from '../models/Thread'
 import { Colours } from '../util/Colours'
 
 export default class ThreadManager {
