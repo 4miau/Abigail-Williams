@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { GuildMember, Message } from 'discord.js'
 
-import Threads from '../../models/Threads'
+import Threads from '../../models/Thread'
 
 export default class Contact extends Command {
     public constructor() {
@@ -33,7 +33,7 @@ export default class Contact extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const modRole = this.client.settings.get(message.guild, 'modRole', '')
-        const supportRole = this.client.settings.get(message.guild, 'modmail.support-role', '')
+        const supportRole = this.client.settings.get(message.guild, 'support-role', '')
         const hasStaffRole = message.member.permissions.has('MANAGE_GUILD', true) || message.member.roles.cache.has(modRole || supportRole)
 
         if (!hasStaffRole) return 'Staff or Support role required.'
@@ -45,12 +45,12 @@ export default class Contact extends Command {
         if (!member) return message.channel.send('You need to provide a member in the server to contact.')
         if (this.client.openThreads.has(member.user.id)) return message.channel.send('This user currently has an active thread in this server or another server.')
 
-        const modmailSetup: boolean = this.client.settings.get(message.guild, 'modmail.modmail-hasSetup', false)
+        const modmailSetup: boolean = this.client.settings.get(message.guild, 'modmail-completed', false)
         const prefix: string = this.client.settings.get(message.guild, 'prefix', 'a.')
         if (!modmailSetup) return message.channel.send(`The server currently does not have modmail set-up. Please use the ${prefix}setup command first.`)
 
         //THREAD CREATION
-        this.client.settings.set(message.guild, 'modmail.existingThreads', (this.client.settings.get(message.guild, 'modmail.open-threads', 0) + 1))
+        this.client.settings.set(message.guild, 'existing-threads', (this.client.settings.get(message.guild, 'open-threads', 0) + 1))
         this.client.openThreads.set(member.user.id, message.guild)
 
         const threadData = new Threads({
