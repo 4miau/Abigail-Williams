@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
 
-import Stars from '../../models/Stars'
+import Star from '../../models/Star'
 
 export default class Unstar extends Command {
     public constructor() {
@@ -32,7 +32,7 @@ export default class Unstar extends Command {
 
         if (!starboard.channel) return message.channel.send('This server does not have a starboard channel to use. Set one using the starboard command.')
 
-        const star = await Stars.findOne({ message: msg.id })
+        const star = await Star.findOne({ message: msg.id })
 
         if (!star || !star.starredBy.includes(message.author.id)) return message.channel.send('You can not remove a star from a message you never gave a star to in the first place.')
 
