@@ -58,7 +58,7 @@ export default class Play extends Command {
 
         try {
             await this.client.music.reconnectQueue(queue, message.member.voice.channel)
-            if (result instanceof Array) return this.client.music.selectSongFromArr(message, result, queue)
+            if (result instanceof Array) return this.client.music.selectSong(message, result, queue)
             else return message.channel.send({ embeds: [await this.client.music.enqueue(result, queue, message.author, true)] })
         } catch (err) {
             this.client.logger.log('ERROR', err)

@@ -1,9 +1,6 @@
 import { Command } from 'discord-akairo'
-import { Message, MessageEmbed, Role } from 'discord.js'
-import { Playlist, Song } from 'discord-music-player'
-
-import { Colours } from '../../util/Colours'
-import { getMsgResponse } from '../../util/functions/misc'
+import { Message } from 'discord.js'
+import { Song } from 'discord-music-player'
 
 export default class Search extends Command {
     public constructor() {
@@ -40,7 +37,7 @@ export default class Search extends Command {
         }
 
         if (songs instanceof Song) return this.client.music.selectSong(message, songs, queue)
-        else if (songs instanceof Array) return this.client.music.selectSongFromArr(message, songs, queue)
+        else if (songs instanceof Array) return this.client.music.selectSong(message, songs, queue)
         else return message.channel.send({ embeds: [await this.client.music.enqueue(songs, queue, message.author)] })
     }
 }

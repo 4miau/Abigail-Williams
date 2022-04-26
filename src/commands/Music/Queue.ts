@@ -28,48 +28,34 @@ export default class Queue extends Command {
     //@ts-ignore
     userPermissions(message: Message) {
         const djRole: string = this.client.settings.get(message.guild, 'djRole', '')
-
         if (!djRole) return null
 
         const hasDJRole = message.member.roles.cache.has(djRole)
-
         if (!hasDJRole) return 'DJ Role'
         return null
     }
 
-    public exec(message: Message, {page}: {page: number}): Promise<Message> {
-        const userVC = message.member.voice.channel
+    public async exec(message: Message, {page}: {page: number}): Promise<Message> {
+        const queue = await this.client.music.guildQueue(message.guild)
 
-        if (!userVC) return message.util!.send('You must be in the same VC to play a song.')
-
-        const players = this.client.manager.players.size
-        if (!players) return message.util!.send('I am currently not in a voice channel.')
-
-        const player = this.client.manager.players.first()
-
-        const queue = player.queue
+        if (!queue.songs.length) return message.channel.send('There are no songs in the queue.')
 
         const e = new MessageEmbed()
-            .setAuthor(`Queue for ${(message.guild.channels.resolve(player.voiceChannel) as VoiceChannel).name}`)
-            .setImage(`https://img.youtube.com/vi/${queue.current.identifier}/maxresdefault.jpg`)
+            .setAuthor(`Queue for #${message.guild.me.voice.channel.name}`)
+            .setImage(queue.songs[0].thumbnail)
 
-        const perPage = 5
-        page = player.queue.length ? page : 1
+        const songs = queue.songs.paginate(page, 5) // [data: Song[], maxPages: number]
+        const start = (!isNaN(page) ? page - 1 : 0) * songs[1] 
 
-        const end = page * perPage
-        const start = end - perPage
+        if (queue.nowPlaying) e.addField('Current', `[${queue.nowPlaying.name}](${queue.nowPlaying.url}) requested by ${message.author.tag}`)
 
-        const tracks = queue.slice(start, end)
+        if (!songs.length) e.setDescription(`No tracks in ${page > 1 ? `page ${page}` : 'the queue'}`)
+        else e.setDescription(
+            songs[0].map((song, i) => `${start + (++i)} - [${song.name}](${song.url}) requested by: ${message.author.tag}`).join('\n')
+        ) //(songs[1] * page) is a calculation to get the start of the page, e.g. page 5 where perPage is 6, 6 * 5 means the starting song is the 30th song.
 
-        if (queue.current) { e.addField("Current", `[${queue.current.title}](${queue.current.uri}) request by: ${queue.current.requester}`) }
+        e.setFooter(`Page ${page > songs[1] ? songs[1] : page} of ${songs[1]} | Overlooked by yettyy`)
 
-        if (!tracks.length) e.setDescription(`No tracks in ${page > 1 ? `page ${page}` : "the queue"}.`)
-        else e.setDescription(tracks.map((track, i) => `${start + (++i)} - [${track.title}](${track.uri}) request by: ${queue.current.requester}`).join("\n"))
-
-        const maxPages = Math.ceil(queue.length / perPage)
-
-        e.setFooter(`Page ${page > maxPages ? maxPages : page} of ${maxPages} | Overlooked by yettyy`)
-
-        return message.channel.send(e)
+        return message.channel.send({ embeds: [e] })
     }
 }
