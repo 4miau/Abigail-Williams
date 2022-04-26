@@ -2,7 +2,7 @@ import { AkairoClient as Abby } from 'discord-akairo'
 import {  Collection, Guild, GuildMember, Message, MessageReaction, TextChannel, User } from 'discord.js'
 import path from 'path'
 
-import Stars from '../models/Stars'
+import Star from '../models/Star'
 import { Colours } from '../util/Colours'
 import { extensions } from '../util/Constants'
 import Queue from './QueueManager'
@@ -57,12 +57,12 @@ export default class Starboard {
 
     private async addStar(message: Message, starredBy: User) {
         //ADDING STAR TO DB
-        const star = await Stars.findOne({ where: { message: message.id }})
+        const star = await Star.findOne({ where: { message: message.id }})
 
         if (!star) {
             const starboardMessage = this.threshold === 1 ? await this.channel.send({ embeds: [this.buildStarboardEmbed(message)] }) : null
 
-            await Stars.create({
+            await Star.create({
                 message: message.id,
                 author: message.author.id,
                 channel: message.channel.id,
@@ -114,7 +114,7 @@ export default class Starboard {
 
     private async removeStar(message: Message, unstarredBy: User) {
         //REMOVING STAR FROM DB
-        const star = await Stars.findOne({ where: { message: message.id } })
+        const star = await Star.findOne({ where: { message: message.id } })
 
         if (!star || !star.starredBy.includes(unstarredBy.id)) return undefined
 
@@ -161,7 +161,7 @@ export default class Starboard {
 
     private async deleteStar(message: Message) {
         //DELETE STAR ENTITY FROM DB
-        const star = await Stars.findOne({ where: { message: message.id} })
+        const star = await Star.findOne({ where: { message: message.id} })
 
         if (!star) return undefined
 
@@ -176,7 +176,7 @@ export default class Starboard {
 
     public async fixStar(message: Message) {
         //FIX STAR IN DB
-        const star = await Stars.findOne({ where: { message: message.id} })
+        const star = await Star.findOne({ where: { message: message.id} })
 
         const UserBlacklist = this.client.settings.get(message.guild, 'starboard.user-blacklist', [])
 
@@ -220,7 +220,7 @@ export default class Starboard {
                 if (msg) await msg.delete()
             }
 
-            Stars.create({
+            Star.create({
                 starredBy: starredBy,
                 message: message.id,
                 author: message.author.id,
@@ -266,7 +266,7 @@ export default class Starboard {
     }
 
     public destroy() {
-        return Stars.deleteOne({ guild: this.guild.id })
+        return Star.deleteOne({ guild: this.guild.id })
     }
 
     public buildStarboardEmbed(message: Message, starCount = 1) {

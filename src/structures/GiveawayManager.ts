@@ -2,7 +2,7 @@ import { Message, MessageEmbed, MessageReaction, User } from 'discord.js'
 import moment from 'moment'
 import ms from 'ms'
 
-import Giveaways from '../models/Giveaways'
+import Giveaways from '../models/Giveaway'
 import { Colours } from '../util/Colours'
 
 export default {
