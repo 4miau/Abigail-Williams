@@ -4,14 +4,15 @@ export interface IReminder extends mongoose.Document {
     id: string,
     snowflake: string,
     guildID: string,
+    reminderName: string,
     note: string,
-    dateTimeDue?: Date
+    dateTimeDue: Date
 }
 
 const Schema = mongoose.Schema
 const reminderSchema = new Schema({
     id: {
-        type: String,
+        type: Number,
         unique: true,
         required: true
     },
@@ -23,6 +24,10 @@ const reminderSchema = new Schema({
         type: String,
         required: false
     },
+    reminderName: {
+        type: String,
+        required: true
+    },
     note: {
         type: String,
         required: true
@@ -33,5 +38,6 @@ const reminderSchema = new Schema({
     }
 }, { collection: 'reminders' })
 
-const Reminders = mongoose.model<IReminder>('reminders', reminderSchema)
-export default Reminders
+const Reminder = mongoose.model<IReminder>('reminders', reminderSchema)
+
+export default Reminder
