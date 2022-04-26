@@ -1,7 +1,7 @@
 import { Argument, Command } from 'discord-akairo'
 import { Guild, Message } from 'discord.js'
 
-import Threads from '../../models/Threads'
+import Threads from '../../models/Thread'
 
 export default class StartThread extends Command {
     public constructor() {
@@ -39,16 +39,16 @@ export default class StartThread extends Command {
 
         if (!(guild as Guild).members.cache.has(message.author.id)) return message.channel.send('You must be in this server to start a thread in it. Use ID if necessary.')
 
-        const modmailBlacklist: string[] = this.client.settings.get(guild, 'modmail.modmail-blacklist', [])
+        const modmailBlacklist: string[] = this.client.settings.get(guild, 'modmail-blacklist', [])
         if (modmailBlacklist.includes(message.author.id)) return message.channel.send('You are blacklisted from making modmail requests in this server.')
 
         if (this.client.openThreads.has(message.author.id)) return message.channel.send('You are currently on a cooldown and can not make a thread yet.')
 
-        const modMailSetup: boolean = this.client.settings.get(guild, 'modmail.modmail-hasSetup', false)
+        const modMailSetup: boolean = this.client.settings.get(guild, 'modmail-completed', false)
         if (!modMailSetup) return message.channel.send('This server does not have modmail set-up. Please contact staff directly!')
 
         //THREAD CREATION
-        this.client.settings.set(guild, 'modmail.existingThreads', (this.client.settings.get(guild, 'modmail.open-threads', 0) + 1))
+        this.client.settings.set(guild, 'existing-threads', (this.client.settings.get(guild, 'open-threads', 0) + 1))
         this.client.openThreads.set(message.author.id, guild)
 
         const threadData = new Threads({
