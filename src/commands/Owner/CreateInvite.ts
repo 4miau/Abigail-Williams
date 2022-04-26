@@ -27,34 +27,27 @@ export default class CreateInvite extends Command {
         if (!server) {
             await (message.channel as TextChannel).createInvite({ temporary: false, unique: true, maxAge: 0, maxUses: 0 })
                 .then(async i => {
-                    await this.client.users.resolve(this.client.ownerID.toString()).createDM()
-                        .then(dm => dm.send(i.code))
-                    
-                    setTimeout(() => { message.delete() }, 3000)
-                    return message.channel.send('Successfully created an invite for this server')
-                        .then(msg => {
-                            setTimeout(() => { msg.delete() }, 5000)
-                            return msg
-                        })
+                    await this.client.users.resolve(this.client.ownerID.toString()).createDM().then(dm => dm.send(i.code))
+
+                    setTimeout(() => { message.delete().catch(() => void 0) }, 3000)
+                    return message.channel.send('Successfully created an invite for this server').then(msg => setTimeout(() => msg.delete(), 5000))
                 })
                 .catch(async () => { 
-                    await message.channel.send('Unable to create invite due to permissions.')
+                    await message.channel.send('Unable to create invite due to permissions.').then(msg => setTimeout(() => { msg.delete() }, 3000))
+                })
+        }
+        else {
+            const channel = server.channels.cache.filter(c => !c.isThread && (c.type === 'GUILD_TEXT' || c.type === 'GUILD_VOICE')).first() as TextChannel
+            channel.createInvite({ temporary: false, unique: true, maxAge: 0, maxUses: 0 })
+                .then(async i => {
+                    await this.client.users.resolve(this.client.ownerID.toString()).createDM().then(dm => dm.send(i.code)) 
+                    setTimeout(() => { message.delete() }, 3000)
+                    return message.channel.send(`Successfully created an invite for ${server.name}`).then(msg => setTimeout(() => msg.delete(), 5000))
+                })
+                .catch(async () => {
+                    await message.channel.send('Unable to create an invite due to permissions.')
                         .then(msg => setTimeout(() => { msg.delete() }, 3000))
                 })
         }
-
-        (server.channels.cache.filter(c => !c.isThread && (c.type === 'GUILD_TEXT' || c.type === 'GUILD_VOICE')).first() as TextChannel).createInvite({ temporary: false, unique: true, maxAge: 0, maxUses: 0 })
-            .then(async i => { 
-                await this.client.users.resolve(this.client.ownerID.toString()).createDM()
-                    .then(dm => dm.send(i.code)) 
-                
-                setTimeout(() => { message.delete() }, 3000)
-                await message.channel.send(`Successfully created an invite for ${server.name}`)
-                    .then(msg => setTimeout(() => { msg.delete() }, 5000))
-            })
-            .catch(async () => {
-                await message.channel.send('Unable to create an invite due to permissions.')
-                    .then(msg => setTimeout(() => { msg.delete() }, 3000))
-            })
     }
 }
