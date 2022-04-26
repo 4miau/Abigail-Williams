@@ -22,6 +22,7 @@ export default class Reboot extends Command {
         this.client.commandHandler.removeAll()
         this.client.listenerHandler.removeAll()
         this.client.inhibitorHandler.removeAll()
+        await this.client.webScraper._exit()
         
         process.exit(1)
     }

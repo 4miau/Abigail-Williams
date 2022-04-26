@@ -17,6 +17,7 @@ export default class Shutdown extends Command {
 
     public exec() {
         this.client.logger.log('INFO', 'Bot shutdown successfully.')
+        this.client.webScraper._exit()
         this.client.destroy()
     }
 }
