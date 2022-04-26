@@ -57,7 +57,7 @@ export default class Ban extends Command {
     public async exec(message: Message, {member, reason, skip}: {member: GuildMember, days: number, reason: string, skip: boolean}): Promise<any> {        
         const totalCases: number = this.client.settings.get(message.guild, 'totalCases', 0) + 1
 
-        if (!member.bannable) return message.util.send('I do not have the permissions to ban this user.')
+        if (!member.bannable) return message.channel.send('I do not have the permissions to ban this user.')
 
         if (skip) {
             await member.ban({days: 7, reason: reason})
@@ -72,7 +72,7 @@ export default class Ban extends Command {
                 await member.ban({days: 7, reason: reason})
                 this.client.settings.set(message.guild, 'totalCases', totalCases)
             } else {
-                return message.util.send('Moderator has not confirmed the ban, the command has now been cancelled.')
+                return message.channel.send('Moderator has not confirmed the ban, the command has now been cancelled.')
             } 
         }
 
@@ -95,7 +95,7 @@ export default class Ban extends Command {
         
         this.client.logger.log('CAUTION', `New case has been saved. ${newCase.targetTag} (${newCase.targetID})`)
 
-        loading.delete()
-        return message.util.send(`${member.user.id} has successfully been banned from the server.`)
+        loading.delete().catch(void 0)
+        return message.channel.send(`${member.user.id} has successfully been banned from the server.`)
     }
 }
