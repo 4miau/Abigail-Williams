@@ -1,8 +1,5 @@
 import { Command } from 'discord-akairo'
 import { Message } from 'discord.js'
-import fs from 'fs'
-
-import { findFile, extractEvent } from '../../util/functions/fileaccess'
 
 export default class Restart extends Command {
     public constructor() {
@@ -24,7 +21,10 @@ export default class Restart extends Command {
                 },
                 {
                     id: 'type',
-                    type: (_: Message, str: string) => { return (str.caseCompare('command', 'event', 'inhibitor')) ? str.toLocaleLowerCase() : 'command' }, 
+                    type: (_: Message, str: string) => {
+                        const arr = ['command', 'event', 'inhibitor', 'service']
+                        return arr.some(s => str.caseCompare(s)) ? str.toLowerCase() : 'command' 
+                    }, 
                     match: 'phrase',
                 }
             ]
@@ -38,17 +38,21 @@ export default class Restart extends Command {
             this.client.commandHandler.reloadAll()
             this.client.inhibitorHandler.reloadAll()
             this.client.listenerHandler.reloadAll()
+            this.client.serviceHandler.reloadAll()
             return message.reply('All commands, inhibitors & listeners have been restarted.')
         } else {
+            const fileServices = this.client.serviceHandler.modules.getArr('findfile', 'extractevent')
+
             try {
-                const loc = await findFile(file, type)
+                const loc = await fileServices[0].exec(file, type)
 
                 if (typeof loc === 'string' && loc.includes('/')) {
                     if (type === 'command') this.client.commandHandler.reload(file)
-                    else if (type === 'event') this.client.listenerHandler.reload(extractEvent(loc))
+                    else if (type === 'event') this.client.listenerHandler.reload(fileServices[1].exec(loc))
                     else if (type === 'inhibitor') this.client.inhibitorHandler.reload(file)
+                    else if (type === 'service') this.client.serviceHandler.reload(file)
 
-                    return message.channel.send(`Restarted \`${file.toLocaleLowerCase()}\` successfully`)
+                    return message.channel.send(`Restarted \`${file.toLowerCase()}\` successfully`)
                 }
                 else throw new Error(loc)
             } catch (err) {
